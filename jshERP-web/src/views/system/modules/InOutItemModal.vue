@@ -56,7 +56,8 @@
             <a-textarea :rows="2" placeholder="请输入备注" v-decorator="['remark']" />
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="文件">
-            <a-textarea :rows="2" placeholder="" v-decorator="['fileList']" />
+            <!-- <a-textarea :rows="2" placeholder="" v-decorator="['fileList']" /> -->
+            <j-upload v-model="fileList" bizPath="bill"></j-upload>
           </a-form-item>
         </a-form>
       </a-spin>
@@ -68,9 +69,11 @@ import pick from 'lodash.pick'
 import { addInOutItem, editInOutItem, checkInOutItem, getUserList } from '@/api/api'
 import { autoJumpNextInput } from '@/utils/util'
 import { mixinDevice } from '@/utils/mixin'
-export default {
+  import JUpload from '@/components/jeecg/JUpload'
+  export default {
   name: 'InOutItemModal',
   mixins: [mixinDevice],
+  components: { JUpload },
   data() {
     return {
       title: '操作',
@@ -79,6 +82,7 @@ export default {
       typeParam: '',
       userList: [],
       isReadOnly: false,
+      fileList: '',
       typeDisabled: false,
       labelCol: {
         xs: { span: 24 },
@@ -120,6 +124,7 @@ export default {
     add(type) {
       this.typeParam = type
       this.edit({})
+      this.fileList = ''
     },
     edit(record) {
       this.form.resetFields()
@@ -135,6 +140,8 @@ export default {
         this.typeDisabled = false
       }
       this.visible = true
+      this.fileList = this.model.fileList
+
       this.$nextTick(() => {
         this.form.setFieldsValue(
           pick(this.model, 'name', 'code', 'contractPrice', 'fileList', 'manager', 'sort', 'remark')
@@ -153,7 +160,8 @@ export default {
         if (!err) {
           that.confirmLoading = true
           let formData = Object.assign(this.model, values)
-
+          formData.fileList = that.fileList
+          
           let obj
           if (!this.model.id) {
             obj = addInOutItem(formData)

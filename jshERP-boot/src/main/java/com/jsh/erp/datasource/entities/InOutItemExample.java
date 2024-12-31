@@ -120,7 +120,9 @@ public class InOutItemExample {
         }
 
         public Criteria andIdNotEqualTo(Long value) {
-            addCriterion("id <>", value, "id");
+            if(value != null) {
+                addCriterion("id <>", value, "id");
+            }
             return (Criteria) this;
         }
 
