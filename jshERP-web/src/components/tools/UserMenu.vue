@@ -1,11 +1,5 @@
 <template>
   <div class="user-wrapper" :class="theme">
-    <span class="action" v-if="showAd">
-      <a v-if="theme==='light'" class="ad_title" target="_blank" :href="payFeeUrl">
-        <a-icon type="cloud" theme="filled" style="color: yellow; font-size: 16px; line-height: 16px;" />
-        <span>管伊佳ERP网络版158元1年</span>
-      </a>
-    </span>
     <!-- update_begin author:zhaoxin date:20191129 for: 做头部菜单栏导航 -->
     <!-- update-begin author:sunjianlei date:20191@20 for: 解决全局样式冲突的问题 -->
     <span class="action" @click="showClick">
@@ -32,14 +26,14 @@
     <!-- update-end author:sunjianlei date:20200219 for: 菜单搜索改为动态组件，在手机端呈现出弹出框 -->
     <!-- update-end author:sunjianlei date:20191220 for: 解决全局样式冲突的问题 -->
     <!-- update_end  author:zhaoxin date:20191129 for: 做头部菜单栏导航 -->
-    <span class="action">
+    <!-- <span class="action">
       <a-tooltip>
         <template slot="title">官方网站</template>
         <a target="_blank" :href="systemUrl">
           <a-icon type="bank" style="font-size: 16px;" />
         </a>
       </a-tooltip>
-    </span>
+    </span> -->
     <header-notice class="action"/>
     <a-dropdown>
       <span v-if="isDesktop()" class="action ant-dropdown-link user-dropdown-menu">
