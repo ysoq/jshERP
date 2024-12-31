@@ -44,114 +44,127 @@ public class InOutItemService {
     @Resource
     private AccountItemMapperEx accountItemMapperEx;
 
-    public InOutItem getInOutItem(long id)throws Exception {
-        InOutItem result=null;
-        try{
-            result=inOutItemMapper.selectByPrimaryKey(id);
-        }catch(Exception e){
+    public InOutItem getInOutItem(long id) throws Exception {
+        InOutItem result = null;
+        try {
+            result = inOutItemMapper.selectByPrimaryKey(id);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
         return result;
     }
 
-    public List<InOutItem> getInOutItemListByIds(String ids)throws Exception {
+    public List<InOutItem> getInOutItemListByIds(String ids) throws Exception {
         List<Long> idList = StringUtil.strToLongList(ids);
         List<InOutItem> list = new ArrayList<>();
-        try{
+        try {
             InOutItemExample example = new InOutItemExample();
             example.createCriteria().andIdIn(idList);
             list = inOutItemMapper.selectByExample(example);
-        }catch(Exception e){
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
         return list;
     }
 
-    public List<InOutItem> getInOutItem()throws Exception {
+    public List<InOutItem> getInOutItem() throws Exception {
         InOutItemExample example = new InOutItemExample();
         example.createCriteria().andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
-        List<InOutItem> list=null;
-        try{
-            list=inOutItemMapper.selectByExample(example);
-        }catch(Exception e){
+        List<InOutItem> list = null;
+        try {
+            list = inOutItemMapper.selectByExample(example);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
         return list;
     }
 
-    public List<InOutItem> select(String name, String type, String remark, int offset, int rows)throws Exception {
-        List<InOutItem> list=null;
-        try{
-            list=inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows);
-        }catch(Exception e){
+    public List<InOutItem> select(String name, String type, String remark, int offset, int rows) throws Exception {
+        List<InOutItem> list = null;
+        try {
+            list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
         return list;
     }
 
-    public Long countInOutItem(String name, String type, String remark)throws Exception {
-        Long result=null;
-        try{
-            result=inOutItemMapperEx.countsByInOutItem(name, type, remark);
-        }catch(Exception e){
+    public Long countInOutItem(String name, String type, String remark) throws Exception {
+        Long result = null;
+        try {
+            result = inOutItemMapperEx.countsByInOutItem(name, type, remark);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
         return result;
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public int insertInOutItem(JSONObject obj, HttpServletRequest request)throws Exception {
+    public int insertInOutItem(JSONObject obj, HttpServletRequest request) throws Exception {
         InOutItem inOutItem = JSONObject.parseObject(obj.toJSONString(), InOutItem.class);
-        int result=0;
-        try{
+        verifyNameAndCode(inOutItem.getId(), inOutItem.getName(), inOutItem.getCode());
+        int result = 0;
+        try {
             inOutItem.setEnabled(true);
-            result=inOutItemMapper.insertSelective(inOutItem);
+            result = inOutItemMapper.insertSelective(inOutItem);
             logService.insertLog("收支项目",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(inOutItem.getName()).toString(), request);
-        }catch(Exception e){
+        } catch (Exception e) {
             JshException.writeFail(logger, e);
         }
         return result;
     }
 
+    private void verifyNameAndCode(Long id, String name, String code) throws Exception {
+        int count = checkIsNameExist(id, name);
+        if (count > 0) {
+            throw new Exception("姓名已存在");
+        }
+        count = checkIsCodeExist(id, code);
+        if (count > 0) {
+            throw new Exception("编号已存在");
+        }
+    }
+
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public int updateInOutItem(JSONObject obj, HttpServletRequest request)throws Exception {
+    public int updateInOutItem(JSONObject obj, HttpServletRequest request) throws Exception {
         InOutItem inOutItem = JSONObject.parseObject(obj.toJSONString(), InOutItem.class);
-        int result=0;
-        try{
-            result=inOutItemMapper.updateByPrimaryKeySelective(inOutItem);
+        verifyNameAndCode(inOutItem.getId(), inOutItem.getName(), inOutItem.getCode());
+        int result = 0;
+        try {
+            result = inOutItemMapper.updateByPrimaryKeySelective(inOutItem);
             logService.insertLog("收支项目",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(inOutItem.getName()).toString(), request);
-        }catch(Exception e){
+        } catch (Exception e) {
             JshException.writeFail(logger, e);
         }
         return result;
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public int deleteInOutItem(Long id, HttpServletRequest request)throws Exception {
+    public int deleteInOutItem(Long id, HttpServletRequest request) throws Exception {
         return batchDeleteInOutItemByIds(id.toString());
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public int batchDeleteInOutItem(String ids, HttpServletRequest request)throws Exception {
+    public int batchDeleteInOutItem(String ids, HttpServletRequest request) throws Exception {
         return batchDeleteInOutItemByIds(ids);
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public int batchDeleteInOutItemByIds(String ids)throws Exception {
+    public int batchDeleteInOutItemByIds(String ids) throws Exception {
         int result = 0;
-        String [] idArray=ids.split(",");
+        String[] idArray = ids.split(",");
         //校验财务子表	jsh_accountitem
-        List<AccountItem> accountItemList=null;
-        try{
-            accountItemList=accountItemMapperEx.getAccountItemListByInOutItemIds(idArray);
-        }catch(Exception e){
+        List<AccountItem> accountItemList = null;
+        try {
+            accountItemList = accountItemMapperEx.getAccountItemListByInOutItemIds(idArray);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
-        if(accountItemList!=null&&accountItemList.size()>0){
+        if (accountItemList != null && accountItemList.size() > 0) {
             logger.error("异常码[{}],异常提示[{}],参数,InOutItemIds[{}]",
-                    ExceptionConstants.DELETE_FORCE_CONFIRM_CODE,ExceptionConstants.DELETE_FORCE_CONFIRM_MSG,ids);
+                    ExceptionConstants.DELETE_FORCE_CONFIRM_CODE, ExceptionConstants.DELETE_FORCE_CONFIRM_MSG, ids);
             throw new BusinessRunTimeException(ExceptionConstants.DELETE_FORCE_CONFIRM_CODE,
                     ExceptionConstants.DELETE_FORCE_CONFIRM_MSG);
         }
@@ -159,34 +172,47 @@ public class InOutItemService {
         StringBuffer sb = new StringBuffer();
         sb.append(BusinessConstants.LOG_OPERATION_TYPE_DELETE);
         List<InOutItem> list = getInOutItemListByIds(ids);
-        for(InOutItem inOutItem: list){
+        for (InOutItem inOutItem : list) {
             sb.append("[").append(inOutItem.getName()).append("]");
         }
         logService.insertLog("收支项目", sb.toString(),
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
-        User userInfo=userService.getCurrentUser();
-        try{
-            result=inOutItemMapperEx.batchDeleteInOutItemByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
-        }catch(Exception e){
+        User userInfo = userService.getCurrentUser();
+        try {
+            result = inOutItemMapperEx.batchDeleteInOutItemByIds(new Date(), userInfo == null ? null : userInfo.getId(), idArray);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
         return result;
     }
 
-    public int checkIsNameExist(Long id, String name)throws Exception {
+    public int checkIsNameExist(Long id, String name) throws Exception {
         InOutItemExample example = new InOutItemExample();
         example.createCriteria().andIdNotEqualTo(id).andNameEqualTo(name).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
         List<InOutItem> list = null;
-        try{
-            list=inOutItemMapper.selectByExample(example);
-        }catch(Exception e){
+        try {
+            list = inOutItemMapper.selectByExample(example);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
 
-        return list==null?0:list.size();
+        return list == null ? 0 : list.size();
     }
 
-    public List<InOutItem> findBySelect(String type)throws Exception {
+    public int checkIsCodeExist(Long id, String code) throws Exception {
+        InOutItemExample example = new InOutItemExample();
+        example.createCriteria().andIdNotEqualTo(id).andCodeEqualTo(code).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
+        List<InOutItem> list = null;
+        try {
+            list = inOutItemMapper.selectByExample(example);
+        } catch (Exception e) {
+            JshException.readFail(logger, e);
+        }
+
+        return list == null ? 0 : list.size();
+    }
+
+    public List<InOutItem> findBySelect(String type) throws Exception {
         InOutItemExample example = new InOutItemExample();
         if (type.equals("in")) {
             example.createCriteria().andTypeEqualTo("收入").andEnabledEqualTo(true)
@@ -200,16 +226,16 @@ public class InOutItemService {
         }
         example.setOrderByClause("sort asc, id desc");
         List<InOutItem> list = null;
-        try{
-            list=inOutItemMapper.selectByExample(example);
-        }catch(Exception e){
+        try {
+            list = inOutItemMapper.selectByExample(example);
+        } catch (Exception e) {
             JshException.readFail(logger, e);
         }
         return list;
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public int batchSetStatus(Boolean status, String ids)throws Exception {
+    public int batchSetStatus(Boolean status, String ids) throws Exception {
         logService.insertLog("收支项目",
                 new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ENABLED).toString(),
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
@@ -218,10 +244,10 @@ public class InOutItemService {
         inOutItem.setEnabled(status);
         InOutItemExample example = new InOutItemExample();
         example.createCriteria().andIdIn(inOutItemIds);
-        int result=0;
-        try{
+        int result = 0;
+        try {
             result = inOutItemMapper.updateByExampleSelective(inOutItem, example);
-        }catch(Exception e){
+        } catch (Exception e) {
             JshException.writeFail(logger, e);
         }
         return result;

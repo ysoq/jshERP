@@ -2,8 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jsh.erp.datasource.mappers.InOutItemMapperEx">
     <select id="selectByConditionInOutItem" parameterType="com.jsh.erp.datasource.entities.InOutItemExample" resultMap="com.jsh.erp.datasource.mappers.InOutItemMapper.BaseResultMap">
-        select *
-        FROM jsh_in_out_item
+        SELECT io.*,u.username,u.phonenum FROM `jsh_in_out_item` io left join `jsh_user` u on io.manager = u.id
         where 1=1
         <if test="name != null">
             <bind name="bindName" value="'%'+name+'%'"/>
@@ -16,7 +15,7 @@
             <bind name="bindRemark" value="'%'+remark+'%'"/>
             and remark like #{bindRemark}
         </if>
-        and ifnull(delete_flag,'0') !='1'
+        and ifnull(io.delete_flag,'0') !='1'
         order by sort asc, id desc
         <if test="offset != null and rows != null">
             limit #{offset},#{rows}

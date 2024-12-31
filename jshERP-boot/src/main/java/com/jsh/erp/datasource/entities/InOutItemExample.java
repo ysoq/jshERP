@@ -178,6 +178,11 @@ public class InOutItemExample {
             addCriterion("name =", value, "name");
             return (Criteria) this;
         }
+        public Criteria andCodeEqualTo(String value) {
+            addCriterion("code =", value, "code");
+            return (Criteria) this;
+        }
+
 
         public Criteria andNameNotEqualTo(String value) {
             addCriterion("name <>", value, "name");

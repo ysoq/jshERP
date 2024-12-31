@@ -137,6 +137,18 @@
       <if test="deleteFlag != null">
         delete_flag,
       </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="manager != null">
+        manager,
+      </if>
+      <if test="fileList != null">
+        file_list,
+      </if>
+      <if test="contractPrice != null">
+        contract_price,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -162,6 +174,18 @@
       </if>
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="manager != null">
+        #{manager,jdbcType=BIGINT},
+      </if>
+      <if test="fileList != null">
+        #{fileList,jdbcType=VARCHAR},
+      </if>
+      <if test="contractPrice != null">
+        #{contractPrice,jdbcType=DECIMAL},
       </if>
     </trim>
   </insert>
@@ -240,6 +264,18 @@
       </if>
       <if test="deleteFlag != null">
         delete_flag = #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="fileList != null">
+        file_list = #{fileList,jdbcType=VARCHAR},
+      </if>
+      <if test="manager != null">
+        manager = #{manager,jdbcType=BIGINT},
+      </if>
+      <if test="contractPrice != null">
+        contract_price = #{contractPrice,jdbcType=DECIMAL},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

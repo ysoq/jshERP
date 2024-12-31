@@ -1,5 +1,7 @@
 package com.jsh.erp.datasource.entities;
 
+import java.math.BigDecimal;
+
 public class InOutItem {
     private Long id;
 
@@ -16,6 +18,15 @@ public class InOutItem {
     private Long tenantId;
 
     private String deleteFlag;
+
+    private String code;
+    private Long manager;
+    private String fileList;
+
+    private String username;
+    private String phonenum;
+    private BigDecimal contractPrice;
+
 
     public Long getId() {
         return id;
@@ -79,5 +90,53 @@ public class InOutItem {
 
     public void setDeleteFlag(String deleteFlag) {
         this.deleteFlag = deleteFlag == null ? null : deleteFlag.trim();
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Long getManager() {
+        return manager;
+    }
+
+    public void setManager(Long manager) {
+        this.manager = manager;
+    }
+
+    public String getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(String fileList) {
+        this.fileList = fileList;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPhonenum() {
+        return phonenum;
+    }
+
+    public void setPhonenum(String phonenum) {
+        this.phonenum = phonenum;
+    }
+
+    public BigDecimal getContractPrice() {
+        return contractPrice;
+    }
+
+    public void setContractPrice(BigDecimal contractPrice) {
+        this.contractPrice = contractPrice;
     }
 }
