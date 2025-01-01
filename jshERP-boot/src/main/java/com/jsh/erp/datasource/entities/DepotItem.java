@@ -53,6 +53,7 @@ public class DepotItem {
     private Long tenantId;
 
     private String deleteFlag;
+    private Long inOutItemId;
 
     public Long getId() {
         return id;
@@ -252,5 +253,13 @@ public class DepotItem {
 
     public void setDeleteFlag(String deleteFlag) {
         this.deleteFlag = deleteFlag == null ? null : deleteFlag.trim();
+    }
+
+    public Long getInOutItemId() {
+        return inOutItemId;
+    }
+
+    public void setInOutItemId(Long inOutItemId) {
+        this.inOutItemId = inOutItemId;
     }
 }

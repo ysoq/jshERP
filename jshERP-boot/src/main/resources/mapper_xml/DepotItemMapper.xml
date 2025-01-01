@@ -220,6 +220,9 @@
       <if test="deleteFlag != null">
         delete_flag,
       </if>
+      <if test="inOutItemId != null">
+        in_out_item_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -296,6 +299,9 @@
       </if>
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="inOutItemId != null">
+        #{inOutItemId,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>

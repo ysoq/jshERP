@@ -240,7 +240,7 @@
         this.initSystemConfig()
         this.initOrgan()
         this.initPerson()
-        this.initInOutItem('out')
+        this.initInOutItem('')
         this.initAccount()
         this.initQuickBtn()
       },

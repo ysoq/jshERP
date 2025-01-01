@@ -33,6 +33,7 @@ public class DepotItemVo4WithInfoEx extends DepotItem{
     private String AnotherDepotName;
 
     private Long UnitId;
+    private Long inOutItemId;
 
     private String unitName;
 
@@ -272,5 +273,15 @@ public class DepotItemVo4WithInfoEx extends DepotItem{
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    @Override
+    public Long getInOutItemId() {
+        return inOutItemId;
+    }
+
+    @Override
+    public void setInOutItemId(Long inOutItemId) {
+        this.inOutItemId = inOutItemId;
     }
 }
