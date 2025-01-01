@@ -2,7 +2,7 @@ import { FormTypes, getListData } from '@/utils/JEditableTableUtil'
 import {
   findBySelectCus,
   findBySelectRetail,
-  findBySelectSup,
+  findBySelectSup, findInOutItemByParam,
   findStockByDepotAndBarCode,
   getAccount,
   getBatchNumberList,
@@ -213,6 +213,7 @@ export const BillModalMixin = {
         }
       });
     },
+
     initCustomer(isChecked) {
       let that = this;
       findBySelectCus({}).then((res)=>{
@@ -257,6 +258,25 @@ export const BillModalMixin = {
                 depotInfo.text = arr[i].depotName
                 depotInfo.title = arr[i].depotName
                 item.options.push(depotInfo)
+              }
+            }
+          }
+        }
+      })
+    },
+    initInOutItem(type) {
+      let that = this;
+      findInOutItemByParam({type:type}).then((res)=>{
+        if(res) {
+          for(let item of that.materialTable.columns){
+            if(item.key == 'inOutItemId') {
+              item.options = []
+              for(let i=0; i<res.length; i++) {
+                let inOutItemInfo = {};
+                inOutItemInfo.value = res[i].id + '' //注意-此处value必须为字符串格式
+                inOutItemInfo.text = res[i].name
+                inOutItemInfo.title = res[i].name
+                item.options.push(inOutItemInfo)
               }
             }
           }

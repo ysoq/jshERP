@@ -228,7 +228,7 @@ export const FinancialModalMixin = {
       this.initPerson()
     },
     inOutItemModalFormOk(type) {
-      this.initInOutItem(type)
+      this.initInOutItem('')
     },
     workflowModalFormOk() {
       this.close()

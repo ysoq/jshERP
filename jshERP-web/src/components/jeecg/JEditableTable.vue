@@ -163,7 +163,6 @@
 
                   <!-- 此 v-for 只是为了拼接 id 字符串 -->
                   <template v-for="(id,i) in [`${col.key}${row.id}`]">
-
                     <!-- native input -->
                     <label :key="i" v-if="col.type === formTypes.input || col.type === formTypes.inputNumber">
                       <a-tooltip
@@ -215,7 +214,6 @@
                       <span
                         @mouseover="()=>{handleMouseoverCommono(row,col)}"
                         @mouseout="()=>{handleMouseoutCommono(row,col)}">
-
                         <a-select
                           :id="id"
                           :key="i"
