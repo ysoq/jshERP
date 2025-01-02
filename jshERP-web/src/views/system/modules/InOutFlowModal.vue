@@ -23,7 +23,7 @@
             <p>
               {{ item.type }}单号：<a @click="showDetail(item)">{{ item.code }}</a>
             </p>
-            <p>变动金额：{{ item.totalInAccount }}</p>
+            <p>变动金额： <span style="color: orangered">{{ Math.abs(item.totalInAccount) }}</span>元</p>
           </a-timeline-item>
         </a-timeline>
       </a-spin>
