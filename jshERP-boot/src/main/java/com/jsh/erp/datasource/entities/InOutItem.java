@@ -26,6 +26,8 @@ public class InOutItem {
     private String username;
     private String phonenum;
     private BigDecimal contractPrice;
+    private BigDecimal totalInAccount;
+    private BigDecimal totalOutAccount;
 
 
     public Long getId() {
@@ -138,5 +140,21 @@ public class InOutItem {
 
     public void setContractPrice(BigDecimal contractPrice) {
         this.contractPrice = contractPrice;
+    }
+
+    public BigDecimal getTotalInAccount() {
+        return totalInAccount;
+    }
+
+    public void setTotalInAccount(BigDecimal totalInAccount) {
+        this.totalInAccount = totalInAccount;
+    }
+
+    public BigDecimal getTotalOutAccount() {
+        return totalOutAccount;
+    }
+
+    public void setTotalOutAccount(BigDecimal totalOutAccount) {
+        this.totalOutAccount = totalOutAccount;
     }
 }
