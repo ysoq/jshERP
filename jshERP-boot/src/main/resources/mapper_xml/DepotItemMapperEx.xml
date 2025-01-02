@@ -319,13 +319,14 @@
 
     <select id="getDetailList" parameterType="com.jsh.erp.datasource.entities.DepotItemExample" resultMap="ResultWithInfoExMap">
         select di.*,m.name MName,m.model MModel,m.unit MaterialUnit,m.color MColor,m.standard MStandard,m.mfrs MMfrs,m.weight, m.position, m.img_name,
-        m.other_field1 MOtherField1,m.other_field2 MOtherField2,m.other_field3 MOtherField3,m.enable_serial_number, m.enable_batch_number,
-        m.brand, dp1.name DepotName,dp2.name AnotherDepotName, me.bar_code barCode, me.purchase_decimal
+               m.other_field1 MOtherField1,m.other_field2 MOtherField2,m.other_field3 MOtherField3,m.enable_serial_number, m.enable_batch_number,
+               m.brand, dp1.name DepotName,dp2.name AnotherDepotName, me.bar_code barCode, me.purchase_decimal, io.name as inOutItemName
         from jsh_depot_item di
         left join jsh_material m on di.material_id=m.id  and ifnull(m.delete_flag,'0') !='1'
         left join jsh_material_extend me on me.id=di.material_extend_id  and ifnull(me.delete_Flag,'0') !='1'
         left join jsh_depot dp1 on di.depot_id=dp1.id and ifnull(dp1.delete_Flag,'0') !='1'
         left join jsh_depot dp2 on di.another_depot_id=dp2.id and ifnull(dp2.delete_Flag,'0') !='1'
+        left join jsh_in_out_item io on io.id = di.in_out_item_id
         where di.header_id = #{headerId}
         and ifnull(di.delete_flag,'0') !='1'
         order by di.id asc

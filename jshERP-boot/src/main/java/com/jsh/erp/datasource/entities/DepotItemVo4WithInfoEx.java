@@ -58,6 +58,7 @@ public class DepotItemVo4WithInfoEx extends DepotItem{
     private String imgName;
 
     private String brand;
+    private String inOutItemName;
 
     public Long getMId() {
         return MId;
@@ -283,5 +284,13 @@ public class DepotItemVo4WithInfoEx extends DepotItem{
     @Override
     public void setInOutItemId(Long inOutItemId) {
         this.inOutItemId = inOutItemId;
+    }
+
+    public String getInOutItemName() {
+        return inOutItemName;
+    }
+
+    public void setInOutItemName(String inOutItemName) {
+        this.inOutItemName = inOutItemName;
     }
 }

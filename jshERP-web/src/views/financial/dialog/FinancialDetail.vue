@@ -456,13 +456,13 @@
         ],
         itemInColumns: [
           { title: '#',dataIndex:'',width:'5%',align:'center',customRender:function(t,r,index){return parseInt(index)+1;}},
-          { title: '收入项目',dataIndex: 'inOutItemName',width: '30%'},
+          { title: '项目名称',dataIndex: 'inOutItemName',width: '30%'},
           { title: '金额',dataIndex: 'eachAmount', width: '30%'},
           { title: '备注',dataIndex: 'remark', width: '30%'}
         ],
         itemOutColumns: [
           { title: '#',dataIndex:'',width:'5%',align:'center',customRender:function(t,r,index){return parseInt(index)+1;}},
-          { title: '支出项目',dataIndex: 'inOutItemName',width: '30%'},
+          { title: '项目名称',dataIndex: 'inOutItemName',width: '30%'},
           { title: '金额',dataIndex: 'eachAmount', width: '30%'},
           { title: '备注',dataIndex: 'remark', width: '30%'}
         ],

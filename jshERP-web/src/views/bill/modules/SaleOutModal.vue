@@ -288,7 +288,7 @@
               validateRules: [{ required: true, message: '${title}不能为空' }]
             },
             {
-              title: '支出项目',
+              title: '项目名称',
               key: 'inOutItemId',
               width: '20%',
               type: FormTypes.select,

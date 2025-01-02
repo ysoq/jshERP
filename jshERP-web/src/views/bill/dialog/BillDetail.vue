@@ -1399,6 +1399,7 @@
         ],
         saleOutColumns: [
           { title: '仓库名称', dataIndex: 'depotName'},
+          { title: '项目名称', dataIndex: 'inOutItemName'},
           { title: '条码', dataIndex: 'barCode'},
           { title: '名称', dataIndex: 'name'},
           { title: '规格', dataIndex: 'standard'},
@@ -1476,6 +1477,7 @@
         ],
         otherOutColumns: [
           { title: '仓库名称', dataIndex: 'depotName'},
+          { title: '项目名称', dataIndex: 'inOutItemName'},
           { title: '条码', dataIndex: 'barCode'},
           { title: '名称', dataIndex: 'name'},
           { title: '规格', dataIndex: 'standard'},

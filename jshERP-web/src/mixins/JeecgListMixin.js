@@ -110,6 +110,7 @@ export const JeecgListMixin = {
         }
         this.loading = false
         this.onClearSelected()
+        this.loadDataAfter && this.loadDataAfter(this.dataSource)
       })
     },
     initDictConfig(){
