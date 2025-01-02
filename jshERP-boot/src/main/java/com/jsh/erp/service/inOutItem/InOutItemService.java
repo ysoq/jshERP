@@ -3,11 +3,9 @@ package com.jsh.erp.service.inOutItem;
 import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.ExceptionConstants;
-import com.jsh.erp.datasource.entities.AccountItem;
-import com.jsh.erp.datasource.entities.InOutItem;
-import com.jsh.erp.datasource.entities.InOutItemExample;
-import com.jsh.erp.datasource.entities.User;
+import com.jsh.erp.datasource.entities.*;
 import com.jsh.erp.datasource.mappers.AccountItemMapperEx;
+import com.jsh.erp.datasource.mappers.InOutItemFlowMapper;
 import com.jsh.erp.datasource.mappers.InOutItemMapper;
 import com.jsh.erp.datasource.mappers.InOutItemMapperEx;
 import com.jsh.erp.exception.BusinessRunTimeException;
@@ -37,6 +35,9 @@ public class InOutItemService {
 
     @Resource
     private InOutItemMapperEx inOutItemMapperEx;
+
+    @Resource
+    private InOutItemFlowMapper inOutItemFlowMapper;
     @Resource
     private UserService userService;
     @Resource
@@ -251,5 +252,9 @@ public class InOutItemService {
             JshException.writeFail(logger, e);
         }
         return result;
+    }
+
+    public List<InOutItem> projectFlow(Long id) {
+        return  inOutItemMapperEx.selectInOutItemByFlow(id);
     }
 }

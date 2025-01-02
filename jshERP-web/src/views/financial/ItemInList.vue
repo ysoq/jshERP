@@ -218,6 +218,13 @@
       this.initPerson()
       this.initAccount()
     },
+    mounted () {
+      const item_id = window.localStorage.getItem('itemId')
+      window.localStorage.removeItem('itemId')
+      console.log('item_id', item_id)
+      if(item_id) {
+      }
+    },
     methods: {
     }
   }

@@ -40,6 +40,7 @@ const getAccount = (params)=>getAction("/account/getAccount",params);
 const addInOutItem = (params)=>postAction("/inOutItem/add",params);
 const editInOutItem = (params)=>putAction("/inOutItem/update",params);
 const checkInOutItem = (params)=>getAction("/inOutItem/checkIsNameExist",params);
+const projectFlow = (params)=>getAction("/inOutItem/projectFlow",params);
 const findInOutItemByParam = (params)=>getAction("/inOutItem/findBySelect",params);
 //仓库信息
 const addDepot = (params)=>postAction("/depot/add",params);
@@ -148,6 +149,7 @@ export {
   addInOutItem,
   editInOutItem,
   checkInOutItem,
+  projectFlow,
   findInOutItemByParam,
   addDepot,
   editDepot,

@@ -65,6 +65,9 @@
                 <a>删除</a>
               </a-popconfirm>
             </span>
+            <span slot='name' slot-scope='name, record'>
+               <a @click='handleFlow(record)'> {{ name }}</a>
+            </span>
             <span slot='totalUnInAccount' slot-scope='enabled, record'>
               {{ getPrice(record) }}
             </span>
@@ -78,6 +81,7 @@
         <!-- table区域-end -->
         <!-- 表单区域 -->
         <inOutItem-modal ref='modalForm' @ok='modalFormOk'></inOutItem-modal>
+        <InOutFlowModal ref='flowModal' ></InOutFlowModal>
       </a-card>
     </a-col>
   </a-row>
@@ -85,6 +89,7 @@
 <!-- f r o m 7 5  2 7 1  8 9 2 0 -->
 <script>
 import InOutItemModal from './modules/InOutItemModal'
+import InOutFlowModal from './modules/InOutFlowModal'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDate from '@/components/jeecg/JDate'
 
@@ -93,6 +98,7 @@ export default {
   mixins: [JeecgListMixin],
   components: {
     InOutItemModal,
+    InOutFlowModal,
     JDate
   },
   data() {
@@ -116,7 +122,8 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'action' }
         },
-        { title: '名称', dataIndex: 'name', width: 200 },
+        { title: '名称', dataIndex: 'name', width: 200 ,
+          scopedSlots: { customRender: 'name' }},
         { title: '项目经理', dataIndex: 'username', width: 100 },
         { title: '联系方式', dataIndex: 'phonenum', width: 100 },
         { title: '合同金额', dataIndex: 'contractPrice', width: 100 },
@@ -165,6 +172,9 @@ export default {
       if (this.btnEnableList.indexOf(1) === -1) {
         this.$refs.modalForm.isReadOnly = true
       }
+    },
+    handleFlow(record) {
+      this.$refs.flowModal.edit(record)
     }
   }
 }

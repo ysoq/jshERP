@@ -49,4 +49,8 @@
         </foreach>
         )
     </update>
+
+    <select id="selectInOutItemByFlow"  resultMap="com.jsh.erp.datasource.mappers.InOutItemMapper.BaseResultMap">
+        select header_id as id, project_name as name, type, number as code, total_price as totalIn_account, time as remark from view_project_account_flow where 1=1 and id = #{id}
+    </select>
 </mapper>

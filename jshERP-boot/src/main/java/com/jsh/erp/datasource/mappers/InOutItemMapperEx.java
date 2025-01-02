@@ -2,6 +2,7 @@ package com.jsh.erp.datasource.mappers;
 
 import com.jsh.erp.datasource.entities.InOutItem;
 import com.jsh.erp.datasource.entities.InOutItemExample;
+import com.jsh.erp.datasource.entities.InOutItemFlow;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -15,6 +16,8 @@ public interface InOutItemMapperEx {
             @Param("remark") String remark,
             @Param("offset") Integer offset,
             @Param("rows") Integer rows);
+
+    List<InOutItem> selectInOutItemByFlow(@Param("id") Long id);
 
     Long countsByInOutItem(
             @Param("name") String name,
