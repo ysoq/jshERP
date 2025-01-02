@@ -68,12 +68,16 @@ export default {
     },
     showDetail(item) {
       let link = ''
+      window.localStorage.setItem('flowItem', JSON.stringify(item))
+
       if (item.type === '收入') {
-        window.localStorage.setItem('flowItem', JSON.stringify(item))
         link = this.$router.resolve(`/financial/item_in`)
-      } else if(item.type === '支出') {
-        window.localStorage.setItem('flowItem', JSON.stringify(item))
+      } else if (item.type === '支出') {
         link = this.$router.resolve(`/financial/item_out`)
+      } else if (item.code.startsWith('QTCK')) {
+        link = this.$router.resolve(`/bill/other_out`)
+      } else if (item.code.startsWith('XSCK')) {
+        link = this.$router.resolve(`/bill/sale_out`)
       }
 
       window.open(link.href, '_target')

@@ -1,18 +1,30 @@
 import Vue from 'vue'
-import {getAction } from '@/api/manage'
+import { getAction } from '@/api/manage'
 import { FormTypes } from '@/utils/JEditableTableUtil'
-import {findBillDetailByNumber, findBySelectSup, findBySelectCus, findBySelectRetail, getUserList, getAccount, waitBillCount,
-  getCurrentSystemConfig, getPlatformConfigByKey} from '@/api/api'
+import {
+  findBillDetailByNumber, findBySelectSup, findBySelectCus, findBySelectRetail, getUserList, getAccount, waitBillCount,
+  getCurrentSystemConfig, getPlatformConfigByKey
+} from '@/api/api'
 import { getCheckFlag, getFormatDate, getPrevMonthFormatDate } from '@/utils/util'
 import moment from 'moment'
+import dayjs from 'dayjs'
 
 export const BillListMixin = {
-  data () {
+  data() {
+
+    let flowItem = window.localStorage.getItem('flowItem')
+    if (flowItem) {
+      flowItem = JSON.parse(flowItem)
+      window.localStorage.removeItem('flowItem')
+    }
+
+
     return {
       /* 原始审核是否开启 */
       checkFlag: true,
       /* 单据Excel是否开启 */
       isShowExcel: false,
+      flowItem: flowItem,
       //以销定购的场景开关
       purchaseBySaleFlag: false,
       waitTotal: 0,
@@ -24,18 +36,19 @@ export const BillListMixin = {
       userList: [],
       accountList: [],
       // 实际索引
-      settingDataIndex:[],
+      settingDataIndex: [],
       // 实际列
-      columns:[],
+      columns: [],
       queryParam: {
         beginTime: getPrevMonthFormatDate(3),
         endTime: getFormatDate(),
         createTimeRange: [moment(getPrevMonthFormatDate(3)), moment(getFormatDate())]
-      }
+      },
+      disableMixinCreated: true
     }
   },
   computed: {
-    importExcelUrl: function(){
+    importExcelUrl: function () {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
     },
 
@@ -51,18 +64,44 @@ export const BillListMixin = {
   created() {
     this.initColumnsSetting()
     this.isShowExcel = Vue.ls.get('isShowExcel');
+
+    if (this.flowItem) {
+      this.queryParam =
+      {
+        ...this.queryParam,
+        number: this.flowItem.code,
+        beginTime: dayjs(this.flowItem.remark).format('YYYY-MM-DD'),
+        endTime: dayjs(this.flowItem.remark).format('YYYY-MM-DD'),
+      }
+    }
+
+    this.loadData();
+    //初始化字典配置 在自己页面定义
+    this.initDictConfig();
+    //初始化按钮权限
+    this.initActiveBtnStr();
   },
   methods: {
+    loadDataAfter(list) {
+      if (this.flowItem) {
+        const item = list.filter(x => x.number === this.flowItem.code)[0]
+        if (item) {
+          const type = this.flowItem.code.startsWith('QTCK') ? '其它出库' : '销售出库'
+          this.myHandleDetail(item, type, this.prefixNo)
+        }
+        this.flowItem = null
+      }
+    },
     myHandleAdd() {
       this.$refs.modalForm.action = "add";
-      if(this.btnEnableList.indexOf(2)===-1) {
+      if (this.btnEnableList.indexOf(2) === -1) {
         this.$refs.modalForm.isCanCheck = false
       }
       this.handleAdd();
     },
     myHandleCopyAdd(record) {
       this.$refs.modalForm.action = "copyAdd";
-      if(this.btnEnableList.indexOf(2)===-1) {
+      if (this.btnEnableList.indexOf(2) === -1) {
         this.$refs.modalForm.isCanCheck = false
       }
       //复制单据的时候需要移除关联单据的相关信息
@@ -74,13 +113,13 @@ export const BillListMixin = {
       this.$refs.modalForm.disableSubmit = false;
       //开启明细的编辑模式
       this.$refs.modalForm.rowCanEdit = true
-      let columnIndex = record.subType === '组装单' || record.subType === '拆卸单'?2:1
+      let columnIndex = record.subType === '组装单' || record.subType === '拆卸单' ? 2 : 1
       this.$refs.modalForm.materialTable.columns[columnIndex].type = FormTypes.popupJsh
     },
     myHandleEdit(record) {
-      if(record.status === '0') {
+      if (record.status === '0') {
         this.$refs.modalForm.action = "edit";
-        if(this.btnEnableList.indexOf(2)===-1) {
+        if (this.btnEnableList.indexOf(2) === -1) {
           this.$refs.modalForm.isCanCheck = false
         }
         //查询单条单据信息
@@ -95,14 +134,14 @@ export const BillListMixin = {
       }
     },
     myHandleDelete(record) {
-      if(record.status === '0') {
+      if (record.status === '0') {
         this.handleDelete(record.id)
       } else {
         this.$message.warning("抱歉，只有未审核的单据才能删除，请先进行反审核！")
       }
     },
     myHandleDetail(record, type, prefixNo) {
-      if(this.btnEnableList.indexOf(7)===-1) {
+      if (this.btnEnableList.indexOf(7) === -1) {
         this.$refs.modalDetail.isCanBackCheck = false
       }
       this.handleDetail(record, type, prefixNo);
@@ -123,9 +162,9 @@ export const BillListMixin = {
       this.loadData(1);
     },
     onDateChange: function (value, dateString) {
-      this.queryParam.beginTime=dateString[0]
-      this.queryParam.endTime=dateString[1]
-      if(dateString[0] && dateString[1]) {
+      this.queryParam.beginTime = dateString[0]
+      this.queryParam.endTime = dateString[1]
+      if (dateString[0] && dateString[1]) {
         this.queryParam.createTimeRange = [moment(dateString[0]), moment(dateString[1])]
       }
     },
@@ -134,17 +173,17 @@ export const BillListMixin = {
     },
     initSystemConfig() {
       getCurrentSystemConfig().then((res) => {
-        if(res.code === 200 && res.data){
+        if (res.code === 200 && res.data) {
           let multiBillType = res.data.multiBillType
           let multiLevelApprovalFlag = res.data.multiLevelApprovalFlag
           this.checkFlag = getCheckFlag(multiBillType, multiLevelApprovalFlag, this.prefixNo)
-          this.purchaseBySaleFlag = res.data.purchaseBySaleFlag==='1'?true:false
-          this.inOutManageFlag = res.data.inOutManageFlag==='1'?true:false
+          this.purchaseBySaleFlag = res.data.purchaseBySaleFlag === '1' ? true : false
+          this.inOutManageFlag = res.data.inOutManageFlag === '1' ? true : false
         }
       })
       getPlatformConfigByKey({ "platformKey": "bill_excel_url" }).then((res) => {
         if (res && res.code === 200) {
-          if(res.data.platformValue) {
+          if (res.data.platformValue) {
             this.billExcelUrl = res.data.platformValue
           }
         }
@@ -152,77 +191,79 @@ export const BillListMixin = {
     },
     initSupplier() {
       let that = this;
-      findBySelectSup({}).then((res)=>{
-        if(res) {
+      findBySelectSup({}).then((res) => {
+        if (res) {
           that.supList = res;
         }
       });
     },
     initCustomer() {
       let that = this;
-      findBySelectCus({}).then((res)=>{
-        if(res) {
+      findBySelectCus({}).then((res) => {
+        if (res) {
           that.cusList = res;
         }
       });
     },
     initRetail() {
       let that = this;
-      findBySelectRetail({}).then((res)=>{
-        if(res) {
+      findBySelectRetail({}).then((res) => {
+        if (res) {
           that.retailList = res;
         }
       });
     },
     getDepotData() {
-      getAction('/depot/findDepotByCurrentUser').then((res)=>{
-        if(res.code === 200){
+      getAction('/depot/findDepotByCurrentUser').then((res) => {
+        if (res.code === 200) {
           this.depotList = res.data;
-        }else{
+        } else {
           this.$message.info(res.data);
         }
       })
     },
     initUser() {
-      getUserList({}).then((res)=>{
-        if(res) {
+      getUserList({}).then((res) => {
+        if (res) {
           this.userList = res;
         }
       });
     },
     initAccount() {
-      getAccount({}).then((res)=>{
-        if(res && res.code === 200) {
+      getAccount({}).then((res) => {
+        if (res && res.code === 200) {
           this.accountList = res.data.accountList
         }
       })
     },
     initWaitBillCount(type, subType, status) {
-      waitBillCount({search: {
+      waitBillCount({
+        search: {
           type: type, subType: subType, status: status
-        }}).then((res)=>{
-        if(res && res.code === 200) {
+        }
+      }).then((res) => {
+        if (res && res.code === 200) {
           this.waitTotal = res.data.total
         }
       })
     },
     //加载初始化列
-    initColumnsSetting(){
+    initColumnsSetting() {
       let columnsStr = Vue.ls.get(this.prefixNo)
-      if(columnsStr && columnsStr.indexOf(',')>-1) {
+      if (columnsStr && columnsStr.indexOf(',') > -1) {
         this.settingDataIndex = columnsStr.split(',')
       } else {
         this.settingDataIndex = this.defDataIndex
       }
       this.columns = this.defColumns.filter(item => {
-        if(this.purchaseBySaleFlag) {
+        if (this.purchaseBySaleFlag) {
           //以销定购-开启
           return this.settingDataIndex.includes(item.dataIndex)
         } else {
           //以销定购-关闭
-          if(this.prefixNo === 'CGDD') {
+          if (this.prefixNo === 'CGDD') {
             //采购订单只显示除了关联订单之外的列
-            if(item.dataIndex!=='linkNumber') {
+            if (item.dataIndex !== 'linkNumber') {
               return this.settingDataIndex.includes(item.dataIndex)
             }
           } else {
@@ -232,7 +273,7 @@ export const BillListMixin = {
       })
     },
     //列设置更改事件
-    onColChange (checkedValues) {
+    onColChange(checkedValues) {
       this.columns = this.defColumns.filter(item => {
         return checkedValues.includes(item.dataIndex)
       })
