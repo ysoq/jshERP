@@ -118,9 +118,10 @@ public class MsgController {
                                                 HttpServletRequest request)throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         try {
-            Map<String, Integer> map = new HashMap<>();
-            Integer count = msgService.getMsgCountByType(type);
-            map.put("count", count);
+            Map<String, Object> map = new HashMap<>();
+            List<Msg> list = msgService.getMsgCountByType(type);
+            map.put("count", list!=null ? list.size() : 0);
+            map.put("list", list);
             res.code = 200;
             res.data = map;
         } catch(Exception e){

@@ -296,15 +296,15 @@ public class MsgService {
         return result;
     }
 
-    public Integer getMsgCountByType(String type)throws Exception {
-        int msgCount = 0;
+    public List<Msg> getMsgCountByType(String type)throws Exception {
         try{
             User userInfo = userService.getCurrentUser();
             if(!BusinessConstants.DEFAULT_MANAGER.equals(userInfo.getLoginName())) {
                 MsgExample example = new MsgExample();
+                example.setOrderByClause("create_time desc");
                 example.createCriteria().andTypeEqualTo(type).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
                 List<Msg> list = msgMapper.selectByExample(example);
-                msgCount = list.size();
+                return list;
             }
         }catch(Exception e){
             logger.error("异常码[{}],异常提示[{}],异常[{}]",
@@ -312,7 +312,7 @@ public class MsgService {
             throw new BusinessRunTimeException(ExceptionConstants.DATA_READ_FAIL_CODE,
                     ExceptionConstants.DATA_READ_FAIL_MSG);
         }
-        return msgCount;
+        return null;
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)

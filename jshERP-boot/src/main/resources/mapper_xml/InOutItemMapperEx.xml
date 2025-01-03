@@ -2,7 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jsh.erp.datasource.mappers.InOutItemMapperEx">
     <select id="selectByConditionInOutItem" parameterType="com.jsh.erp.datasource.entities.InOutItemExample" resultMap="com.jsh.erp.datasource.mappers.InOutItemMapper.BaseResultMap">
-        SELECT        io.*,        u.username,        u.phonenum,        COALESCE ( SUM( CASE WHEN f.type = '收入' THEN f.total_price ELSE 0 END ), 0 ) AS total_in_account,        (COALESCE ( SUM( CASE WHEN f.type = '出库' THEN f.total_price ELSE 0 END ), 0 ) + COALESCE ( -SUM( CASE WHEN f.type = '支出' THEN f.total_price ELSE 0 END ), 0 )) AS total_out_account        FROM         `jsh_in_out_item` io        LEFT JOIN `jsh_user` u ON io.manager = u.id        RIGHT JOIN view_project_account_flow as f on f.id = io.id        where 1=1
+        SELECT        io.*,        u.username,        u.phonenum,
+                      COALESCE ( SUM( CASE WHEN f.type = '收入' THEN f.total_price ELSE 0 END ), 0 ) AS total_in_account,
+                      (COALESCE ( SUM( CASE WHEN f.type = '出库' THEN f.total_price ELSE 0 END ), 0 )
+                           + COALESCE ( -SUM( CASE WHEN f.type = '支出' THEN f.total_price ELSE 0 END ), 0 )) AS total_out_account
+        FROM         `jsh_in_out_item` io
+            LEFT JOIN `jsh_user` u ON io.manager = u.id
+            LEFT JOIN view_project_account_flow as f on f.id = io.id
+        where 1=1
+
         <if test="name != null">
             <bind name="bindName" value="'%'+name+'%'"/>
             and io.name like #{bindName}
