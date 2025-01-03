@@ -55,6 +55,8 @@
             @change='handleTableChange'
           >
             <span slot='action' slot-scope='text, record'>
+              <a @click='handleMsg(record)'>进度填写</a>
+              <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
               <a @click='handleEdit(record)'>编辑</a>
               <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
               <a-popconfirm
@@ -76,12 +78,17 @@
               <a-tag v-if='enabled' color='green'>启用</a-tag>
               <a-tag v-if='!enabled' color='orange'>禁用</a-tag>
             </template>
+            <template slot='projectStatus' slot-scope='projectStatus'>
+              <a-tag v-if="projectStatus==='2'" color='green'>已完成</a-tag>
+              <a-tag v-else color='orange'>进行中</a-tag>
+            </template>
           </a-table>
         </div>
         <!-- table区域-end -->
         <!-- 表单区域 -->
         <inOutItem-modal ref='modalForm' @ok='modalFormOk'></inOutItem-modal>
-        <InOutFlowModal ref='flowModal' ></InOutFlowModal>
+        <InOutFlowModal ref='flowModal'></InOutFlowModal>
+        <InOutMsgModal ref='msg' @ok='modalFormOk'/>
       </a-card>
     </a-col>
   </a-row>
@@ -92,6 +99,8 @@ import InOutItemModal from './modules/InOutItemModal'
 import InOutFlowModal from './modules/InOutFlowModal'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDate from '@/components/jeecg/JDate'
+import InOutMsgModal from '@views/system/modules/InOutMsgModal.vue'
+import { getAction } from '@api/manage'
 
 export default {
   name: 'InOutItemList',
@@ -99,6 +108,7 @@ export default {
   components: {
     InOutItemModal,
     InOutFlowModal,
+    InOutMsgModal,
     JDate
   },
   data() {
@@ -118,12 +128,14 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: 100,
+          width: 150,
           align: 'center',
           scopedSlots: { customRender: 'action' }
         },
-        { title: '名称', dataIndex: 'name', width: 200 ,
-          scopedSlots: { customRender: 'name' }},
+        {
+          title: '名称', dataIndex: 'name', width: 200,
+          scopedSlots: { customRender: 'name' }
+        },
         { title: '项目经理', dataIndex: 'username', width: 100 },
         { title: '联系方式', dataIndex: 'phonenum', width: 100 },
         { title: '合同金额', dataIndex: 'contractPrice', width: 100 },
@@ -135,8 +147,12 @@ export default {
           scopedSlots: { customRender: 'totalUnInAccount' }
         },
         { title: '支出金额', dataIndex: 'totalOutAccount', width: 100 },
+        {
+          title: '项目状态', dataIndex: 'projectStatus', width: 100,
+          align: 'center',
+          scopedSlots: { customRender: 'projectStatus' }
+        },
         { title: '备注', dataIndex: 'remark', width: 200 },
-        { title: '排序', dataIndex: 'sort', width: 60 },
         {
           title: '状态',
           dataIndex: 'enabled',
@@ -146,7 +162,18 @@ export default {
         }
       ],
       url: {
-        list: '/inOutItem/list',
+        async list(params) {
+          const msgList = await getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
+            return res.data.list
+          })
+          const list = await getAction('/inOutItem/list', params)
+          for (const item of list.data.rows) {
+            item.msgList = msgList.filter(x => x.inOutItemId === item.id)
+            item.projectStatus = (item.msgList[0] || { projectStatus: '1' }).projectStatus
+            item.projectStatusText = item.projectStatus === '2' ? '已完成' : '进行中'
+          }
+          return list
+        },
         delete: '/inOutItem/delete',
         deleteBatch: '/inOutItem/deleteBatch',
         batchSetStatusUrl: '/inOutItem/batchSetStatus'
@@ -155,9 +182,9 @@ export default {
   },
   computed: {},
   methods: {
-    getPrice(record){
-      if(record.contractPrice >= 0) {
-        if(record.totalInAccount > record.contractPrice) {
+    getPrice(record) {
+      if (record.contractPrice >= 0) {
+        if (record.totalInAccount > record.contractPrice) {
           return record.contractPrice
         } else {
           return (record.contractPrice - record.totalInAccount).toFixed(2)
@@ -174,7 +201,18 @@ export default {
       }
     },
     handleFlow(record) {
-      this.$refs.flowModal.edit(record)
+      this.$refs.flowModal.edit({
+        ...record,
+        msgList: record.msgList || []
+      })
+    },
+    handleMsg(record) {
+      this.$refs.msg.add({
+        username: record.username,
+        manager: record.manager,
+        inOutItemId: record.id,
+        projectStatus: record.projectStatus
+      })
     }
   }
 }

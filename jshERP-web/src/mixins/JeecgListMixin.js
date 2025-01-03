@@ -98,7 +98,9 @@ export const JeecgListMixin = {
       }
       let params = this.getQueryParams() //查询条件
       this.loading = true
-      getAction(this.url.list, params).then((res) => {
+      const action = typeof this.url.list === 'string' ? getAction(this.url.list, params) : this.url.list(params)
+
+      action.then((res) => {
         if (res.code===200) {
           this.dataSource = res.data.rows
           this.ipagination.total = res.data.total

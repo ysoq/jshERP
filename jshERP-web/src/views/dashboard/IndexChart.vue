@@ -180,7 +180,7 @@
         this.loading = !this.loading
       }, 1000)
       this.initInfo()
-      this.initWithTenant()
+      // this.initWithTenant()
     },
     mounted() {
       handleIntroJs('indexChart', 1)

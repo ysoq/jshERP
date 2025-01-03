@@ -20,6 +20,36 @@ public class Msg {
     private Long tenantId;
 
     private String deleteFlag;
+    private String recoverContent;
+    private String recoverFile;
+    private String projectStatus;
+    private Long inOutItemId;
+
+
+    public String getRecoverContent() {
+        return recoverContent;
+    }
+
+    public void setRecoverContent(String recoverContent) {
+        this.recoverContent = recoverContent;
+    }
+
+    public String getRecoverFile() {
+        return recoverFile;
+    }
+
+    public void setRecoverFile(String recoverFile) {
+        this.recoverFile = recoverFile;
+    }
+
+    public Long getInOutItemId() {
+        return inOutItemId;
+    }
+
+    public void setInOutItemId(Long inOutItemId) {
+        this.inOutItemId = inOutItemId;
+    }
+
 
     public Long getId() {
         return id;
@@ -91,5 +121,13 @@ public class Msg {
 
     public void setDeleteFlag(String deleteFlag) {
         this.deleteFlag = deleteFlag == null ? null : deleteFlag.trim();
+    }
+
+    public String getProjectStatus() {
+        return projectStatus;
+    }
+
+    public void setProjectStatus(String projectStatus) {
+        this.projectStatus = projectStatus;
     }
 }

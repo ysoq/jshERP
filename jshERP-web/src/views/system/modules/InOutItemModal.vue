@@ -28,18 +28,12 @@
             <a-input placeholder="请输入名称" v-decorator.trim="['name', validatorRules.name]" />
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目经理">
-            <a-select placeholder="选择项目经理" v-decorator="['manager']" :dropdownMatchSelectWidth="false">
+            <a-select placeholder="选择项目经理" v-decorator="['manager',validatorRules.manager]" :dropdownMatchSelectWidth="false">
               <a-select-option v-for="(item, index) in userList" :key="index" :value="item.id">
                 {{ item.userName }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <!-- <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="类型">
-            <a-select placeholder="请选择类型" v-decorator="[ 'type', validatorRules.type]" :disabled="typeDisabled">
-              <a-select-option value="收入">收入</a-select-option>
-              <a-select-option value="支出">支出</a-select-option>
-            </a-select>
-          </a-form-item> -->
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="合同金额">
             <a-input-number
               style="width: 100%"
@@ -56,7 +50,6 @@
             <a-textarea :rows="2" placeholder="请输入备注" v-decorator="['remark']" />
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="文件">
-            <!-- <a-textarea :rows="2" placeholder="" v-decorator="['fileList']" /> -->
             <j-upload v-model="fileList" bizPath="bill"></j-upload>
           </a-form-item>
         </a-form>
@@ -103,6 +96,9 @@ import { mixinDevice } from '@/utils/mixin'
         },
         type: {
           rules: [{ required: true, message: '请选择类型!' }],
+        },
+        manager: {
+          rules: [{ required: true, message: '请选择项目经理!' }],
         },
         code: {
           rules: [{ required: true, message: '请输入编号!' }],
@@ -161,7 +157,7 @@ import { mixinDevice } from '@/utils/mixin'
           that.confirmLoading = true
           let formData = Object.assign(this.model, values)
           formData.fileList = that.fileList
-          
+
           let obj
           if (!this.model.id) {
             obj = addInOutItem(formData)

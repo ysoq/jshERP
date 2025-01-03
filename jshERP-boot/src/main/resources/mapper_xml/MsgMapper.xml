@@ -71,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, msg_title, msg_content, create_time, type, user_id, status, tenant_id, delete_Flag
+    id, msg_title, msg_content, create_time, type, user_id, status, tenant_id, delete_Flag, recover_content, recover_file, in_out_item_id, project_status
   </sql>
   <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.MsgExample" resultMap="BaseResultMap">
     select
@@ -143,6 +143,18 @@
       <if test="deleteFlag != null">
         delete_Flag,
       </if>
+      <if test="recoverContent != null">
+        recover_content,
+      </if>
+      <if test="recoverFile != null">
+        recover_file,
+      </if>
+      <if test="inOutItemId != null">
+        in_out_item_id,
+      </if>
+      <if test="projectStatus != null">
+        project_status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -171,6 +183,18 @@
       </if>
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="recoverContent != null">
+        #{recoverContent,jdbcType=VARCHAR},
+      </if>
+      <if test="recoverFile != null">
+        #{recoverFile,jdbcType=VARCHAR},
+      </if>
+      <if test="inOutItemId != null">
+        #{inOutItemId,jdbcType=BIGINT},
+      </if>
+      <if test="projectStatus != null">
+        #{projectStatus,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -256,6 +280,19 @@
       </if>
       <if test="deleteFlag != null">
         delete_Flag = #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+
+      <if test="recoverContent != null">
+        recover_content = #{recoverContent,jdbcType=VARCHAR},
+      </if>
+      <if test="recoverFile != null">
+        recover_file = #{recoverFile,jdbcType=VARCHAR},
+      </if>
+      <if test="inOutItemId != null">
+        in_out_item_id = #{inOutItemId,jdbcType=BIGINT},
+      </if>
+      <if test="projectStatus != null">
+        project_status = #{projectStatus,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
