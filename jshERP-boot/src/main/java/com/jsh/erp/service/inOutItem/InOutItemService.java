@@ -107,7 +107,9 @@ public class InOutItemService {
         int result = 0;
         try {
             inOutItem.setEnabled(true);
-            result = inOutItemMapper.insertSelective(inOutItem);
+            inOutItemMapper.insertSelective(inOutItem);
+            List<InOutItem> list = this.findBySelect("");
+            result = Math.toIntExact(list.get(0).getId());
             logService.insertLog("收支项目",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(inOutItem.getName()).toString(), request);
         } catch (Exception e) {
