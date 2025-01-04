@@ -100,7 +100,7 @@ export const JeecgListMixin = {
       this.loading = true
       const action = typeof this.url.list === 'string' ? getAction(this.url.list, params) : this.url.list(params)
 
-      action.then((res) => {
+      return action.then((res) => {
         if (res.code===200) {
           this.dataSource = res.data.rows
           this.ipagination.total = res.data.total
@@ -284,7 +284,7 @@ export const JeecgListMixin = {
     },
     modalFormOk() {
       // 新增/修改 成功时，重载列表
-      this.loadData()
+      return this.loadData()
     },
     modalFormClose() {
       // 关闭页面时，重载列表

@@ -157,17 +157,18 @@ import { mixinDevice } from '@/utils/mixin'
           that.confirmLoading = true
           let formData = Object.assign(this.model, values)
           formData.fileList = that.fileList
-
+          let editType = 'insert'
           let obj
           if (!this.model.id) {
             obj = addInOutItem(formData)
           } else {
+            editType = 'update'
             obj = editInOutItem(formData)
           }
           obj
             .then((res) => {
               if (res.code === 200) {
-                that.$emit('ok')
+                that.$emit('ok', editType)
                 that.close()
               } else {
                 that.$message.warning(res.data.message)

@@ -55,7 +55,7 @@
             @change='handleTableChange'
           >
             <span slot='action' slot-scope='text, record'>
-              <a @click='handleMsg(record)'>进度填写</a>
+              <a @click='handleMsg(record)' v-if='btnEnableList.indexOf(1) > -1'>进度填写</a>
               <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
               <a @click='handleEdit(record)'>编辑</a>
               <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
@@ -86,9 +86,9 @@
         </div>
         <!-- table区域-end -->
         <!-- 表单区域 -->
-        <inOutItem-modal ref='modalForm' @ok='modalFormOk'></inOutItem-modal>
+        <inOutItem-modal ref='modalForm' @ok='handleFormOk'></inOutItem-modal>
         <InOutFlowModal ref='flowModal'></InOutFlowModal>
-        <InOutMsgModal ref='msg' @ok='modalFormOk'/>
+        <InOutMsgModal ref='msg' @ok='modalFormOk' />
       </a-card>
     </a-col>
   </a-row>
@@ -100,7 +100,7 @@ import InOutFlowModal from './modules/InOutFlowModal'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDate from '@/components/jeecg/JDate'
 import InOutMsgModal from '@views/system/modules/InOutMsgModal.vue'
-import { getAction } from '@api/manage'
+import { getAction, postAction } from '@api/manage'
 
 export default {
   name: 'InOutItemList',
@@ -124,7 +124,6 @@ export default {
       queryParam: { name: '', type: '', remark: '' },
       // 表头
       columns: [
-        { title: '编号', dataIndex: 'code', width: 50 },
         {
           title: '操作',
           dataIndex: 'action',
@@ -132,6 +131,7 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'action' }
         },
+        { title: '编号', dataIndex: 'code', width: 50 },
         {
           title: '名称', dataIndex: 'name', width: 200,
           scopedSlots: { customRender: 'name' }
@@ -168,7 +168,7 @@ export default {
           })
           const list = await getAction('/inOutItem/list', params)
           for (const item of list.data.rows) {
-            item.msgList = msgList.filter(x => x.inOutItemId === item.id)
+            item.msgList = msgList ? msgList.filter(x => x.inOutItemId === item.id) : []
             item.projectStatus = (item.msgList[0] || { projectStatus: '1' }).projectStatus
             item.projectStatusText = item.projectStatus === '2' ? '已完成' : '进行中'
           }
@@ -182,6 +182,22 @@ export default {
   },
   computed: {},
   methods: {
+    async handleFormOk(type) {
+      await this.modalFormOk()
+      if (type === 'insert') {
+        const item = this.dataSource[0]
+        let msgParam = {
+          msgTitle: `项目创建`,
+          msgContent: '',
+          inOutItemId: item.id,
+          projectStatus: '1',
+          recoverFile: '',
+          type: '项目进度'
+        }
+        await postAction('/msg/add', msgParam)
+        await this.modalFormOk()
+      }
+    },
     getPrice(record) {
       if (record.contractPrice >= 0) {
         if (record.totalInAccount > record.contractPrice) {

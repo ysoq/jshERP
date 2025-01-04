@@ -22,7 +22,7 @@
             <p>时间：{{ format(item.createTime) }}</p>
             <template v-if="item.type === '项目进度'">
               <p>{{ item.msgTitle }}，项目状态：{{ item.projectStatus === '2' ? '已完成' : '进行中' }}</p>
-              <p>进度：{{ item.msgContent }}</p>
+              <p v-if='item.msgContent'>进度：{{ item.msgContent }}</p>
               <div style='display: flex;' v-if='item.recoverFile'>附件：
                 <div><p v-for='(f,i) in item.recoverFile' :key='i'><a target='_blank'
                                                                        :href='`/jshERP-boot/systemConfig/static/${f}`'> {{ f
