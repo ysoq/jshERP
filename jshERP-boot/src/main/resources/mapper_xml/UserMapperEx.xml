@@ -35,6 +35,7 @@
             <bind name="bindLoginName" value="'%'+loginName+'%'"/>
             and user.login_name like #{bindLoginName}
         </if>
+        group by user.id
         order by rel.user_blng_orga_dspl_seq,user.id desc
         <if test="offset != null and rows != null">
             limit #{offset},#{rows}
