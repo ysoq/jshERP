@@ -35,7 +35,7 @@
             </a-radio-group>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='正文'>
-            <a-textarea :rows='8' placeholder='正文' initialValue=''
+            <a-textarea :rows='8' placeholder='进度描述' initialValue='' maxlength='2500'
                         v-decorator.trim="['msgContent', validatorRules.msgContent]" />
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='附件'>

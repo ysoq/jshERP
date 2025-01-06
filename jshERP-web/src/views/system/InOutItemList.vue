@@ -54,7 +54,8 @@
             :rowSelection='{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }'
             @change='handleTableChange'
           >
-            <span slot='action' slot-scope='text, record'>
+            <span slot='action' slot-scope='text, record' >
+              <template v-if='record.rowIndex !== "合计"'>
               <a @click='handleMsg(record)' v-if='btnEnableList.indexOf(1) > -1'>进度填写</a>
               <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
               <a @click='handleEdit(record)'>编辑</a>
@@ -66,6 +67,8 @@
               >
                 <a>删除</a>
               </a-popconfirm>
+            </template>
+
             </span>
             <span slot='name' slot-scope='name, record'>
                <a @click='handleFlow(record)'> {{ name }}</a>
@@ -73,15 +76,29 @@
             <span slot='totalUnInAccount' slot-scope='enabled, record'>
               {{ getPrice(record) }}
             </span>
+            <span slot='contractPrice' slot-scope='enabled, record'>
+              {{ getPrice2(record.contractPrice) }}
+            </span>
+            <span slot='totalInAccount' slot-scope='enabled, record'>
+              {{ getPrice2(record.totalInAccount) }}
+            </span>
+            <span slot='totalOutAccount' slot-scope='enabled, record'>
+              {{ getPrice2(record.totalOutAccount) }}
+            </span>
             <!-- 状态渲染模板 -->
-            <template slot='customRenderFlag' slot-scope='enabled'>
-              <a-tag v-if='enabled' color='green'>启用</a-tag>
-              <a-tag v-if='!enabled' color='orange'>禁用</a-tag>
-            </template>
-            <template slot='projectStatus' slot-scope='projectStatus'>
+            <span slot='customRenderFlag' slot-scope='enabled,record' >
+              <template v-if='record.rowIndex !== "合计"'> 
+
+                <a-tag v-if='enabled' color='green'>启用</a-tag>
+                <a-tag v-if='!enabled' color='orange'>禁用</a-tag>
+              </template>
+            </span>
+            <span slot='projectStatus' slot-scope='projectStatus,record' >
+              <template v-if='record.rowIndex !== "合计"'>
               <a-tag v-if="projectStatus==='2'" color='green'>已完成</a-tag>
               <a-tag v-else color='orange'>进行中</a-tag>
-            </template>
+              </template>
+            </span>
           </a-table>
         </div>
         <!-- table区域-end -->
@@ -122,16 +139,23 @@ export default {
       },
       // 查询条件
       queryParam: { name: '', type: '', remark: '' },
+      totalColumns: ['contractPrice', 'totalInAccount', 'totalUnInAccount', 'totalOutAccount'],
       // 表头
       columns: [
         {
+          dataIndex: 'rowIndex', width: 60, align: 'center', slots: { title: 'customTitle' },
+          customRender: function(t, r, index) {
+            return (t !== '合计') ? (parseInt(index) + 1) : t
+          }
+        },
+        {
           title: '操作',
           dataIndex: 'action',
-          width: 150,
+          width: 160,
           align: 'center',
           scopedSlots: { customRender: 'action' }
         },
-        { title: '编号', dataIndex: 'code', width: 50 },
+        { title: '编号', dataIndex: 'code', width: 150 },
         {
           title: '名称', dataIndex: 'name', width: 200,
           scopedSlots: { customRender: 'name' }
@@ -139,31 +163,42 @@ export default {
         { title: '类型', dataIndex: 'type', width: 100 },
         { title: '项目经理', dataIndex: 'username', width: 100 },
         { title: '联系方式', dataIndex: 'phonenum', width: 100 },
-        { title: '合同金额', dataIndex: 'contractPrice', width: 100 },
-        { title: '已回款金额', dataIndex: 'totalInAccount', width: 100 },
+        {
+          title: '合同金额', dataIndex: 'contractPrice', width: 100,
+          scopedSlots: { customRender: 'contractPrice' }
+        },
+        {
+          title: '已回款金额', dataIndex: 'totalInAccount', width: 100,
+          scopedSlots: { customRender: 'totalInAccount' }
+        },
         {
           title: '未回款金额',
           dataIndex: 'totalUnInAccount',
           width: 100,
           scopedSlots: { customRender: 'totalUnInAccount' }
         },
-        { title: '支出金额', dataIndex: 'totalOutAccount', width: 100 },
         {
-          title: '项目状态', dataIndex: 'projectStatus', width: 100,
+          title: '支出金额', dataIndex: 'totalOutAccount', width: 100,
+          scopedSlots: { customRender: 'totalOutAccount' }
+        },
+        {
+          title: '项目进度', dataIndex: 'projectStatus', width: 100,
           align: 'center',
           scopedSlots: { customRender: 'projectStatus' }
         },
-        { title: '备注', dataIndex: 'remark', width: 200 },
         {
           title: '状态',
           dataIndex: 'enabled',
           width: 60,
           align: 'center',
           scopedSlots: { customRender: 'customRenderFlag' }
-        }
+        },
+        { title: '备注', dataIndex: 'remark', width: 150 }
+
       ],
       url: {
-        async list(params) {
+        list: async (params) => {
+          console.log(this)
           const msgList = await getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
             return res.data.list
           })
@@ -173,6 +208,18 @@ export default {
             item.projectStatus = (item.msgList[0] || { projectStatus: '1' }).projectStatus
             item.projectStatusText = item.projectStatus === '2' ? '已完成' : '进行中'
           }
+
+          function getTotal(key) {
+              return list.data.rows.reduce((a,b)=> a + b[key], 0).toFixed(2)
+          }
+
+
+          list.data.rows.push({
+            rowIndex: '合计',
+            contractPrice: getTotal('contractPrice'),
+            totalInAccount: getTotal('totalInAccount'),
+            totalOutAccount: getTotal('totalOutAccount'),
+          })
           return list
         },
         delete: '/inOutItem/delete',
@@ -199,15 +246,42 @@ export default {
         await this.modalFormOk()
       }
     },
+    getPrice2(price) {
+      const s = parseFloat(price)
+      if (typeof s === 'number') {
+        return this.formatPrice(s)
+      }
+      return price
+    },
     getPrice(record) {
       if (record.contractPrice >= 0) {
         if (record.totalInAccount > record.contractPrice) {
-          return record.contractPrice
+          return '0.00'
         } else {
-          return (record.contractPrice - record.totalInAccount).toFixed(2)
+          return this.formatPrice((record.contractPrice - record.totalInAccount))
         }
       }
       return ''
+    },
+    formatPrice(price) {
+      const num = parseFloat(price)
+      if (typeof num === 'number') {
+        const amount = num.toFixed(2)
+            // 将金额转换为字符串，并分割为整数部分和小数部分
+        let [integerPart, decimalPart] = amount.toString().split('.');
+        
+        // 对整数部分进行分组，每三位一组，从右向左
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        
+        // 如果存在小数部分，则保留；否则不显示小数部分
+        if (decimalPart) {
+            return `${integerPart}.${decimalPart}`;
+        } else {
+            return integerPart;
+        }
+
+      }
+      return price
     },
     handleEdit: function(record) {
       this.$refs.modalForm.edit(record)

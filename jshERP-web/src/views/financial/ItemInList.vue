@@ -224,6 +224,7 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'action' },
         },
+        { title: '项目', dataIndex: 'projectName',width:140, ellipsis:true},
         { title: '往来单位', dataIndex: 'organName', width: 140, ellipsis: true },
         { title: '单据编号', dataIndex: 'billNo', width: 160 },
         { title: '单据日期 ', dataIndex: 'billTimeStr', width: 160 },

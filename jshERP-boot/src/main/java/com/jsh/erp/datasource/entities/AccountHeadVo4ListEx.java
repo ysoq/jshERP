@@ -14,6 +14,8 @@ public class AccountHeadVo4ListEx extends AccountHead{
     private String accountName;
 
     private String billTimeStr;
+    private String projectName;
+    private Long inOutItemId;
 
     public String getOrganName() {
         return organName;
@@ -53,5 +55,21 @@ public class AccountHeadVo4ListEx extends AccountHead{
 
     public void setBillTimeStr(String billTimeStr) {
         this.billTimeStr = billTimeStr;
+    }
+
+    public String getInOutItemId() {
+        return inOutItemId;
+    }
+
+    public void setInOutItemId(String inOutItemId) {
+        this.inOutItemId = inOutItemId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }
