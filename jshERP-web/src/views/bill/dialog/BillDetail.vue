@@ -654,6 +654,11 @@
       <template v-else-if="billType === '销售出库'">
         <section ref="print" id="saleOutPrint">
           <a-row class="form-row" :gutter="24">
+            <a-col :span='6'>
+              <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目'>
+                {{ dataSource[0] ? dataSource[0].inOutItemName : '' }}
+              </a-form-item>
+            </a-col>
             <a-col :span="6">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户">
                 <a-input v-decorator="['id']" hidden/>
@@ -928,6 +933,11 @@
       <template v-else-if="billType === '其它出库'">
         <section ref="print" id="otherOutPrint">
           <a-row class="form-row" :gutter="24">
+            <a-col :span='6'>
+              <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目'>
+                {{ dataSource[0] ? dataSource[0].inOutItemName : '' }}
+              </a-form-item>
+            </a-col>
             <a-col :span="6">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户">
                 <a-input v-decorator="['id']" hidden/>
@@ -1399,7 +1409,6 @@
         ],
         saleOutColumns: [
           { title: '仓库名称', dataIndex: 'depotName'},
-          { title: '项目名称', dataIndex: 'inOutItemName'},
           { title: '条码', dataIndex: 'barCode'},
           { title: '名称', dataIndex: 'name'},
           { title: '规格', dataIndex: 'standard'},
@@ -1477,7 +1486,6 @@
         ],
         otherOutColumns: [
           { title: '仓库名称', dataIndex: 'depotName'},
-          { title: '项目名称', dataIndex: 'inOutItemName'},
           { title: '条码', dataIndex: 'barCode'},
           { title: '名称', dataIndex: 'name'},
           { title: '规格', dataIndex: 'standard'},
