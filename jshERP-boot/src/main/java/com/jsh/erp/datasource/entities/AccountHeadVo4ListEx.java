@@ -57,11 +57,11 @@ public class AccountHeadVo4ListEx extends AccountHead{
         this.billTimeStr = billTimeStr;
     }
 
-    public String getInOutItemId() {
+    public Long getInOutItemId() {
         return inOutItemId;
     }
 
-    public void setInOutItemId(String inOutItemId) {
+    public void setInOutItemId(Long inOutItemId) {
         this.inOutItemId = inOutItemId;
     }
 
