@@ -33,6 +33,7 @@ export const BillModalMixin = {
       accountList: [],
       accountIdList: [],
       accountMoneyList: [],
+      inOutList: [],
       billUnitPirce: '',
       scanBarCode: '',
       scanStatus: true,
@@ -140,7 +141,7 @@ export const BillModalMixin = {
     /** 查询某个tab的数据 */
     requestSubTableData(url, params, tab, success) {
       tab.loading = true
-      getAction(url, params).then(res => {
+      return getAction(url, params).then(res => {
         if (res && res.code === 200) {
           typeof success === 'function' ? success(res) : ''
           tab.dataSource = res.data.rows
@@ -149,6 +150,7 @@ export const BillModalMixin = {
             info.isEdit = this.model.id ? 1 : 0
             this.changeColumnShow(info)
           }
+          return tab.dataSource
         }
       }).finally(() => {
         tab.loading = false
@@ -270,18 +272,15 @@ export const BillModalMixin = {
       let that = this
       findInOutItemByParam({ type: type }).then((res) => {
         if (res) {
-          for (let item of that.materialTable.columns) {
-            if (item.key == 'inOutItemId') {
-              item.options = []
-              for (let i = 0; i < res.length; i++) {
-                let inOutItemInfo = {}
-                inOutItemInfo.value = res[i].id + '' //注意-此处value必须为字符串格式
-                inOutItemInfo.text = res[i].name
-                inOutItemInfo.title = res[i].name
-                item.options.push(inOutItemInfo)
-              }
-            }
+          const options = []
+          for (let i = 0; i < res.length; i++) {
+            let inOutItemInfo = {}
+            inOutItemInfo.value = res[i].id + '' //注意-此处value必须为字符串格式
+            inOutItemInfo.text = res[i].name
+            inOutItemInfo.title = res[i].name
+            options.push(inOutItemInfo)
           }
+          this.inOutList = options
         }
       })
     },
