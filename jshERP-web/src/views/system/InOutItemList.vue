@@ -136,6 +136,7 @@ export default {
           title: '名称', dataIndex: 'name', width: 200,
           scopedSlots: { customRender: 'name' }
         },
+        { title: '类型', dataIndex: 'type', width: 100 },
         { title: '项目经理', dataIndex: 'username', width: 100 },
         { title: '联系方式', dataIndex: 'phonenum', width: 100 },
         { title: '合同金额', dataIndex: 'contractPrice', width: 100 },
