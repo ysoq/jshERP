@@ -24,6 +24,17 @@
       <a-form :form='form'>
         <a-row class='form-row' :gutter='24'>
           <a-col :lg='6' :md='12' :sm='24'>
+            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+              <a-select placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]" :disabled='!rowCanEdit'
+                        :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'
+                       >
+                <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :lg='6' :md='12' :sm='24'>
             <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='客户'>
               <a-select placeholder='请选择客户' v-decorator="[ 'organId' ]" :disabled='!rowCanEdit'
                         :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'
@@ -208,15 +219,15 @@ export default {
             title: '条码', key: 'barCode', width: '12%', type: FormTypes.popupJsh, kind: 'material', multi: true,
             validateRules: [{ required: true, message: '${title}不能为空' }]
           },
-          {
-            title: '项目名称',
-            key: 'inOutItemId',
-            width: '20%',
-            type: FormTypes.select,
-            placeholder: '请选择${title}',
-            options: [],
-            allowSearch: false,
-          },
+          // {
+          //   title: '项目名称',
+          //   key: 'inOutItemId',
+          //   width: '20%',
+          //   type: FormTypes.select,
+          //   placeholder: '请选择${title}',
+          //   options: [],
+          //   allowSearch: false,
+          // },
           { title: '名称', key: 'name', width: '10%', type: FormTypes.normal },
           { title: '规格', key: 'standard', width: '9%', type: FormTypes.normal },
           { title: '型号', key: 'model', width: '9%', type: FormTypes.normal },
@@ -266,7 +277,7 @@ export default {
   },
   methods: {
     //调用完edit()方法之后会自动调用此方法
-    editAfter() {
+    async editAfter() {
 
       this.billStatus = '0'
       this.currentSelectDepotId = ''
@@ -299,7 +310,10 @@ export default {
           linkType: 'basic'
         }
         let url = this.readOnly ? this.url.detailList : this.url.detailList
-        this.requestSubTableData(url, params, this.materialTable)
+        await this.requestSubTableData(url, params, this.materialTable).then(list => {
+          const inOutItemId = list[0] ? list[0].inOutItemId + '' : null
+          this.form.setFieldsValue({ 'inOutItemId': inOutItemId })
+        })
       }
       //复制新增单据-初始化单号和日期
       if (this.action === 'copyAdd') {
@@ -323,6 +337,7 @@ export default {
       billMain.subType = '其它'
       for (let item of detailArr) {
         totalPrice += item.allPrice - 0
+        item.inOutItemId = billMain.inOutItemId
       }
       billMain.totalPrice = totalPrice
       if (this.fileList && this.fileList.length > 0) {

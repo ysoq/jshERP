@@ -82,9 +82,10 @@ export const JEditableTableMixin = {
     /** 查询某个tab的数据 */
     requestSubTableData(url, params, tab, success) {
       tab.loading = true
-      getAction(url, params).then(res => {
+      return getAction(url, params).then(res => {
         if(res && res.code === 200){
           tab.dataSource = res.data.rows
+          return res.data.rows
           typeof success === 'function' ? success(res) : ''
         }
       }).finally(() => {

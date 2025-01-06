@@ -21,6 +21,16 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row class="form-row" :gutter="24">
+          <a-col :lg='6' :md='12' :sm='24'>
+            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+              <a-select placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]"
+                        :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="往来单位">
               <a-select placeholder="请选择往来单位" v-decorator="[ 'organId', validatorRules.organId ]"
@@ -175,9 +185,9 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '项目名称',key: 'inOutItemId',width: '20%', type: FormTypes.select, placeholder: '请选择${title}', options: [],
-              allowSearch:true, validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
+            // { title: '项目名称',key: 'inOutItemId',width: '20%', type: FormTypes.select, placeholder: '请选择${title}', options: [],
+            //   allowSearch:true, validateRules: [{ required: true, message: '${title}不能为空' }]
+            // },
             { title: '金额',key: 'eachAmount', width: '10%', type: FormTypes.inputNumber, statistics: true, placeholder: '请选择${title}',
               validateRules: [{ required: true, message: '${title}不能为空' }]
             },
@@ -218,7 +228,7 @@
     },
     methods: {
       //调用完edit()方法之后会自动调用此方法
-      editAfter() {
+      async editAfter() {
         this.billStatus = '0'
         if (this.action === 'add') {
           this.addInit("ZC")
@@ -235,7 +245,10 @@
             headerId: this.model.id
           }
           let url = this.readOnly ? this.url.detailList : this.url.detailList;
-          this.requestSubTableData(url, params, this.accountTable);
+          await this.requestSubTableData(url, params, this.accountTable).then(list => {
+            const inOutItemId = list[0] ? list[0].inOutItemId + '' : null
+            this.form.setFieldsValue({ 'inOutItemId': inOutItemId })
+          })
         }
         this.initSystemConfig()
         this.initOrgan()
@@ -252,6 +265,7 @@
         billMain.type = '支出'
         for(let item of detailArr){
           totalPrice += item.eachAmount-0
+          item.inOutItemId = billMain.inOutItemId
         }
         billMain.totalPrice = 0-totalPrice
         billMain.changeAmount = 0-billMain.changeAmount
