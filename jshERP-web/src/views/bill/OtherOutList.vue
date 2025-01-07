@@ -216,7 +216,7 @@
           offset: 1
         },
         // 默认索引
-        defDataIndex:['action','organName','number','materialsList','operTimeStr','userName','materialCount','totalPrice','status'],
+        defDataIndex:['action','organName','projectName','number','materialsList','operTimeStr','userName','materialCount','totalPrice','status'],
         // 默认列
         defColumns: [
           {
@@ -232,6 +232,7 @@
               return text
             }
           },
+          { title: '项目', dataIndex: 'projectName',width:140},
           { title: '关联单据', dataIndex: 'linkNumber',width:140},
           { title: '商品信息', dataIndex: 'materialsList',width:220, ellipsis:true},
           { title: '单据日期', dataIndex: 'operTimeStr',width:145},

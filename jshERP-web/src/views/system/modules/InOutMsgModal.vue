@@ -24,7 +24,7 @@
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目经理'>
             <span>{{ model.username }}</span>
           </a-form-item>
-          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目状态'>
+          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目进度'>
             <a-radio-group button-style='solid' v-model='model.projectStatus'>
               <a-radio-button value='1'>
                 进行中
@@ -34,8 +34,8 @@
               </a-radio-button>
             </a-radio-group>
           </a-form-item>
-          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='正文'>
-            <a-textarea :rows='8' placeholder='进度描述' initialValue='' maxlength='2500'
+          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='进度描述'>
+            <a-textarea :rows='8' placeholder='请输入进度描述' initialValue='' maxlength='2500'
                         v-decorator.trim="['msgContent', validatorRules.msgContent]" />
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='附件'>
