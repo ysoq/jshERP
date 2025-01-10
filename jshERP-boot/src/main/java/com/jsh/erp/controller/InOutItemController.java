@@ -76,7 +76,7 @@ public class InOutItemController {
     @ApiOperation(value = "批量设置状态")
     public String batchSetStatus(@RequestBody JSONObject jsonObject,
                                  HttpServletRequest request) throws Exception {
-        Boolean status = jsonObject.getBoolean("status");
+        String status = jsonObject.getString("status");
         String ids = jsonObject.getString("ids");
         Map<String, Object> objectMap = new HashMap<>();
         int res = inOutItemService.batchSetStatus(status, ids);

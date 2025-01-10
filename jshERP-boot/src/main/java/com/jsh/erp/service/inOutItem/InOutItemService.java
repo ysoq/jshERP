@@ -217,11 +217,8 @@ public class InOutItemService {
 
     public List<InOutItem> findBySelect(String type) throws Exception {
         InOutItemExample example = new InOutItemExample();
-        if (type.equals("in")) {
-            example.createCriteria().andTypeEqualTo("收入").andEnabledEqualTo(true)
-                    .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
-        } else if (type.equals("out")) {
-            example.createCriteria().andTypeEqualTo("支出").andEnabledEqualTo(true)
+        if (type.equals("excludeFinish")) {
+            example.createCriteria().andEnabledEqualTo(true).addStatusNotEqualTo("1")
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
         } else {
             example.createCriteria().andEnabledEqualTo(true)
@@ -238,13 +235,22 @@ public class InOutItemService {
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public int batchSetStatus(Boolean status, String ids) throws Exception {
+    public int batchSetStatus(String status, String ids) throws Exception {
         logService.insertLog("收支项目",
                 new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ENABLED).toString(),
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
         List<Long> inOutItemIds = StringUtil.strToLongList(ids);
         InOutItem inOutItem = new InOutItem();
-        inOutItem.setEnabled(status);
+        if(status.equals("examine")) {
+            inOutItem.setStatus("1");
+        } else if (status.equals("counter-audit")) {
+            inOutItem.setStatus("0");
+        } else if (status.equals("enable")) {
+            inOutItem.setEnabled(true);
+        } else {
+            inOutItem.setEnabled(false);
+        }
+
         InOutItemExample example = new InOutItemExample();
         example.createCriteria().andIdIn(inOutItemIds);
         int result = 0;

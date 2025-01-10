@@ -396,6 +396,11 @@ public class InOutItemExample {
             return (Criteria) this;
         }
 
+        public Criteria addStatusNotEqualTo(String value) {
+            addCriterion("STATUS is  null or status <> ", value, "status");
+            return (Criteria) this;
+        }
+
         public Criteria andEnabledNotEqualTo(Boolean value) {
             addCriterion("enabled <>", value, "enabled");
             return (Criteria) this;
