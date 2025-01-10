@@ -1,5 +1,8 @@
-export function getProjectStatusText(status) {
-  switch (status) {
+export function getProjectStatusText(projectStatus, status) {
+  if (status === '1') {
+    return '已完成'
+  }
+  switch (projectStatus) {
     case '1' :
       return '施工中'
     case '2' :

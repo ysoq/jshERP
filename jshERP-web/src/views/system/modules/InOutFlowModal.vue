@@ -22,7 +22,7 @@
             <p style='margin-bottom: 5px;color: #555;font-size: 16px;font-weight: 600;'>时间：{{ format(item.createTime) }}</p>
             <div style='margin-left: 8px'>
               <template v-if="item.type === '项目进度'">
-                <p style='margin-bottom: 3px'>{{ item.msgTitle }}，项目进度：<a>{{getProjectStatusText(item.projectStatus) }}</a></p>
+                <p style='margin-bottom: 3px'>{{ item.msgTitle }} <span v-if='item.projectStatus'>，项目进度：<a>{{getProjectStatusText(item.projectStatus) }}</a></span> </p>
                 <p  v-if='item.msgContent'>进度：{{ item.msgContent }}</p>
                 <div style='display: flex;' v-if='item.recoverFile'>附件：
                   <div><p v-for='(f,i) in item.recoverFile' :key='i'><a target='_blank'

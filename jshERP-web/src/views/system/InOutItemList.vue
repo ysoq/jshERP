@@ -30,11 +30,14 @@
         <div class='table-operator' style='margin-top: 5px'>
           <a-button v-if='btnEnableList.indexOf(1) > -1' @click='handleAdd' type='primary' icon='plus'>新增</a-button>
           <a-button v-if='btnEnableList.indexOf(1) > -1' @click='batchDel' icon='delete'>删除</a-button>
-          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='batchSetStatus(true)' icon='check-square'
+          <a-button v-if='btnEnableList.indexOf(2)>-1' icon='check' @click="handleSetStatus('examine')">审核</a-button>
+          <a-button v-if='btnEnableList.indexOf(7)>-1' icon='stop' @click="handleSetStatus('counter-audit')">反审核
+          </a-button>
+          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='handleSetStatus("enable")' icon='check-square'
           >启用
           </a-button
           >
-          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='batchSetStatus(false)' icon='close-square'
+          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='handleSetStatus("disabled")' icon='close-square'
           >禁用
           </a-button
           >
@@ -79,14 +82,18 @@
             <span slot='contractPrice' slot-scope='enabled, record'>
               {{ getPrice2(record.contractPrice) }}
             </span>
-            <span slot='totalInAccount' slot-scope='enabled, record'>
-              {{ getPrice2(record.totalInAccount) }}
-            </span>
+            <div slot='totalInAccount' slot-scope='enabled, record'>
+              <span>{{ getPrice2(record.totalInAccount) }}</span>
+              <span style='color: royalblue'
+                    v-if='record.contractPrice'> ({{ (record.totalInAccount / record.contractPrice * 100).toFixed(2)
+                }}%)</span>
+
+            </div>
             <span slot='totalOutAccount' slot-scope='enabled, record'>
               {{ getPrice2(record.totalOutAccount) }}
             </span>
             <span slot='finishTime' slot-scope='finishTime, record'>
-              <span :style='{color: isAfterNow(finishTime) ? "red": ""}'>{{ finishTime }}</span>
+              <span :style='{color: isAfterNow(record) ? "red": ""}'>{{ finishTime }}</span>
             </span>
             <!-- 状态渲染模板 -->
             <span slot='customRenderFlag' slot-scope='enabled,record'>
@@ -98,7 +105,9 @@
             </span>
             <span slot='projectStatus' slot-scope='projectStatus,record'>
               <template v-if='record.rowIndex !== "合计"'>
-                <a-tag :color='projectStatus==="6" ? "green":"blue"'>{{ getProjectStatusText(projectStatus) }}</a-tag>
+                <a-tag
+                  :color='record.status==="1" ? "green":"blue"'>{{ getProjectStatusText(projectStatus, record.status)
+                  }}</a-tag>
               </template>
             </span>
           </a-table>
@@ -121,7 +130,7 @@ import JDate from '@/components/jeecg/JDate'
 import InOutMsgModal from '@views/system/modules/InOutMsgModal.vue'
 import { getAction, postAction } from '@api/manage'
 import { getProjectStatusText } from '@views/system/InOutItemCommon'
-import vue from 'vue'
+import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
 
 export default {
@@ -183,7 +192,7 @@ export default {
           scopedSlots: { customRender: 'contractPrice' }
         },
         {
-          title: '已回款金额', dataIndex: 'totalInAccount', width: 150,
+          title: '已回款金额', dataIndex: 'totalInAccount', width: 180,
           scopedSlots: { customRender: 'totalInAccount' }
         },
         {
@@ -217,13 +226,11 @@ export default {
           for (const item of list.data.rows) {
             item.msgList = msgList ? msgList.filter(x => x.inOutItemId === item.id) : []
             item.projectStatus = (item.msgList[0] || { projectStatus: '1' }).projectStatus
-            item.projectStatusText = item.projectStatus === '2' ? '已完成' : '进行中'
           }
 
           function getTotal(key) {
             return list.data.rows.reduce((a, b) => a + b[key], 0).toFixed(2)
           }
-
 
           list.data.rows.push({
             rowIndex: '合计',
@@ -241,25 +248,53 @@ export default {
   },
   computed: {},
   methods: {
+    ...mapGetters(['nickname']),
     getProjectStatusText,
-    isAfterNow(date) {
-      return dayjs().isAfter(date, 'day')
+    handleSetStatus(status) {
+      console.log(this.selectionRows)
+      if (!this.selectionRows.every(x => x.projectStatus === '5' && x.status !== '1') && status === 'examine') {
+        this.$message.error(`只能选择${getProjectStatusText('5')}状态数据`)
+        return
+      } else if (status === 'counter-audit' && !this.selectionRows.every(x => x.status === '1')) {
+        this.$message.error(`只能选择${getProjectStatusText(1, '1')}状态数据`)
+        return
+      }
+
+      this.batchSetStatus(status).then(async () => {
+        for (const item of this.selectionRows) {
+          if (status === 'examine') {
+            await this.addMsg(`由${this.nickname()}审核`, item.id, '6')
+          } else if (status === 'counter-audit') {
+            await this.addMsg(`由${this.nickname()}反审核`, item.id, '5')
+          }
+        }
+        await this.modalFormOk()
+      })
+    },
+    isAfterNow(row) {
+      if (row.projectStatus === '5' || row.status === '1') {
+        return false
+      }
+      return dayjs().isAfter(row.finishTime, 'day')
     },
     async handleFormOk(type) {
       await this.modalFormOk()
       if (type === 'insert') {
         const item = this.dataSource[0]
-        let msgParam = {
-          msgTitle: `项目创建`,
-          msgContent: '',
-          inOutItemId: item.id,
-          projectStatus: '1',
-          recoverFile: '',
-          type: '项目进度'
-        }
-        await postAction('/msg/add', msgParam)
+        await this.addMsg(`项目创建`, item.id, '1')
         await this.modalFormOk()
       }
+    },
+    addMsg(title, id, projectStatus) {
+      let msgParam = {
+        msgTitle: title,
+        msgContent: '',
+        inOutItemId: id,
+        projectStatus: projectStatus,
+        recoverFile: '',
+        type: '项目进度'
+      }
+      return postAction('/msg/add', msgParam)
     },
     getPrice2(price) {
       const s = parseFloat(price)

@@ -25,13 +25,12 @@
             <span>{{ model.username }}</span>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目进度'>
-
-            <a-select placeholder='请选择类型' v-decorator="[ 'projectStatus']" >
-              <a-select-option value='1'>{{getProjectStatusText("1")}}</a-select-option>
-              <a-select-option value='2'>{{getProjectStatusText("21")}}</a-select-option>
-              <a-select-option value='3'>{{getProjectStatusText("3")}}</a-select-option>
-              <a-select-option value='4'>{{getProjectStatusText("4")}}</a-select-option>
-              <a-select-option value='5'>{{getProjectStatusText("5")}}</a-select-option>
+            <a-select placeholder='请选择类型' v-decorator="[ 'projectStatus', validatorRules.projectStatus]">
+              <a-select-option value='1'>{{ getProjectStatusText('1') }}</a-select-option>
+              <a-select-option value='2'>{{ getProjectStatusText('2') }}</a-select-option>
+              <a-select-option value='3'>{{ getProjectStatusText('3') }}</a-select-option>
+              <a-select-option value='4'>{{ getProjectStatusText('4') }}</a-select-option>
+              <a-select-option value='5'>{{ getProjectStatusText('5') }}</a-select-option>
             </a-select>
 
           </a-form-item>
@@ -88,6 +87,11 @@ export default {
             { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
           ]
         },
+        projectStatus: {
+          rules: [
+            { required: true, message: '请选择进度!' }
+          ]
+        },
         msgContent: {
           rules: [
             { required: true, message: '请请输入内容!' },
@@ -120,7 +124,7 @@ export default {
 
       this.$nextTick(() => {
         this.form.setFieldsValue(
-          pick(this.model, 'name', 'code','projectStatus', 'contractPrice', 'fileList', 'manager', 'sort', 'remark')
+          pick(this.model, 'name', 'code', 'projectStatus', 'contractPrice', 'fileList', 'manager', 'sort', 'remark')
         )
         autoJumpNextInput('inOutItemModal')
       })
@@ -152,7 +156,7 @@ export default {
             } else {
               that.$message.warning(res.data.message)
             }
-          }).finally(()=> {
+          }).finally(() => {
             that.confirmLoading = false
           })
         }
