@@ -42,6 +42,14 @@
               </a-select-option>
             </a-select>
           </a-form-item>
+          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='客户'>
+            <a-select placeholder='选择客户' v-decorator="['supplierId']"
+                      :dropdownMatchSelectWidth='false'>
+              <a-select-option v-for='(item, index) in supplierList' :key='index' :value='item.id'>
+                {{ item.supplier }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='合同金额'>
             <a-input-number
               style='width: 100%'
@@ -50,6 +58,9 @@
               :min='0'
               :max='999999999'
             ></a-input-number>
+          </a-form-item>
+          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目完成时间'>
+            <j-date v-decorator="['finishTime']" dateFormat='YYYY-MM-DD'/>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='排序'>
             <a-input placeholder='请输入排序' v-decorator.trim="['sort']" />
@@ -83,11 +94,13 @@ import { addInOutItem, editInOutItem, checkInOutItem, getUserList } from '@/api/
 import { autoJumpNextInput } from '@/utils/util'
 import { mixinDevice } from '@/utils/mixin'
 import JUpload from '@/components/jeecg/JUpload'
+import { getAction } from '@api/manage'
+import JDate from '@comp/jeecg/JDate.vue'
 
 export default {
   name: 'InOutItemModal',
   mixins: [mixinDevice],
-  components: { JUpload },
+  components: { JDate, JUpload },
   data() {
     return {
       title: '操作',
@@ -95,6 +108,7 @@ export default {
       model: {},
       typeParam: '',
       userList: [],
+      supplierList: [],
       isReadOnly: false,
       typeDisabled: false,
       labelCol: {
@@ -131,11 +145,23 @@ export default {
   },
   methods: {
     initUser() {
+      const args = {
+        search: `{"supplier":"","type":"客户","telephone":"","phonenum":""}`,
+        currentPage: 1,
+        pageSize: 1000,
+        column: 'createTime',
+        order: 'desc'
+      }
+      getAction('/supplier/list', args).then(res => {
+        this.supplierList = res.data.rows
+      })
+
       getUserList({}).then((res) => {
         if (res) {
           this.userList = res
         }
       })
+
     },
     add(type) {
       this.typeParam = type
@@ -159,7 +185,7 @@ export default {
       this.$nextTick(() => {
 
         this.form.setFieldsValue(
-          pick(this.model, 'name', 'code', 'type', 'contractPrice', 'manager', 'sort', 'remark')
+          pick(this.model, 'name', 'code', 'type', 'contractPrice', 'supplierId', 'manager',  'finishTime', 'sort', 'remark')
         )
 
         const fileList = JSON.parse(this.model.fileList || '{}')

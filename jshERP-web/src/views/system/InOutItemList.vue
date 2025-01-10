@@ -85,6 +85,9 @@
             <span slot='totalOutAccount' slot-scope='enabled, record'>
               {{ getPrice2(record.totalOutAccount) }}
             </span>
+            <span slot='finishTime' slot-scope='finishTime, record'>
+              <span :style='{color: isAfterNow(finishTime) ? "red": ""}'>{{ finishTime }}</span>
+            </span>
             <!-- 状态渲染模板 -->
             <span slot='customRenderFlag' slot-scope='enabled,record'>
               <template v-if='record.rowIndex !== "合计"'>
@@ -95,7 +98,7 @@
             </span>
             <span slot='projectStatus' slot-scope='projectStatus,record'>
               <template v-if='record.rowIndex !== "合计"'>
-                <a-tag :color='projectStatus==="6" ? "green":"blue"'>{{getProjectStatusText(projectStatus)}}</a-tag>
+                <a-tag :color='projectStatus==="6" ? "green":"blue"'>{{ getProjectStatusText(projectStatus) }}</a-tag>
               </template>
             </span>
           </a-table>
@@ -118,6 +121,8 @@ import JDate from '@/components/jeecg/JDate'
 import InOutMsgModal from '@views/system/modules/InOutMsgModal.vue'
 import { getAction, postAction } from '@api/manage'
 import { getProjectStatusText } from '@views/system/InOutItemCommon'
+import vue from 'vue'
+import dayjs from 'dayjs'
 
 export default {
   name: 'InOutItemList',
@@ -151,7 +156,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: 160,
+          width: 180,
           align: 'center',
           scopedSlots: { customRender: 'action' }
         },
@@ -162,30 +167,36 @@ export default {
         },
         { title: '类型', dataIndex: 'type', width: 100 },
         { title: '项目经理', dataIndex: 'username', width: 100 },
-        { title: '联系方式', dataIndex: 'phonenum', width: 100 },
+        { title: '联系方式', dataIndex: 'phonenum', width: 130 },
+        { title: '客户', dataIndex: 'supplierName', width: 150 },
         {
-          title: '合同金额', dataIndex: 'contractPrice', width: 100,
-          scopedSlots: { customRender: 'contractPrice' }
-        },
-        {
-          title: '已回款金额', dataIndex: 'totalInAccount', width: 100,
-          scopedSlots: { customRender: 'totalInAccount' }
-        },
-        {
-          title: '未回款金额',
-          dataIndex: 'totalUnInAccount',
-          width: 100,
-          scopedSlots: { customRender: 'totalUnInAccount' }
-        },
-        {
-          title: '支出金额', dataIndex: 'totalOutAccount', width: 100,
-          scopedSlots: { customRender: 'totalOutAccount' }
+          title: '项目完成日期', dataIndex: 'finishTime', width: 150,
+          scopedSlots: { customRender: 'finishTime' }
         },
         {
           title: '项目进度', dataIndex: 'projectStatus', width: 100,
           align: 'center',
           scopedSlots: { customRender: 'projectStatus' }
         },
+        {
+          title: '合同金额', dataIndex: 'contractPrice', width: 150,
+          scopedSlots: { customRender: 'contractPrice' }
+        },
+        {
+          title: '已回款金额', dataIndex: 'totalInAccount', width: 150,
+          scopedSlots: { customRender: 'totalInAccount' }
+        },
+        {
+          title: '未回款金额',
+          dataIndex: 'totalUnInAccount',
+          width: 150,
+          scopedSlots: { customRender: 'totalUnInAccount' }
+        },
+        {
+          title: '支出金额', dataIndex: 'totalOutAccount', width: 150,
+          scopedSlots: { customRender: 'totalOutAccount' }
+        },
+
         {
           title: '状态',
           dataIndex: 'enabled',
@@ -231,6 +242,9 @@ export default {
   computed: {},
   methods: {
     getProjectStatusText,
+    isAfterNow(date) {
+      return dayjs().isAfter(date, 'day')
+    },
     async handleFormOk(type) {
       await this.modalFormOk()
       if (type === 'insert') {

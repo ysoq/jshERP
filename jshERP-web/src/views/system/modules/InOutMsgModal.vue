@@ -27,11 +27,11 @@
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目进度'>
 
             <a-select placeholder='请选择类型' v-decorator="[ 'projectStatus']" >
-              <a-select-option value='1'>施工中</a-select-option>
-              <a-select-option value='2'>资料完成中</a-select-option>
-              <a-select-option value='3'>验收中</a-select-option>
-              <a-select-option value='4'>送审中</a-select-option>
-              <a-select-option value='5'>已开票</a-select-option>
+              <a-select-option value='1'>{{getProjectStatusText("1")}}</a-select-option>
+              <a-select-option value='2'>{{getProjectStatusText("21")}}</a-select-option>
+              <a-select-option value='3'>{{getProjectStatusText("3")}}</a-select-option>
+              <a-select-option value='4'>{{getProjectStatusText("4")}}</a-select-option>
+              <a-select-option value='5'>{{getProjectStatusText("5")}}</a-select-option>
             </a-select>
 
           </a-form-item>
@@ -54,6 +54,7 @@ import { mixinDevice } from '@/utils/mixin'
 import JUpload from '@/components/jeecg/JUpload'
 import { postAction } from '@api/manage'
 import { mapGetters } from 'vuex'
+import { getProjectStatusText } from '@views/system/InOutItemCommon'
 
 export default {
   name: 'InOutItemModal',
@@ -105,6 +106,7 @@ export default {
   created() {
   },
   methods: {
+    getProjectStatusText,
     ...mapGetters(['nickname']),
     add(record) {
       this.title = '进度填写'
