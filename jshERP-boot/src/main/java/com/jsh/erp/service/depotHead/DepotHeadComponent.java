@@ -32,6 +32,7 @@ public class DepotHeadComponent implements ICommonQuery {
     private List<?> getDepotHeadList(Map<String, String> map)throws Exception {
         String search = map.get(Constants.SEARCH);
         String type = StringUtil.getInfo(search, "type");
+        String inOutItemId = StringUtil.getInfo(search, "inOutItemId");
         String subType = StringUtil.getInfo(search, "subType");
         String hasDebt = StringUtil.getInfo(search, "hasDebt");
         String status = StringUtil.getInfo(search, "status");
@@ -48,7 +49,7 @@ public class DepotHeadComponent implements ICommonQuery {
         Long accountId = StringUtil.parseStrLong(StringUtil.getInfo(search, "accountId"));
         String remark = StringUtil.getInfo(search, "remark");
         return depotHeadService.select(type, subType, hasDebt, status, purchaseStatus, number, linkApply, linkNumber,
-                beginTime, endTime, materialParam, organId, creator, depotId, accountId, remark, QueryUtils.offset(map), QueryUtils.rows(map));
+                beginTime, endTime, materialParam, organId, creator, depotId, accountId, remark, inOutItemId,QueryUtils.offset(map), QueryUtils.rows(map));
     }
 
     @Override

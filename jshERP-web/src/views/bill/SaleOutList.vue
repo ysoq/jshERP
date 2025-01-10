@@ -8,14 +8,10 @@
           <!-- 搜索区域 -->
           <a-form layout="inline" @keyup.enter.native="searchQuery">
             <a-row :gutter="24">
+
               <a-col :md="6" :sm="24">
                 <a-form-item label="单据编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input placeholder="请输入单据编号" v-model="queryParam.number"></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="6" :sm="24">
-                <a-form-item label="商品信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input placeholder="请输入条码、名称、助记码、规格、型号等信息" v-model="queryParam.materialParam"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="24">
@@ -30,6 +26,16 @@
                   />
                 </a-form-item>
               </a-col>
+              <a-col :lg='6' :md='12' :sm='24'>
+                <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+                  <a-select placeholder='请选择项目' v-model="queryParam.inOutItemId"  allowClear
+                            :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                    <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                      {{ item.text }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-col :md="6" :sm="24">
                   <a-button type="primary" @click="searchQuery">查询</a-button>
@@ -41,6 +47,11 @@
                 </a-col>
               </span>
               <template v-if="toggleSearchStatus">
+                <a-col :md="6" :sm="24">
+                  <a-form-item label="商品信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input placeholder="请输入条码、名称、助记码、规格、型号等信息" v-model="queryParam.materialParam"></a-input>
+                  </a-form-item>
+                </a-col>
                 <a-col :md="6" :sm="24">
                   <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择客户" showSearch optionFilterProp="children" v-model="queryParam.organId">

@@ -71,6 +71,9 @@
         <if test="type != null">
             and dh.type=#{type}
         </if>
+        <if test="inOutItemId != null">
+            and di.in_out_item_id=#{inOutItemId}
+        </if>
         <if test="subType != null">
             and dh.sub_type=#{subType}
         </if>

@@ -35,6 +35,7 @@ public interface DepotHeadMapperEx {
             @Param("depotArray") String[] depotArray,
             @Param("accountId") Long accountId,
             @Param("remark") String remark,
+            @Param("inOutItemId") String inOutItemId,
             @Param("offset") Integer offset,
             @Param("rows") Integer rows);
 

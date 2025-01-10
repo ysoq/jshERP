@@ -3,7 +3,7 @@ import { getAction } from '@/api/manage'
 import { FormTypes } from '@/utils/JEditableTableUtil'
 import {
   findBillDetailByNumber, findBySelectSup, findBySelectCus, findBySelectRetail, getUserList, getAccount, waitBillCount,
-  getCurrentSystemConfig, getPlatformConfigByKey
+  getCurrentSystemConfig, getPlatformConfigByKey, findInOutItemByParam, inOutItemExcludeFinish
 } from '@/api/api'
 import { getCheckFlag, getFormatDate, getPrevMonthFormatDate } from '@/utils/util'
 import moment from 'moment'
@@ -35,6 +35,7 @@ export const BillListMixin = {
       retailList: [],
       userList: [],
       accountList: [],
+      inOutList: [],
       // 实际索引
       settingDataIndex: [],
       // 实际列
@@ -80,8 +81,13 @@ export const BillListMixin = {
     this.initDictConfig();
     //初始化按钮权限
     this.initActiveBtnStr();
+
+    inOutItemExcludeFinish(false).then(list=> {
+      this.inOutList = list
+    })
   },
   methods: {
+
     loadDataAfter(list) {
       if (this.flowItem) {
         const item = list.filter(x => x.number === this.flowItem.code)[0]
