@@ -149,6 +149,12 @@
       <if test="contractPrice != null">
         contract_price,
       </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="supplierId != null">
+        supplier_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -186,6 +192,15 @@
       </if>
       <if test="contractPrice != null">
         #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierId != null">
+        #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="finishTime != null">
+        #{finishTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -276,6 +291,15 @@
       </if>
       <if test="contractPrice != null">
         contract_price = #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierId != null">
+        supplier_id = #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="finishTime != null">
+        finish_time = #{finishTime,jdbcType=BIGINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

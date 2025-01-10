@@ -1,6 +1,7 @@
 package com.jsh.erp.datasource.entities;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class InOutItem {
     private Long id;
@@ -25,11 +26,46 @@ public class InOutItem {
 
     private String username;
     private String phonenum;
+
+    private String supplierName;
+
+    private Date finishTime;
+
+    private String status;
+    private Long supplierId;
     private BigDecimal contractPrice;
     private BigDecimal totalInAccount;
     private BigDecimal totalOutAccount;
+    public Date getFinishTime() {
+        return finishTime;
+    }
 
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
+    }
+    public String getStatus() {
+        return status;
+    }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public Long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Long supplierId) {
+        this.supplierId = supplierId;
+    }
     public Long getId() {
         return id;
     }
