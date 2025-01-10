@@ -54,7 +54,7 @@
             :rowSelection='{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }'
             @change='handleTableChange'
           >
-            <span slot='action' slot-scope='text, record' >
+            <span slot='action' slot-scope='text, record'>
               <template v-if='record.rowIndex !== "合计"'>
               <a @click='handleMsg(record)' v-if='btnEnableList.indexOf(1) > -1'>进度填写</a>
               <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
@@ -86,17 +86,16 @@
               {{ getPrice2(record.totalOutAccount) }}
             </span>
             <!-- 状态渲染模板 -->
-            <span slot='customRenderFlag' slot-scope='enabled,record' >
-              <template v-if='record.rowIndex !== "合计"'> 
+            <span slot='customRenderFlag' slot-scope='enabled,record'>
+              <template v-if='record.rowIndex !== "合计"'>
 
                 <a-tag v-if='enabled' color='green'>启用</a-tag>
                 <a-tag v-if='!enabled' color='orange'>禁用</a-tag>
               </template>
             </span>
-            <span slot='projectStatus' slot-scope='projectStatus,record' >
+            <span slot='projectStatus' slot-scope='projectStatus,record'>
               <template v-if='record.rowIndex !== "合计"'>
-              <a-tag v-if="projectStatus==='2'" color='green'>已完成</a-tag>
-              <a-tag v-else color='orange'>进行中</a-tag>
+                <a-tag :color='projectStatus==="6" ? "green":"blue"'>{{getProjectStatusText(projectStatus)}}</a-tag>
               </template>
             </span>
           </a-table>
@@ -118,6 +117,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDate from '@/components/jeecg/JDate'
 import InOutMsgModal from '@views/system/modules/InOutMsgModal.vue'
 import { getAction, postAction } from '@api/manage'
+import { getProjectStatusText } from '@views/system/InOutItemCommon'
 
 export default {
   name: 'InOutItemList',
@@ -210,7 +210,7 @@ export default {
           }
 
           function getTotal(key) {
-              return list.data.rows.reduce((a,b)=> a + b[key], 0).toFixed(2)
+            return list.data.rows.reduce((a, b) => a + b[key], 0).toFixed(2)
           }
 
 
@@ -218,7 +218,7 @@ export default {
             rowIndex: '合计',
             contractPrice: getTotal('contractPrice'),
             totalInAccount: getTotal('totalInAccount'),
-            totalOutAccount: getTotal('totalOutAccount'),
+            totalOutAccount: getTotal('totalOutAccount')
           })
           return list
         },
@@ -230,6 +230,7 @@ export default {
   },
   computed: {},
   methods: {
+    getProjectStatusText,
     async handleFormOk(type) {
       await this.modalFormOk()
       if (type === 'insert') {
@@ -267,17 +268,17 @@ export default {
       const num = parseFloat(price)
       if (typeof num === 'number') {
         const amount = num.toFixed(2)
-            // 将金额转换为字符串，并分割为整数部分和小数部分
-        let [integerPart, decimalPart] = amount.toString().split('.');
-        
+        // 将金额转换为字符串，并分割为整数部分和小数部分
+        let [integerPart, decimalPart] = amount.toString().split('.')
+
         // 对整数部分进行分组，每三位一组，从右向左
-        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
         // 如果存在小数部分，则保留；否则不显示小数部分
         if (decimalPart) {
-            return `${integerPart}.${decimalPart}`;
+          return `${integerPart}.${decimalPart}`
         } else {
-            return integerPart;
+          return integerPart
         }
 
       }

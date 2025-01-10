@@ -25,14 +25,15 @@
             <span>{{ model.username }}</span>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目进度'>
-            <a-radio-group button-style='solid' v-model='model.projectStatus'>
-              <a-radio-button value='1'>
-                进行中
-              </a-radio-button>
-              <a-radio-button value='2'>
-                已完成
-              </a-radio-button>
-            </a-radio-group>
+
+            <a-select placeholder='请选择类型' v-decorator="[ 'projectStatus']" >
+              <a-select-option value='1'>施工中</a-select-option>
+              <a-select-option value='2'>资料完成中</a-select-option>
+              <a-select-option value='3'>验收中</a-select-option>
+              <a-select-option value='4'>送审中</a-select-option>
+              <a-select-option value='5'>已开票</a-select-option>
+            </a-select>
+
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='进度描述'>
             <a-textarea :rows='8' placeholder='请输入进度描述' initialValue='' maxlength='2500'
@@ -117,7 +118,7 @@ export default {
 
       this.$nextTick(() => {
         this.form.setFieldsValue(
-          pick(this.model, 'name', 'code', 'contractPrice', 'fileList', 'manager', 'sort', 'remark')
+          pick(this.model, 'name', 'code','projectStatus', 'contractPrice', 'fileList', 'manager', 'sort', 'remark')
         )
         autoJumpNextInput('inOutItemModal')
       })

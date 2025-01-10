@@ -19,23 +19,25 @@
       <a-spin :spinning='confirmLoading'>
         <a-timeline>
           <a-timeline-item :color='item.color' v-for='(item, index) in list' :key='index'>
-            <p>时间：{{ format(item.createTime) }}</p>
-            <template v-if="item.type === '项目进度'">
-              <p>{{ item.msgTitle }}，项目状态：{{ item.projectStatus === '2' ? '已完成' : '进行中' }}</p>
-              <p v-if='item.msgContent'>进度：{{ item.msgContent }}</p>
-              <div style='display: flex;' v-if='item.recoverFile'>附件：
-                <div><p v-for='(f,i) in item.recoverFile' :key='i'><a target='_blank'
-                                                                       :href='`/jshERP-boot/systemConfig/static/${f}`'> {{ f
-                  }}</a></p></div>
-              </div>
-            </template>
-            <template v-else>
-              <p>
-                {{ item.type }}单号：<a @click='showDetail(item)'>{{ item.code }}</a>
-              </p>
-              <p>变动金额： <span style='color: orangered'>{{ (item.type === '收入' ? 1 : -1) * Math.abs(item.totalInAccount)
-                }}</span>元</p>
-            </template>
+            <p style='margin-bottom: 5px;color: #555;font-size: 16px;font-weight: 600;'>时间：{{ format(item.createTime) }}</p>
+            <div style='margin-left: 8px'>
+              <template v-if="item.type === '项目进度'">
+                <p style='margin-bottom: 3px'>{{ item.msgTitle }}，项目进度：<a>{{getProjectStatusText(item.projectStatus) }}</a></p>
+                <p  v-if='item.msgContent'>进度：{{ item.msgContent }}</p>
+                <div style='display: flex;' v-if='item.recoverFile'>附件：
+                  <div><p v-for='(f,i) in item.recoverFile' :key='i'><a target='_blank'
+                                                                        :href='`/jshERP-boot/systemConfig/static/${f}`'> {{ f
+                    }}</a></p></div>
+                </div>
+              </template>
+              <template v-else>
+                <p style='margin-bottom: 3px'>
+                  {{ item.type }}单号：<a @click='showDetail(item)'>{{ item.code }}</a>
+                </p>
+                <p>变动金额： <span style='color: orangered'>{{ (item.type === '收入' ? 1 : -1) * Math.abs(item.totalInAccount)
+                  }}</span>元</p>
+              </template>
+            </div>
 
           </a-timeline-item>
         </a-timeline>
@@ -47,6 +49,7 @@
 import { projectFlow } from '@/api/api'
 import { mixinDevice } from '@/utils/mixin'
 import dayjs from 'dayjs'
+import { getProjectStatusText } from '@views/system/InOutItemCommon'
 
 export default {
   name: 'InOutFlowModal',
@@ -62,6 +65,7 @@ export default {
   created() {
   },
   methods: {
+    getProjectStatusText,
     format(val) {
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
     },
