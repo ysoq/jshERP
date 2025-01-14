@@ -12,6 +12,8 @@
         <result column="wholesale_decimal" jdbcType="VARCHAR" property="wholesaleDecimal" />
         <result column="low_decimal" jdbcType="VARCHAR" property="lowDecimal" />
         <result column="sku" jdbcType="VARCHAR" property="sku" />
+        <result column="in_out_item_id" jdbcType="BIGINT" property="inOutItemId" />
+
     </resultMap>
 
     <resultMap extends="com.jsh.erp.datasource.mappers.MaterialMapper.BaseResultMap" id="ResultMapListWithStock" type="com.jsh.erp.datasource.entities.MaterialVo4Unit">
@@ -70,6 +72,9 @@
         <if test="mfrs != null and mfrs !=''">
             <bind name="bindMfrs" value="'%'+mfrs+'%'"/>
             and m.mfrs like #{bindMfrs}
+        </if>
+        <if test="inOutItemId != null">
+            and m.in_out_item_id like #{inOutItemId}
         </if>
         <if test="materialOther != null and materialOther !=''">
             <bind name="bindOther" value="'%'+materialOther+'%'"/>

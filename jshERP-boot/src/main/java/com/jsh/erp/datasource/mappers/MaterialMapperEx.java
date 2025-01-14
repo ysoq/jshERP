@@ -34,6 +34,7 @@ public interface MaterialMapperEx {
             @Param("remark") String remark,
             @Param("idList") List<Long> idList,
             @Param("mpList") String mpList,
+            @Param("inOutItemId") String inOutItemId,
             @Param("offset") Integer offset,
             @Param("rows") Integer rows);
 

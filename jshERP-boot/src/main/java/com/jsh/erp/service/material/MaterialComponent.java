@@ -49,8 +49,9 @@ public class MaterialComponent implements ICommonQuery {
         String enabled = StringUtil.getInfo(search, "enabled");
         String remark = StringUtil.getInfo(search, "remark");
         String mpList = StringUtil.getInfo(search, "mpList");
+        String inOutItemId = StringUtil.getInfo(search, "inOutItemId");
         return materialService.select(materialParam, standard, model, color, brand, mfrs, materialOther, weight, expiryNum,
-                enableSerialNumber, enableBatchNumber, position, enabled, remark, categoryId, mpList, QueryUtils.offset(map), QueryUtils.rows(map));
+                enableSerialNumber, enableBatchNumber, position, enabled, remark, categoryId, mpList, inOutItemId, QueryUtils.offset(map), QueryUtils.rows(map));
     }
 
     @Override

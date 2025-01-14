@@ -122,7 +122,7 @@ public class MaterialService {
     public List<MaterialVo4Unit> select(String materialParam, String standard, String model, String color, String brand, String mfrs,
                                         String materialOther, String weight, String expiryNum, String enableSerialNumber,
                                         String enableBatchNumber, String position, String enabled, String remark, String categoryId,
-                                        String mpList, int offset, int rows)
+                                        String mpList, String inOutItemId, int offset, int rows)
             throws Exception{
         String[] mpArr = new String[]{};
         if(StringUtil.isNotEmpty(mpList)){
@@ -136,7 +136,7 @@ public class MaterialService {
                 idList = getListByParentId(Long.parseLong(categoryId));
             }
             list= materialMapperEx.selectByConditionMaterial(materialParam, standard, model, color, brand, mfrs, materialOther, weight, expiryNum,
-                    enableSerialNumber, enableBatchNumber, position, enabled, remark, idList, mpList, offset, rows);
+                    enableSerialNumber, enableBatchNumber, position, enabled, remark, idList, mpList,inOutItemId, offset, rows);
             if (null != list && list.size()>0) {
                 Map<Long,BigDecimal> initialStockMap = getInitialStockMapByMaterialList(list);
                 Map<Long,BigDecimal> currentStockMap = getCurrentStockMapByMaterialList(list);
