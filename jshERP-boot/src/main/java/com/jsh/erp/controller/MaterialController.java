@@ -218,6 +218,7 @@ public class MaterialController {
                                   @RequestParam(value = "color", required = false) String color,
                                   @RequestParam(value = "brand", required = false) String brand,
                                   @RequestParam(value = "mfrs", required = false) String mfrs,
+                                  @RequestParam(value = "inOutItemId", required = false) String inOutItemId,
                                   @RequestParam(value = "enableSerialNumber", required = false) String enableSerialNumber,
                                   @RequestParam(value = "enableBatchNumber", required = false) String enableBatchNumber,
                                   @RequestParam("page") Integer currentPage,
@@ -230,10 +231,10 @@ public class MaterialController {
                 mpArr= mpList.split(",");
             }
             List<MaterialVo4Unit> dataList = materialService.findBySelectWithBarCode(categoryId, q, StringUtil.toNull(standardOrModel),
-                    StringUtil.toNull(color), StringUtil.toNull(brand), StringUtil.toNull(mfrs), enableSerialNumber, enableBatchNumber,
+                    StringUtil.toNull(color), StringUtil.toNull(brand), StringUtil.toNull(mfrs), enableSerialNumber, enableBatchNumber, inOutItemId,
                     (currentPage-1)*pageSize, pageSize);
             int total = materialService.findBySelectWithBarCodeCount(categoryId, q, StringUtil.toNull(standardOrModel),
-                    StringUtil.toNull(color), StringUtil.toNull(brand), StringUtil.toNull(mfrs), enableSerialNumber, enableBatchNumber);
+                    StringUtil.toNull(color), StringUtil.toNull(brand), StringUtil.toNull(mfrs), enableSerialNumber, enableBatchNumber, inOutItemId);
             object.put("total", total);
             JSONArray dataArray = new JSONArray();
             //存放数据json数组

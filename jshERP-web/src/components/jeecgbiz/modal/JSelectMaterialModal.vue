@@ -292,9 +292,10 @@
           this.scrollTrigger = {};
         }
       },
-      showModal(barCode) {
+      showModal(barCode, q) {
         this.visible = true;
         this.title = '选择商品'
+        this.queryParam = Object.assign(this.queryParam, q)
         this.queryParam.q = barCode
         this.$nextTick(() => this.$refs.material.focus());
         this.loadTreeData()

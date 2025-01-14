@@ -446,7 +446,7 @@ public class MaterialService {
     }
 
     public List<MaterialVo4Unit> findBySelectWithBarCode(Long categoryId, String q, String standardOrModel, String color,
-                                                         String brand, String mfrs, String enableSerialNumber, String enableBatchNumber,
+                                                         String brand, String mfrs, String enableSerialNumber, String enableBatchNumber, String inOutItemId,
                                                          Integer offset, Integer rows) throws Exception{
         List<MaterialVo4Unit> list =null;
         try{
@@ -460,7 +460,7 @@ public class MaterialService {
                 q = q.trim();
             }
             list=  materialMapperEx.findBySelectWithBarCode(idList, q, standardOrModel, color, brand, mfrs,
-                    enableSerialNumber, enableBatchNumber, offset, rows);
+                    enableSerialNumber, enableBatchNumber, inOutItemId, offset, rows);
         }catch(Exception e){
             JshException.readFail(logger, e);
         }
@@ -468,7 +468,7 @@ public class MaterialService {
     }
 
     public int findBySelectWithBarCodeCount(Long categoryId, String q, String standardOrModel, String color,
-                                            String brand, String mfrs, String enableSerialNumber, String enableBatchNumber) throws Exception{
+                                            String brand, String mfrs, String enableSerialNumber, String enableBatchNumber, String inOutItemId) throws Exception{
         int result=0;
         try{
             List<Long> idList = new ArrayList<>();
@@ -480,7 +480,7 @@ public class MaterialService {
                 q = q.replace("'", "");
             }
             result = materialMapperEx.findBySelectWithBarCodeCount(idList, q, standardOrModel, color, brand, mfrs,
-                    enableSerialNumber, enableBatchNumber);
+                    enableSerialNumber, enableBatchNumber, inOutItemId);
         }catch(Exception e){
             logger.error("异常码[{}],异常提示[{}],异常[{}]",
                     ExceptionConstants.DATA_READ_FAIL_CODE,ExceptionConstants.DATA_READ_FAIL_MSG,e);

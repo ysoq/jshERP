@@ -58,7 +58,7 @@ Vue.prototype.getProjectName = (id)=> {
     return ''
   }
   const projectList = Vue.prototype.projectList || []
-  return projectList.filter(x=> `${id}` === x.value) || ''
+  return (projectList.filter(x=> `${id}` === x.value)[0] || {}).text
 }
 
 Promise.all([

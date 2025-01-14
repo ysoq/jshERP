@@ -17,6 +17,7 @@ const FormTypes = {
   checkbox_meta:"checkbox_meta",
   input_pop:'input_pop',
   slot: 'slot',
+  inOutItem: 'inOutItem',
   hidden: 'hidden'
 }
 const VALIDATE_NO_PASSED = Symbol()

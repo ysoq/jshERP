@@ -27,7 +27,7 @@
 
           <a-col :lg='6' :md='12' :sm='24'>
             <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
-              <a-select placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]" :disabled='!rowCanEdit'
+              <a-select placeholder='请选择项目' @change='clearList' v-decorator="[ 'inOutItemId', validatorRules.inOutItemId ]" :disabled='!rowCanEdit'
                         :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
                 <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
                   {{ item.text }}
@@ -338,7 +338,11 @@ export default {
           },
           {
             title: '条码', key: 'barCode', width: '12%', type: FormTypes.popupJsh, kind: 'material', multi: true,
-            validateRules: [{ required: true, message: '${title}不能为空' }]
+            validateRules: [{ required: true, message: '${title}不能为空' }],
+            getInOutItem: () => {
+              const id = this.form.getFieldValue('inOutItemId')
+              return id
+            }
           },
           // {
           //   title: '项目名称',
@@ -386,6 +390,11 @@ export default {
       },
       confirmLoading: false,
       validatorRules: {
+        inOutItemId: {
+          rules: [
+            { required: true, message: '请选择项目！' }
+          ]
+        },
         operTime: {
           rules: [
             { required: true, message: '请输入单据日期！' }

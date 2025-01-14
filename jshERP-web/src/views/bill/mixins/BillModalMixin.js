@@ -91,6 +91,9 @@ export const BillModalMixin = {
     }
   },
   methods: {
+    clearList() {
+      this.materialTable.dataSource = [{}]
+    },
     // 快捷键
     handleOkKey(e) {
       const key = window.event.keyCode ? window.event.keyCode : window.event.which
@@ -591,7 +594,7 @@ export const BillModalMixin = {
                 target.setValues([{
                   rowKey: row.id, values: {
                     expirationDate: info.expirationDateStr, operNumber: operNumber,
-                    allPrice: allPrice, taxMoney: taxMoney, taxLastMoney: taxLastMoney,
+                    allPrice: allPrice, taxMoney: taxMoney, taxLastMoney: taxLastMoney
                   }
                 }])
                 target.recalcAllStatisticsColumns()
@@ -687,7 +690,8 @@ export const BillModalMixin = {
         allPrice: mInfo.billPrice,
         taxRate: 0,
         taxMoney: 0,
-        taxLastMoney: mInfo.billPrice
+        taxLastMoney: mInfo.billPrice,
+        byInOutItemId: mInfo.inOutItemId
       }
     },
     //使得型号、颜色、扩展信息、sku等为隐藏
@@ -1003,6 +1007,7 @@ export const BillModalMixin = {
                   item.taxRate = 0
                   item.taxMoney = 0
                   item.taxLastMoney = mInfo.billPrice
+                  item.byInOutItemId = mInfo.inOutItemId
                   newDetailArr.push(item)
                 } else {
                   this.$message.warning('抱歉，此条码不存在商品信息！')

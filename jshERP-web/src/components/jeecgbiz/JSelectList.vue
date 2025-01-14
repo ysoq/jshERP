@@ -62,6 +62,10 @@
         type: Boolean,
         default: true,
         required: false
+      },
+      getInOutItem: {
+        type: Function,
+        required: false,
       }
     },
     data() {
@@ -98,7 +102,9 @@
         this.names = name ? name : undefined
       },
       onSearch() {
-        this.$refs.selectModal.showModal()
+        this.$refs.selectModal.showModal(null, {
+          inOutItemId: this.getInOutItem ? this.getInOutItem() : null
+        })
       },
       handleSearch(value) {
         let that = this

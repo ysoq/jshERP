@@ -74,7 +74,7 @@
             and m.mfrs like #{bindMfrs}
         </if>
         <if test="inOutItemId != null">
-            and m.in_out_item_id like #{inOutItemId}
+            and m.in_out_item_id = #{inOutItemId}
         </if>
         <if test="materialOther != null and materialOther !=''">
             <bind name="bindOther" value="'%'+materialOther+'%'"/>
@@ -404,6 +404,9 @@
             <bind name="bindMfrs" value="'%'+mfrs+'%'"/>
             and m.mfrs like #{bindMfrs}
         </if>
+        <if test="inOutItemId != null and inOutItemId !=''">
+            and m.in_out_item_id = #{inOutItemId}
+        </if>
         <if test="idList.size()>0">
             and m.category_id in
             <foreach collection="idList" item="item" index="index" separator="," open="(" close=")">
@@ -448,6 +451,9 @@
         <if test="mfrs != null and mfrs !=''">
             <bind name="bindMfrs" value="'%'+mfrs+'%'"/>
             and m.mfrs like #{bindMfrs}
+        </if>
+        <if test="inOutItemId != null and inOutItemId !=''">
+            and m.in_out_item_id = #{inOutItemId}
         </if>
         <if test="idList.size()>0">
             and m.category_id in

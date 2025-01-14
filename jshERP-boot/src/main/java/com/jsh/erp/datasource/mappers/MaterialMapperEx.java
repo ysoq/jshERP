@@ -74,6 +74,7 @@ public interface MaterialMapperEx {
                                                   @Param("mfrs") String mfrs,
                                                   @Param("enableSerialNumber") String enableSerialNumber,
                                                   @Param("enableBatchNumber") String enableBatchNumber,
+                                                  @Param("inOutItemId") String inOutItemId,
                                                   @Param("offset") Integer offset,
                                                   @Param("rows") Integer rows);
 
@@ -84,7 +85,8 @@ public interface MaterialMapperEx {
                                      @Param("brand") String brand,
                                      @Param("mfrs") String mfrs,
                                      @Param("enableSerialNumber") String enableSerialNumber,
-                                     @Param("enableBatchNumber") String enableBatchNumber);
+                                     @Param("enableBatchNumber") String enableBatchNumber,
+                                     @Param("inOutItemId") String inOutItemId    );
 
     List<MaterialVo4Unit> exportExcel(
             @Param("materialParam") String materialParam,

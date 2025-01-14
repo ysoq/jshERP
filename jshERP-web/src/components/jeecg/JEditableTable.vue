@@ -435,6 +435,7 @@
                             :kind="col.kind"
                             :multi="col.multi"
                             :value="getPopupJshValue(id)"
+                            :getInOutItem="col.getInOutItem"
                             @change="(v)=>handleChangePopupJshCommon(v,id,row,col,rowIndex)" />
                         </span>
                       </a-tooltip>
@@ -732,6 +733,9 @@
                     </div>
 
                     <!-- else (normal) -->
+                    <span v-else-if="col.type === formTypes.inOutItem" :key="i" v-bind="buildProps(row,col)" class="td-span" :title="inputValues[rowIndex][col.key]">
+                      {{ getProjectName(inputValues[rowIndex][col.key] )}}
+                    </span>
                     <span v-else :key="i" v-bind="buildProps(row,col)" class="td-span" :title="inputValues[rowIndex][col.key]">
                       {{ inputValues[rowIndex][col.key] }}
                     </span>
