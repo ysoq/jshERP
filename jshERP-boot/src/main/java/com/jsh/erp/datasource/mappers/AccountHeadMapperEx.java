@@ -25,6 +25,7 @@ public interface AccountHeadMapperEx {
             @Param("status") String status,
             @Param("remark") String remark,
             @Param("number") String number,
+            @Param("inOutItemId") String inOutItemId,
             @Param("offset") Integer offset,
             @Param("rows") Integer rows);
 

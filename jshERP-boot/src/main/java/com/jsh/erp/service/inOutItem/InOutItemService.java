@@ -220,6 +220,10 @@ public class InOutItemService {
         if (type.equals("excludeFinish")) {
             example.createCriteria().andEnabledEqualTo(true).addStatusNotEqualTo("1")
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
+        } else if(type.equals("clearPackage")) {
+            example.createCriteria().andEnabledEqualTo(true)
+                    .andTypeEqualTo("清包")
+                    .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
         } else {
             example.createCriteria().andEnabledEqualTo(true)
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);

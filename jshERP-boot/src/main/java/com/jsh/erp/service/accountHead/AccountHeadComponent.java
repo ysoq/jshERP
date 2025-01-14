@@ -42,8 +42,9 @@ public class AccountHeadComponent implements ICommonQuery {
         String status = StringUtil.getInfo(search, "status");
         String remark = StringUtil.getInfo(search, "remark");
         String number = StringUtil.getInfo(search, "number");
+        String inOutItemId = StringUtil.getInfo(search, "inOutItemId");
         return accountHeadService.select(type, billNo, beginTime, endTime, organId, creator, handsPersonId,
-                accountId, status, remark, number, QueryUtils.offset(map), QueryUtils.rows(map));
+                accountId, status, remark, number, inOutItemId, QueryUtils.offset(map), QueryUtils.rows(map));
     }
 
     @Override

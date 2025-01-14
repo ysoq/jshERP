@@ -24,6 +24,9 @@
         left join jsh_account_item i on ah.id = i.header_id
         left join jsh_in_out_item io on io.id = i.in_out_item_id
         where 1=1
+        <if test="inOutItemId != null">
+            and i.in_out_item_id =#{inOutItemId}
+        </if>
         <if test="billNo != null">
             <bind name="bindBillNo" value="'%'+billNo+'%'"/>
             and ah.bill_no like #{bindBillNo}

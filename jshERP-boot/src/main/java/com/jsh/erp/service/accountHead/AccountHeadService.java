@@ -96,14 +96,14 @@ public class AccountHeadService {
 
     public List<AccountHeadVo4ListEx> select(String type, String billNo, String beginTime, String endTime,
                                              Long organId, Long creator, Long handsPersonId, Long accountId, String status,
-                                             String remark, String number, int offset, int rows) throws Exception{
+                                             String remark, String number, String inOutItemId, int offset, int rows) throws Exception{
         List<AccountHeadVo4ListEx> resList = new ArrayList<>();
         try{
             String [] creatorArray = getCreatorArray();
             beginTime = Tools.parseDayToTime(beginTime,BusinessConstants.DAY_FIRST_TIME);
             endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
             List<AccountHeadVo4ListEx> list = accountHeadMapperEx.selectByConditionAccountHead(type, creatorArray, billNo,
-                    beginTime, endTime, organId, creator, handsPersonId, accountId, status, remark, number, offset, rows);
+                    beginTime, endTime, organId, creator, handsPersonId, accountId, status, remark, number, inOutItemId, offset, rows);
             if (null != list) {
                 for (AccountHeadVo4ListEx ah : list) {
                     if(ah.getChangeAmount() != null) {
