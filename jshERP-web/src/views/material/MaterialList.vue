@@ -36,6 +36,16 @@
                 </a-col>
               </span>
               <template v-if="toggleSearchStatus">
+                <a-col :lg='6' :md='12' :sm='24'>
+                  <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+                    <a-select placeholder='请选择项目' v-model="queryParam.inOutItemId"  allowClear
+                              :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                      <a-select-option v-for='(item,index) in projectList' :key='index' :value='item.value'>
+                        {{ item.text }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
                 <a-col :md="6" :sm="24">
                   <a-form-item label="型号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-input placeholder="请输入型号查询" v-model="queryParam.model"></a-input>
@@ -100,11 +110,11 @@
                     <a-input-number style="width: 100%" placeholder="请输入保质期查询" v-model="queryParam.expiryNum"></a-input-number>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="24">
-                  <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-input placeholder="请输入备注查询" v-model="queryParam.remark"></a-input>
-                  </a-form-item>
-                </a-col>
+<!--                <a-col :md="6" :sm="24">-->
+<!--                  <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--                    <a-input placeholder="请输入备注查询" v-model="queryParam.remark"></a-input>-->
+<!--                  </a-form-item>-->
+<!--                </a-col>-->
               </template>
             </a-row>
           </a-form>
@@ -220,6 +230,7 @@
   import JEllipsis from '@/components/jeecg/JEllipsis'
   import JDate from '@/components/jeecg/JDate'
   import Vue from 'vue'
+  import inOutItemList from '@views/system/InOutItemList.vue'
 
   export default {
     name: "MaterialList",
@@ -270,7 +281,7 @@
         // 实际列
         columns:[],
         // 默认索引
-        defDataIndex:['action','mBarCode','name','standard','model','color','categoryName','materialOther','unit', 'stock',
+        defDataIndex:['action','mBarCode','name','standard','model','color','categoryName','inOutItemId','unit', 'stock',
           'purchaseDecimal','commodityDecimal','wholesaleDecimal','lowDecimal','enabled'],
         // 默认列
         defColumns: [
@@ -291,6 +302,11 @@
           {title: '助记码', dataIndex: 'mnemonic', width: 80, ellipsis:true},
           {title: '类别', dataIndex: 'categoryName', width: 100, ellipsis:true},
           {title: '扩展信息', dataIndex: 'materialOther', width: 100, ellipsis:true},
+          {title: '项目', dataIndex: 'inOutItemId', width: 150, ellipsis:true,
+            customRender:function (t,r) {
+              return Vue.prototype.getProjectName(r.inOutItemId)
+            }
+          },
           {title: '单位', dataIndex: 'unit', width: 100, ellipsis:true,
             customRender:function (t,r,index) {
               if (r) {
@@ -340,6 +356,9 @@
       this.loadTreeData();
     },
     computed: {
+      inOutItemList() {
+        return inOutItemList
+      },
       importExcelUrl: function () {
         return `${window._CONFIG['domianURL']}${this.url.importExcelUrl}`;
       }

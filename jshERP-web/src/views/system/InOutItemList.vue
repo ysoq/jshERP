@@ -134,7 +134,7 @@ import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
 
 export default {
-  name: 'InOutItemList',
+  name: 'InOutItemListView',
   mixins: [JeecgListMixin],
   components: {
     InOutItemModal,

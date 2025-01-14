@@ -38,6 +38,7 @@ import vueBus from '@/utils/vueBus';
 import JeecgComponents from '@/components/jeecg/index'
 import '@/assets/less/JAreaLinkage.less'
 import VueAreaLinkage from 'vue-area-linkage'
+import { inOutItemExcludeFinish } from '@api/api'
 
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
@@ -51,26 +52,39 @@ Vue.use(vueBus);
 Vue.use(JeecgComponents)
 Vue.use(VueAreaLinkage)
 
-Vue.prototype.inOutItemName = (id)=> {
 
+Vue.prototype.getProjectName = (id)=> {
+  if(!id) {
+    return ''
+  }
+  const projectList = Vue.prototype.projectList || []
+  return projectList.filter(x=> `${id}` === x.value) || ''
 }
 
-new Vue({
-  router,
-  store,
-  mounted () {
-    // store.commit('SET_SIDEBAR_TYPE', Vue.ls.get(SIDEBAR_TYPE, true))
-    store.commit('SET_SIDEBAR_TYPE', true)
-    store.commit('TOGGLE_THEME', Vue.ls.get(DEFAULT_THEME, config.navTheme))
-    store.commit('TOGGLE_LAYOUT_MODE', Vue.ls.get(DEFAULT_LAYOUT_MODE, config.layout))
-    store.commit('TOGGLE_FIXED_HEADER', Vue.ls.get(DEFAULT_FIXED_HEADER, config.fixedHeader))
-    store.commit('TOGGLE_FIXED_SIDERBAR', Vue.ls.get(DEFAULT_FIXED_SIDEMENU, config.fixSiderbar))
-    store.commit('TOGGLE_CONTENT_WIDTH', Vue.ls.get(DEFAULT_CONTENT_WIDTH_TYPE, config.contentWidth))
-    store.commit('TOGGLE_FIXED_HEADER_HIDDEN', Vue.ls.get(DEFAULT_FIXED_HEADER_HIDDEN, config.autoHideHeader))
-    store.commit('TOGGLE_WEAK', Vue.ls.get(DEFAULT_COLOR_WEAK, config.colorWeak))
-    store.commit('TOGGLE_COLOR', Vue.ls.get(DEFAULT_COLOR, config.primaryColor))
-    store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
-    store.commit('SET_MULTI_PAGE',Vue.ls.get(DEFAULT_MULTI_PAGE,config.multipage))
-  },
-  render: h => h(App)
-}).$mount('#app')
+Promise.all([
+  inOutItemExcludeFinish(false).then(list=> {
+    Vue.prototype.projectList = list
+  })
+]).then(()=> {
+  new Vue({
+    router,
+    store,
+
+    mounted () {
+      // store.commit('SET_SIDEBAR_TYPE', Vue.ls.get(SIDEBAR_TYPE, true))
+      store.commit('SET_SIDEBAR_TYPE', true)
+      store.commit('TOGGLE_THEME', Vue.ls.get(DEFAULT_THEME, config.navTheme))
+      store.commit('TOGGLE_LAYOUT_MODE', Vue.ls.get(DEFAULT_LAYOUT_MODE, config.layout))
+      store.commit('TOGGLE_FIXED_HEADER', Vue.ls.get(DEFAULT_FIXED_HEADER, config.fixedHeader))
+      store.commit('TOGGLE_FIXED_SIDERBAR', Vue.ls.get(DEFAULT_FIXED_SIDEMENU, config.fixSiderbar))
+      store.commit('TOGGLE_CONTENT_WIDTH', Vue.ls.get(DEFAULT_CONTENT_WIDTH_TYPE, config.contentWidth))
+      store.commit('TOGGLE_FIXED_HEADER_HIDDEN', Vue.ls.get(DEFAULT_FIXED_HEADER_HIDDEN, config.autoHideHeader))
+      store.commit('TOGGLE_WEAK', Vue.ls.get(DEFAULT_COLOR_WEAK, config.colorWeak))
+      store.commit('TOGGLE_COLOR', Vue.ls.get(DEFAULT_COLOR, config.primaryColor))
+      store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
+      store.commit('SET_MULTI_PAGE',Vue.ls.get(DEFAULT_MULTI_PAGE,config.multipage))
+    },
+    render: h => h(App)
+  }).$mount('#app')
+})
+

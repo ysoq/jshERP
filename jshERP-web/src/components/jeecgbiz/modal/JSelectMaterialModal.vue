@@ -168,6 +168,11 @@
         columns: [
           {dataIndex: 'mBarCode', title: '条码', scopedSlots: { customRender: 'customBarCode' }},
           {dataIndex: 'name', title: '名称', scopedSlots: { customRender: 'customName' }},
+          {title: '项目', dataIndex: 'inOutItemId', width: 150, ellipsis:true,
+            customRender:function (t,r) {
+              return Vue.prototype.getProjectName(r.inOutItemId)
+            }
+          },
           {dataIndex: 'categoryName', title: '类别'},
           {dataIndex: 'standard', title: '规格'},
           {dataIndex: 'model', title: '型号'},
@@ -177,7 +182,6 @@
           {dataIndex: 'unit', title: '单位'},
           {dataIndex: 'sku', title: '多属性'},
           {dataIndex: 'stock', title: '库存'},
-          {dataIndex: 'expand', title: '扩展信息'}
         ],
         scrollTrigger: {},
         dataSource: [],

@@ -51,6 +51,8 @@ public class Material {
 
     private String deleteFlag;
 
+    private Long inOutItemId;
+
     public Long getId() {
         return id;
     }
@@ -241,5 +243,13 @@ public class Material {
 
     public void setDeleteFlag(String deleteFlag) {
         this.deleteFlag = deleteFlag == null ? null : deleteFlag.trim();
+    }
+
+    public Long getInOutItemId() {
+        return inOutItemId;
+    }
+
+    public void setInOutItemId(Long inOutItemId) {
+        this.inOutItemId = inOutItemId;
     }
 }
