@@ -51,6 +51,10 @@ Vue.use(vueBus);
 Vue.use(JeecgComponents)
 Vue.use(VueAreaLinkage)
 
+Vue.prototype.inOutItemName = (id)=> {
+
+}
+
 new Vue({
   router,
   store,

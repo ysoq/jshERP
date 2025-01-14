@@ -25,6 +25,16 @@
                   <a-input placeholder="请输入名称" v-decorator.trim="[ 'name', validatorRules.name ]" @change="handleNameChange" />
                 </a-form-item>
               </a-col>
+              <a-col :lg='6' :md='12' :sm='24'>
+                <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+                  <a-select placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]"
+                            :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                    <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                      {{ item.text }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
               <a-col :md="6" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="规格" data-step="2" data-title="规格" data-intro="规格不必填，比如：10克">
                   <a-input placeholder="请输入规格" v-decorator.trim="[ 'standard', validatorRules.standard ]"/>
@@ -62,8 +72,6 @@
                   </a-row>
                 </a-form-item>
               </a-col>
-            </a-row>
-            <a-row class="form-row" :gutter="24">
               <a-col :md="6" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="颜色" data-step="5" data-title="颜色"
                              data-intro="请填写商品的颜色，如果是多属性商品可以不填（下面有多属性开关）">
@@ -90,8 +98,6 @@
                   </a-tree-select>
                 </a-form-item>
               </a-col>
-            </a-row>
-            <a-row class="form-row" :gutter="24">
               <a-col :md="6" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="基础重量" data-step="9" data-title="基础重量"
                   data-intro="请填写基本单位对应的重量，用于计算按重量分摊费用时单据中各行商品分摊的费用成本">
@@ -116,8 +122,6 @@
                   <a-input placeholder="请输入制造商" v-decorator.trim="[ 'mfrs' ]" />
                 </a-form-item>
               </a-col>
-            </a-row>
-            <a-row class="form-row" :gutter="24">
               <a-col :md="6" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="序列号" data-step="13" data-title="序列号"
                   data-intro="此处是商品的序列号开关，如果选择了有，则在采购入库单据需要录入该商品的序列号，在销售出库单据需要选择该商品的序列号进行出库">
@@ -154,8 +158,6 @@
                   </a-tooltip>
                 </a-form-item>
               </a-col>
-            </a-row>
-            <a-row class="form-row" :gutter="24">
               <a-col :md="12" :sm="24" v-if="manySkuSelected>=1">
                 <a-form-item :labelCol="{xs: { span: 24 },sm: { span: 4 }}" :wrapperCol="{xs: { span: 24 },sm: { span: 20 }}" :label="skuOneTitle">
                   <a-select mode="multiple" v-decorator="[ 'skuOne' ]" showSearch optionFilterProp="children"
@@ -294,8 +296,16 @@
   import UnitModal from '../../system/modules/UnitModal'
   import JEditableTable from '@/components/jeecg/JEditableTable'
   import { FormTypes, getRefPromise, VALIDATE_NO_PASSED, validateFormAndTables } from '@/utils/JEditableTableUtil'
-  import { checkMaterial, checkMaterialBarCode, getMaterialAttributeNameList,
-    getMaterialAttributeValueListById, getMaxBarCode, queryMaterialCategoryTreeList, changeNameToPinYin } from '@/api/api'
+  import {
+    checkMaterial,
+    checkMaterialBarCode,
+    getMaterialAttributeNameList,
+    getMaterialAttributeValueListById,
+    getMaxBarCode,
+    queryMaterialCategoryTreeList,
+    changeNameToPinYin,
+    inOutItemExcludeFinish
+  } from '@/api/api'
   import { removeByVal, autoJumpNextInput, handleIntroJs } from '@/utils/util'
   import { getAction, httpAction } from '@/api/manage'
   import JImageUpload from '@/components/jeecg/JImageUpload'
@@ -340,6 +350,7 @@
         skuTwoTitle: '属性2',
         skuThreeTitle: '属性3',
         skuOneList: [],
+        inOutList: [],
         skuTwoList: [],
         skuThreeList: [],
         manySkuSelected: 0,
@@ -451,6 +462,10 @@
       this.loadParseMaterialProperty()
       let realScreenWidth = window.screen.width
       this.width = realScreenWidth<1500?'1200px':'1400px'
+
+      inOutItemExcludeFinish(false).then(list=> {
+        this.inOutList = list
+      })
     },
     mounted() {
       document.getElementById(this.prefixNo).addEventListener('keydown', this.handleOkKey)
