@@ -219,15 +219,6 @@ export default {
             title: '条码', key: 'barCode', width: '12%', type: FormTypes.popupJsh, kind: 'material', multi: true,
             validateRules: [{ required: true, message: '${title}不能为空' }]
           },
-          // {
-          //   title: '项目名称',
-          //   key: 'inOutItemId',
-          //   width: '20%',
-          //   type: FormTypes.select,
-          //   placeholder: '请选择${title}',
-          //   options: [],
-          //   allowSearch: false,
-          // },
           { title: '名称', key: 'name', width: '10%', type: FormTypes.normal },
           { title: '规格', key: 'standard', width: '9%', type: FormTypes.normal },
           { title: '型号', key: 'model', width: '9%', type: FormTypes.normal },

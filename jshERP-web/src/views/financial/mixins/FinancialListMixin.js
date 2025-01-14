@@ -1,6 +1,6 @@
 import {
   findFinancialDetailByNumber, findBySelectSup, findBySelectCus, findBySelectOrgan, findBySelectRetail,
-  getUserList, getPersonByType, getAccount, getCurrentSystemConfig, getPlatformConfigByKey
+  getUserList, getPersonByType, getAccount, getCurrentSystemConfig, getPlatformConfigByKey, inOutItemExcludeFinish
 } from '@/api/api'
 import { getCheckFlag, getFormatDate, getPrevMonthFormatDate } from '@/utils/util'
 import Vue from 'vue'
@@ -30,6 +30,7 @@ export const FinancialListMixin = {
       retailList: [],
       userList: [],
       personList: [],
+      inOutList: [],
       accountList: [],
       queryParam: {
         beginTime: getPrevMonthFormatDate(3),
@@ -70,6 +71,10 @@ export const FinancialListMixin = {
     this.initDictConfig();
     //初始化按钮权限
     this.initActiveBtnStr();
+
+    inOutItemExcludeFinish(false).then(list=> {
+      this.inOutList = list
+    })
   },
   methods: {
     loadDataAfter(list) {

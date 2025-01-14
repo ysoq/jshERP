@@ -23,6 +23,17 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row class="form-row" :gutter="24">
+          <a-col :lg='6' :md='12' :sm='24'>
+            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+              <a-select placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]" :disabled='!rowCanEdit'
+                        :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'
+              >
+                <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="供应商">
               <a-select placeholder="请选择供应商" v-decorator="[ 'organId' ]" :disabled="!rowCanEdit"
@@ -235,7 +246,7 @@
     },
     methods: {
       //调用完edit()方法之后会自动调用此方法
-      editAfter() {
+      async editAfter() {
         this.billStatus = '0'
         this.currentSelectDepotId = ''
         this.rowCanEdit = true
@@ -267,7 +278,10 @@
             linkType: 'basic'
           }
           let url = this.readOnly ? this.url.detailList : this.url.detailList;
-          this.requestSubTableData(url, params, this.materialTable);
+          await this.requestSubTableData(url, params, this.materialTable).then(list => {
+            const inOutItemId = list[0] ? list[0].inOutItemId + '' : null
+            this.form.setFieldsValue({ 'inOutItemId': inOutItemId })
+          })
         }
         //复制新增单据-初始化单号和日期
         if(this.action === 'copyAdd') {
@@ -275,6 +289,7 @@
           this.model.tenantId = ''
           this.copyAddInit(this.prefixNo)
         }
+        this.initInOutItem('clearPackage')
         this.initSystemConfig()
         this.initSupplier(0)
         this.initDepot()
@@ -290,6 +305,7 @@
         billMain.subType = '其它'
         for(let item of detailArr){
           totalPrice += item.allPrice-0
+          item.inOutItemId = billMain.inOutItemId
         }
         billMain.totalPrice = 0-totalPrice
         if(this.fileList && this.fileList.length > 0) {

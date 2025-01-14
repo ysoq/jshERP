@@ -12,11 +12,7 @@
                   <a-input placeholder="请输入单据编号" v-model="queryParam.number"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="24">
-                <a-form-item label="商品信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input placeholder="请输入条码、名称、助记码、规格、型号等信息" v-model="queryParam.materialParam"></a-input>
-                </a-form-item>
-              </a-col>
+
               <a-col :md="6" :sm="24">
                 <a-form-item label="单据日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-range-picker
@@ -27,6 +23,16 @@
                     @change="onDateChange"
                     @ok="onDateOk"
                   />
+                </a-form-item>
+              </a-col>
+              <a-col :lg='6' :md='12' :sm='24'>
+                <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+                  <a-select placeholder='请选择项目' v-model="queryParam.inOutItemId"  allowClear
+                            :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                    <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                      {{ item.text }}
+                    </a-select-option>
+                  </a-select>
                 </a-form-item>
               </a-col>
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -40,6 +46,11 @@
                 </a-col>
               </span>
               <template v-if="toggleSearchStatus">
+                <a-col :md="6" :sm="24">
+                  <a-form-item label="商品信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input placeholder="请输入条码、名称、助记码、规格、型号等信息" v-model="queryParam.materialParam"></a-input>
+                  </a-form-item>
+                </a-col>
                 <a-col :md="6" :sm="24">
                   <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择供应商" showSearch optionFilterProp="children" v-model="queryParam.organId">
@@ -216,7 +227,7 @@
           offset: 1
         },
         // 默认索引
-        defDataIndex:['action','organName','number','materialsList','operTimeStr','userName','materialCount','totalPrice','status'],
+        defDataIndex:['action','organName','number','projectName','materialsList','operTimeStr','userName','materialCount','totalPrice','status'],
         // 默认列
         defColumns: [
           {
@@ -232,6 +243,7 @@
               return text
             }
           },
+          { title: '项目', dataIndex: 'projectName',width:140, ellipsis:true},
           { title: '关联单据', dataIndex: 'linkNumber',width:140},
           { title: '商品信息', dataIndex: 'materialsList',width:220, ellipsis:true},
           { title: '单据日期', dataIndex: 'operTimeStr',width:145},

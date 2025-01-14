@@ -25,16 +25,12 @@
                   />
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="24">
-                <a-form-item label="往来单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select
-                    placeholder="请选择往来单位"
-                    showSearch
-                    optionFilterProp="children"
-                    v-model="queryParam.organId"
-                  >
-                    <a-select-option v-for="(item, index) in organList" :key="index" :value="item.id">
-                      {{ item.supplier }}
+              <a-col :lg='6' :md='12' :sm='24'>
+                <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+                  <a-select placeholder='请选择项目' v-model="queryParam.inOutItemId"  allowClear
+                            :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                    <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                      {{ item.text }}
                     </a-select-option>
                   </a-select>
                 </a-form-item>
@@ -50,6 +46,20 @@
                 </a-col>
               </span>
               <template v-if="toggleSearchStatus">
+                <a-col :md="6" :sm="24">
+                  <a-form-item label="往来单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-select
+                      placeholder="请选择往来单位"
+                      showSearch
+                      optionFilterProp="children"
+                      v-model="queryParam.organId"
+                    >
+                      <a-select-option v-for="(item, index) in organList" :key="index" :value="item.id">
+                        {{ item.supplier }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
                 <a-col :md="6" :sm="24">
                   <a-form-item label="操作员" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select
@@ -205,6 +215,7 @@ export default {
       // 查询条件
       queryParam: {
         billNo: '',
+        inOutItemId: '',
         searchMaterial: '',
         type: '收入',
         organId: undefined,
