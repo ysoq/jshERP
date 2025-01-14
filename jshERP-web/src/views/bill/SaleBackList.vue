@@ -14,11 +14,6 @@
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="24">
-                <a-form-item label="商品信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input placeholder="请输入条码、名称、助记码、规格、型号等信息" v-model="queryParam.materialParam"></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="6" :sm="24">
                 <a-form-item label="单据日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-range-picker
                     style="width:100%"
@@ -28,6 +23,16 @@
                     @change="onDateChange"
                     @ok="onDateOk"
                   />
+                </a-form-item>
+              </a-col>
+              <a-col :lg='6' :md='12' :sm='24'>
+                <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+                  <a-select placeholder='请选择项目' v-model="queryParam.inOutItemId"  allowClear
+                            :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                    <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                      {{ item.text }}
+                    </a-select-option>
+                  </a-select>
                 </a-form-item>
               </a-col>
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -42,14 +47,19 @@
               </span>
               <template v-if="toggleSearchStatus">
                 <a-col :md="6" :sm="24">
-                  <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder="请选择客户" showSearch optionFilterProp="children" v-model="queryParam.organId">
-                      <a-select-option v-for="(item,index) in cusList" :key="index" :value="item.id">
-                        {{ item.supplier }}
-                      </a-select-option>
-                    </a-select>
+                  <a-form-item label="商品信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input placeholder="请输入条码、名称、助记码、规格、型号等信息" v-model="queryParam.materialParam"></a-input>
                   </a-form-item>
                 </a-col>
+<!--                <a-col :md="6" :sm="24">-->
+<!--                  <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--                    <a-select placeholder="请选择客户" showSearch optionFilterProp="children" v-model="queryParam.organId">-->
+<!--                      <a-select-option v-for="(item,index) in cusList" :key="index" :value="item.id">-->
+<!--                        {{ item.supplier }}-->
+<!--                      </a-select-option>-->
+<!--                    </a-select>-->
+<!--                  </a-form-item>-->
+<!--                </a-col>-->
                 <a-col :md="6" :sm="24">
                   <a-form-item label="仓库名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择仓库" showSearch optionFilterProp="children" v-model="queryParam.depotId">
@@ -224,7 +234,7 @@
           offset: 1
         },
         // 默认索引
-        defDataIndex:['action','organName','number','materialsList','operTimeStr','userName','materialCount','totalPrice','totalTaxLastMoney','needBackMoney',
+        defDataIndex:['action','organName','number','materialsList','projectName','operTimeStr','userName','materialCount','totalPrice','totalTaxLastMoney','needBackMoney',
           'changeAmount','debt','status'],
         // 默认列
         defColumns: [
@@ -234,7 +244,6 @@
             align:"center", width: 180,
             scopedSlots: { customRender: 'action' },
           },
-          { title: '客户', dataIndex: 'organName',width:120, ellipsis:true},
           { title: '单据编号', dataIndex: 'number',width:160,
             customRender:function (text,record,index) {
               text = record.linkNumber?text+"[转]":text
@@ -242,33 +251,34 @@
             }
           },
           { title: '关联单据', dataIndex: 'linkNumber',width:140},
+          { title: '项目', dataIndex: 'projectName',width:140},
           { title: '商品信息', dataIndex: 'materialsList',width:220, ellipsis:true},
           { title: '单据日期', dataIndex: 'operTimeStr',width:145},
           { title: '操作员', dataIndex: 'userName',width:80, ellipsis:true},
           { title: '数量', dataIndex: 'materialCount',width:60},
           { title: '金额合计', dataIndex: 'totalPrice',width:80},
-          { title: '含税合计', dataIndex: 'totalTaxLastMoney',width:80,
-            customRender:function (text,record,index) {
-              return (record.discountMoney + record.discountLastMoney).toFixed(2);
-            }
-          },
-          { title: '优惠率', dataIndex: 'discount',width:60,
-            customRender:function (text,record,index) {
-              return text? text + '%':''
-            }
-          },
-          { title: '退款优惠', dataIndex: 'discountMoney',width:80},
-          { title: '其它费用', dataIndex: 'otherMoney',width:80},
-          { title: '待退金额', dataIndex: 'needBackMoney',width:80,
-            customRender:function (text,record,index) {
-              let needBackMoney = record.discountLastMoney + record.otherMoney
-              return needBackMoney? needBackMoney.toFixed(2):0
-            }
-          },
-          { title: '结算账户', dataIndex: 'accountName',width:80},
-          { title: '本次退款', dataIndex: 'changeAmount',width:80},
-          { title: '本次欠款', dataIndex: 'debt',width:80},
-          { title: '销售人员', dataIndex: 'salesManStr',width:120},
+          // { title: '含税合计', dataIndex: 'totalTaxLastMoney',width:80,
+          //   customRender:function (text,record,index) {
+          //     return (record.discountMoney + record.discountLastMoney).toFixed(2);
+          //   }
+          // },
+          // { title: '优惠率', dataIndex: 'discount',width:60,
+          //   customRender:function (text,record,index) {
+          //     return text? text + '%':''
+          //   }
+          // },
+          // { title: '退款优惠', dataIndex: 'discountMoney',width:80},
+          // { title: '其它费用', dataIndex: 'otherMoney',width:80},
+          // { title: '待退金额', dataIndex: 'needBackMoney',width:80,
+          //   customRender:function (text,record,index) {
+          //     let needBackMoney = record.discountLastMoney + record.otherMoney
+          //     return needBackMoney? needBackMoney.toFixed(2):0
+          //   }
+          // },
+          // { title: '结算账户', dataIndex: 'accountName',width:80},
+          // { title: '本次退款', dataIndex: 'changeAmount',width:80},
+          // { title: '本次欠款', dataIndex: 'debt',width:80},
+          // { title: '销售人员', dataIndex: 'salesManStr',width:120},
           { title: '备注', dataIndex: 'remark',width:200},
           { title: '状态', dataIndex: 'status', width: 80, align: "center",
             scopedSlots: { customRender: 'customRenderStatus' }

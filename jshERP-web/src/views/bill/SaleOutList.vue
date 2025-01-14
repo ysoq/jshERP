@@ -52,15 +52,15 @@
                     <a-input placeholder="请输入条码、名称、助记码、规格、型号等信息" v-model="queryParam.materialParam"></a-input>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="24">
-                  <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder="请选择客户" showSearch optionFilterProp="children" v-model="queryParam.organId">
-                      <a-select-option v-for="(item,index) in cusList" :key="index" :value="item.id">
-                        {{ item.supplier }}
-                      </a-select-option>
-                    </a-select>
-                  </a-form-item>
-                </a-col>
+<!--                <a-col :md="6" :sm="24">-->
+<!--                  <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--                    <a-select placeholder="请选择客户" showSearch optionFilterProp="children" v-model="queryParam.organId">-->
+<!--                      <a-select-option v-for="(item,index) in cusList" :key="index" :value="item.id">-->
+<!--                        {{ item.supplier }}-->
+<!--                      </a-select-option>-->
+<!--                    </a-select>-->
+<!--                  </a-form-item>-->
+<!--                </a-col>-->
                 <a-col :md="6" :sm="24">
                   <a-form-item label="仓库名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择仓库" showSearch optionFilterProp="children" v-model="queryParam.depotId">
@@ -265,7 +265,7 @@
             align:"center", width: 180,
             scopedSlots: { customRender: 'action' },
           },
-          { title: '客户', dataIndex: 'organName',width:120, ellipsis:true},
+          // { title: '客户', dataIndex: 'organName',width:120, ellipsis:true},
           { title: '单据编号', dataIndex: 'number',width:160,
             customRender:function (text,record,index) {
               text = record.linkNumber?text+"[订]":text
@@ -279,32 +279,32 @@
           { title: '单据日期', dataIndex: 'operTimeStr',width:145},
           { title: '操作员', dataIndex: 'userName',width:80, ellipsis:true},
           { title: '数量', dataIndex: 'materialCount',width:60},
-          { title: '金额合计', dataIndex: 'totalPrice',width:80},
-          { title: '含税合计', dataIndex: 'totalTaxLastMoney',width:80,
-            customRender:function (text,record,index) {
-              return (record.discountMoney + record.discountLastMoney).toFixed(2);
-            }
-          },
-          { title: '优惠率', dataIndex: 'discount',width:60,
-            customRender:function (text,record,index) {
-              return text? text + '%':''
-            }
-          },
-          { title: '收款优惠', dataIndex: 'discountMoney',width:80},
-          { title: '其它费用', dataIndex: 'otherMoney',width:80},
-          { title: '待收金额', dataIndex: 'needOutMoney',width:80,
-            customRender:function (text,record,index) {
-              let needOutMoney = record.discountLastMoney + record.otherMoney - record.deposit
-              return needOutMoney? needOutMoney.toFixed(2):0
-            }
-          },
-          { title: '结算账户', dataIndex: 'accountName',width:80},
-          { title: '扣除订金', dataIndex: 'deposit',width:80},
-          { title: '本次收款', dataIndex: 'changeAmount',width:80},
-          { title: '本次欠款', dataIndex: 'debt',width:80,
-            scopedSlots: { customRender: 'customRenderDebt' }
-          },
-          { title: '销售人员', dataIndex: 'salesManStr',width:120},
+          // { title: '金额合计', dataIndex: 'totalPrice',width:80},
+          // { title: '含税合计', dataIndex: 'totalTaxLastMoney',width:80,
+          //   customRender:function (text,record,index) {
+          //     return (record.discountMoney + record.discountLastMoney).toFixed(2);
+          //   }
+          // },
+          // { title: '优惠率', dataIndex: 'discount',width:60,
+          //   customRender:function (text,record,index) {
+          //     return text? text + '%':''
+          //   }
+          // },
+          // { title: '收款优惠', dataIndex: 'discountMoney',width:80},
+          // { title: '其它费用', dataIndex: 'otherMoney',width:80},
+          // { title: '待收金额', dataIndex: 'needOutMoney',width:80,
+          //   customRender:function (text,record,index) {
+          //     let needOutMoney = record.discountLastMoney + record.otherMoney - record.deposit
+          //     return needOutMoney? needOutMoney.toFixed(2):0
+          //   }
+          // },
+          // { title: '结算账户', dataIndex: 'accountName',width:80},
+          // { title: '扣除订金', dataIndex: 'deposit',width:80},
+          // { title: '本次收款', dataIndex: 'changeAmount',width:80},
+          // { title: '本次欠款', dataIndex: 'debt',width:80,
+          //   scopedSlots: { customRender: 'customRenderDebt' }
+          // },
+          // { title: '销售人员', dataIndex: 'salesManStr',width:120},
           { title: '备注', dataIndex: 'remark',width:200},
           { title: '状态', dataIndex: 'status', width: 80, align: "center",
             scopedSlots: { customRender: 'customRenderStatus' }

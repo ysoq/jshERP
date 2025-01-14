@@ -1056,7 +1056,7 @@ public class DepotHeadService {
         }
         String subType = depotHead.getSubType();
         //结算账户校验
-        if("采购".equals(subType) || "采购退货".equals(subType) || "销售".equals(subType) || "销售退货".equals(subType)) {
+        if("采购".equals(subType) || "采购退货".equals(subType) ) {
             if (StringUtil.isEmpty(depotHead.getAccountIdList()) && depotHead.getAccountId() == null) {
                 throw new BusinessRunTimeException(ExceptionConstants.DEPOT_HEAD_ACCOUNT_FAILED_CODE,
                         String.format(ExceptionConstants.DEPOT_HEAD_ACCOUNT_FAILED_MSG));
@@ -1164,7 +1164,7 @@ public class DepotHeadService {
         Long preOrganId = getDepotHead(depotHead.getId()).getOrganId();
         String subType = depotHead.getSubType();
         //结算账户校验
-        if("采购".equals(subType) || "采购退货".equals(subType) || "销售".equals(subType) || "销售退货".equals(subType)) {
+        if("采购".equals(subType) || "采购退货".equals(subType)) {
             if (StringUtil.isEmpty(depotHead.getAccountIdList()) && depotHead.getAccountId() == null) {
                 throw new BusinessRunTimeException(ExceptionConstants.DEPOT_HEAD_ACCOUNT_FAILED_CODE,
                         String.format(ExceptionConstants.DEPOT_HEAD_ACCOUNT_FAILED_MSG));
