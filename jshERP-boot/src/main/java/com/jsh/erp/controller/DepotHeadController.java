@@ -103,6 +103,7 @@ public class DepotHeadController {
                                             @RequestParam(value = "organizationId", required = false) Long organizationId,
                                             @RequestParam("remark") String remark,
                                             @RequestParam(value = "column", required = false, defaultValue = "createTime") String column,
+                                            @RequestParam(value = "inOutItemId", required = false, defaultValue = "") String inOutItemId,
                                             @RequestParam(value = "order", required = false, defaultValue = "desc") String order,
                                             HttpServletRequest request)throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
@@ -132,9 +133,9 @@ public class DepotHeadController {
             Boolean inOutManageFlag = systemConfigService.getInOutManageFlag();
             List<DepotHeadVo4InDetail> list = depotHeadService.findInOutDetail(beginTime, endTime, type, creatorArray, organArray, forceFlag, inOutManageFlag,
                     StringUtil.toNull(materialParam), depotList, oId, StringUtil.toNull(number), creator, remark,
-                    StringUtil.safeSqlParse(column), StringUtil.safeSqlParse(order), (currentPage-1)*pageSize, pageSize);
+                    StringUtil.safeSqlParse(column), StringUtil.safeSqlParse(order), inOutItemId, (currentPage-1)*pageSize, pageSize);
             int total = depotHeadService.findInOutDetailCount(beginTime, endTime, type, creatorArray, organArray, forceFlag, inOutManageFlag,
-                    StringUtil.toNull(materialParam), depotList, oId, StringUtil.toNull(number), creator, remark);
+                    StringUtil.toNull(materialParam), depotList, oId, StringUtil.toNull(number), creator, remark, inOutItemId);
             map.put("total", total);
             //存放数据json数组
             if (null != list) {
@@ -142,7 +143,7 @@ public class DepotHeadController {
             }
             map.put("rows", resList);
             DepotHeadVo4InDetail statistic = depotHeadService.findInOutDetailStatistic(beginTime, endTime, type, creatorArray, organArray, forceFlag, inOutManageFlag,
-                    StringUtil.toNull(materialParam), depotList, oId, StringUtil.toNull(number), creator, remark);
+                    StringUtil.toNull(materialParam), depotList, oId, StringUtil.toNull(number), creator, remark, inOutItemId);
             map.put("operNumberTotal", statistic.getOperNumber());
             map.put("allPriceTotal", statistic.getAllPrice());
             res.code = 200;

@@ -709,11 +709,11 @@ public class DepotHeadService {
     public List<DepotHeadVo4InDetail> findInOutDetail(String beginTime, String endTime, String type, String [] creatorArray,
                                                       String [] organArray, Boolean forceFlag, Boolean inOutManageFlag,
                                                       String materialParam, List<Long> depotList, Integer oId, String number,
-                                                      Long creator, String remark, String column, String order, Integer offset, Integer rows) throws Exception{
+                                                      Long creator, String remark, String column, String order, String inOutItemId, Integer offset, Integer rows) throws Exception{
         List<DepotHeadVo4InDetail> list = null;
         try{
             list =depotHeadMapperEx.findInOutDetail(beginTime, endTime, type, creatorArray, organArray, forceFlag, inOutManageFlag,
-                    materialParam, depotList, oId, number, creator, remark, column, order, offset, rows);
+                    materialParam, depotList, oId, number, creator, remark, column, order, inOutItemId, offset, rows);
         }catch(Exception e){
             JshException.readFail(logger, e);
         }
@@ -722,11 +722,11 @@ public class DepotHeadService {
 
     public int findInOutDetailCount(String beginTime, String endTime, String type, String [] creatorArray,
                               String [] organArray, Boolean forceFlag, Boolean inOutManageFlag, String materialParam, List<Long> depotList, Integer oId, String number,
-                              Long creator, String remark) throws Exception{
+                              Long creator, String remark, String inOutItemId) throws Exception{
         int result = 0;
         try{
             result =depotHeadMapperEx.findInOutDetailCount(beginTime, endTime, type, creatorArray, organArray, forceFlag, inOutManageFlag,
-                    materialParam, depotList, oId, number, creator, remark);
+                    materialParam, depotList, oId, number, creator, remark, inOutItemId);
         }catch(Exception e){
             JshException.readFail(logger, e);
         }
@@ -736,11 +736,11 @@ public class DepotHeadService {
     public DepotHeadVo4InDetail findInOutDetailStatistic(String beginTime, String endTime, String type, String [] creatorArray,
                                                       String [] organArray, Boolean forceFlag, Boolean inOutManageFlag,
                                                       String materialParam, List<Long> depotList, Integer oId, String number,
-                                                      Long creator, String remark) throws Exception{
+                                                      Long creator, String remark, String inOutItemId) throws Exception{
         DepotHeadVo4InDetail item = new DepotHeadVo4InDetail();
         try{
             List<DepotHeadVo4InDetail> list =depotHeadMapperEx.findInOutDetailStatistic(beginTime, endTime, type, creatorArray, organArray, forceFlag, inOutManageFlag,
-                    materialParam, depotList, oId, number, creator, remark);
+                    materialParam, depotList, oId, number, creator, remark, inOutItemId);
             if(list.size()>0) {
                 item.setOperNumber(list.get(0).getOperNumber());
                 item.setAllPrice(list.get(0).getAllPrice());

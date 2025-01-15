@@ -49,6 +49,7 @@ public class DepotHeadVo4InDetail {
     private String newType;
 
     private Long tenantId;
+    private Long inOutItemId;
 
     public String getNumber() {
         return number;
@@ -224,5 +225,13 @@ public class DepotHeadVo4InDetail {
 
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
+    }
+
+    public Long getInOutItemId() {
+        return inOutItemId;
+    }
+
+    public void setInOutItemId(Long inOutItemId) {
+        this.inOutItemId = inOutItemId;
     }
 }

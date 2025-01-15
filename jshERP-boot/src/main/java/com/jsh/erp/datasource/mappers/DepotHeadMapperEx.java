@@ -82,6 +82,7 @@ public interface DepotHeadMapperEx {
             @Param("remark") String remark,
             @Param("column") String column,
             @Param("order") String order,
+            @Param("inOutItemId") String inOutItemId,
             @Param("offset") Integer offset,
             @Param("rows") Integer rows);
 
@@ -98,7 +99,8 @@ public interface DepotHeadMapperEx {
             @Param("oId") Integer oId,
             @Param("number") String number,
             @Param("creator") Long creator,
-            @Param("remark") String remark);
+            @Param("remark") String remark,
+            @Param("inOutItemId") String inOutItemId);
 
     List<DepotHeadVo4InDetail> findInOutDetailStatistic(
             @Param("beginTime") String beginTime,
@@ -113,7 +115,8 @@ public interface DepotHeadMapperEx {
             @Param("oId") Integer oId,
             @Param("number") String number,
             @Param("creator") Long creator,
-            @Param("remark") String remark);
+            @Param("remark") String remark,
+            @Param("inOutItemId") String inOutItemId);
 
     List<DepotHeadVo4InOutMCount> findInOutMaterialCount(
             @Param("beginTime") String beginTime,

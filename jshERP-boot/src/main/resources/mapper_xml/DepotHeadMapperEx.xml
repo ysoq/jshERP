@@ -71,7 +71,7 @@
         <if test="type != null">
             and dh.type=#{type}
         </if>
-        <if test="inOutItemId != null">
+        <if test="inOutItemId != null and inOutItemId !='' ">
             and di.in_out_item_id=#{inOutItemId}
         </if>
         <if test="subType != null">
@@ -306,7 +306,8 @@
         select dh.number,me.bar_code barCode, m.name mname,m.model,m.standard,m.color,m.brand,m.mfrs,di.unit_price unitPrice,di.material_unit as mUnit, di.sku,
         di.oper_number operNumber,di.all_price allPrice, ifnull(di.tax_rate,0) taxRate, ifnull(di.tax_money,0) taxMoney, ifnull(di.tax_last_money,0) taxLastMoney,
         s.supplier sname,d.dname dname, date_format(dh.oper_time, '%Y-%m-%d') operTime, concat(dh.sub_type,dh.type) as newType,
-        concat_ws('  ',dh.remark,di.remark) as newRemark
+        concat_ws('  ',dh.remark,di.remark) as newRemark,
+        di.in_out_item_id as inOutItemId
         from jsh_depot_head dh
         left join jsh_depot_item di on di.header_id=dh.id and ifnull(di.delete_flag,'0') !='1'
         left join jsh_material m on m.id=di.material_id and ifnull(m.delete_flag,'0') !='1'
@@ -314,6 +315,9 @@
         left join jsh_supplier s on s.id=dh.organ_id and ifnull(s.delete_Flag,'0') !='1'
         left join (select id,name as dName,delete_Flag from jsh_depot ) d on d.id=di.depot_id and ifnull(d.delete_Flag,'0') !='1'
         where dh.oper_time >=#{beginTime} and dh.oper_time &lt;=#{endTime}
+        <if test="inOutItemId != null and inOutItemId !='' ">
+            and di.in_out_item_id = #{inOutItemId}
+        </if>
         <if test="oId != null">
             and dh.organ_id = #{oId}
         </if>
@@ -324,7 +328,10 @@
             </foreach>
         </if>
         <if test="type != null">
-            and dh.type=#{type}
+            and dh.type in
+            <foreach collection="type.split(',')" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="inOutManageFlag">
             and (dh.sub_type!='采购' and dh.sub_type!='采购退货' and dh.sub_type!='销售' and dh.sub_type!='销售退货')
@@ -385,6 +392,9 @@
         left join jsh_supplier s on s.id=dh.organ_id and ifnull(s.delete_Flag,'0') !='1'
         left join (select id,name as dName,delete_Flag from jsh_depot) d on d.id=di.depot_id and ifnull(d.delete_Flag,'0') !='1'
         where dh.oper_time >=#{beginTime} and dh.oper_time &lt;=#{endTime}
+        <if test="inOutItemId != null and inOutItemId !='' ">
+            and di.in_out_item_id = #{inOutItemId}
+        </if>
         <if test="oId != null">
             and dh.organ_id = #{oId}
         </if>
@@ -395,7 +405,10 @@
             </foreach>
         </if>
         <if test="type != null">
-            and dh.type=#{type}
+            and dh.type in
+            <foreach collection="type.split(',')" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="inOutManageFlag">
             and (dh.sub_type!='采购' and dh.sub_type!='采购退货' and dh.sub_type!='销售' and dh.sub_type!='销售退货')
@@ -447,6 +460,9 @@
         left join jsh_supplier s on s.id=dh.organ_id and ifnull(s.delete_Flag,'0') !='1'
         left join (select id,name as dName,delete_Flag from jsh_depot ) d on d.id=di.depot_id and ifnull(d.delete_Flag,'0') !='1'
         where dh.oper_time >=#{beginTime} and dh.oper_time &lt;=#{endTime}
+        <if test="inOutItemId != null and inOutItemId !='' ">
+            and di.in_out_item_id = #{inOutItemId}
+        </if>
         <if test="oId != null">
             and dh.organ_id = #{oId}
         </if>
@@ -457,7 +473,10 @@
             </foreach>
         </if>
         <if test="type != null">
-            and dh.type=#{type}
+            and dh.type in
+            <foreach collection="type.split(',')" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="inOutManageFlag">
             and (dh.sub_type!='采购' and dh.sub_type!='采购退货' and dh.sub_type!='销售' and dh.sub_type!='销售退货')

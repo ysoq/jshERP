@@ -9,6 +9,18 @@
         <result column="AccountName" jdbcType="VARCHAR" property="accountName" />
     </resultMap>
 
+    <resultMap extends="com.jsh.erp.datasource.mappers.AccountHeadMapper.BaseResultMap" id="ResultWithInfoExMap" type="com.jsh.erp.datasource.entities.AccountVo4IncomeExpend">
+        <result column="id" jdbcType="VARCHAR" property="id" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="headerId" jdbcType="VARCHAR" property="headerId" />
+        <result column="billNo" jdbcType="VARCHAR" property="billNo" />
+        <result column="billTime" jdbcType="VARCHAR" property="billTime" />
+        <result column="inOutItemId" jdbcType="VARCHAR" property="inOutItemId" />
+        <result column="eachAmount" jdbcType="DECIMAL" property="eachAmount" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+    </resultMap>
+
     <select id="selectByConditionAccountHead" parameterType="com.jsh.erp.datasource.entities.AccountHeadExample" resultMap="ResultMapEx">
         select
              distinct ah.*, s.supplier OrganName, p.Name HandsPersonName, u.username userName, a.Name AccountName,
@@ -153,6 +165,7 @@
         </if>
         and ifnull(ah.delete_flag,'0') !='1'
     </select>
+
     <update id="batchDeleteAccountHeadByIds">
         update jsh_account_head
         set delete_flag='1'
@@ -225,5 +238,51 @@
         where ah.organ_id=#{organId}
         and ah.type = '收预付款'
         and ifnull(ah.delete_flag,'0') !='1'
+    </select>
+
+
+    <select id="getIncomeExpendDetail" resultMap="ResultWithInfoExMap">
+        select
+        ai.id,
+        ah.type as type,
+        ah.id AS headerId,
+        ah.bill_no AS billNo,
+        ah.bill_time AS billTime,
+        ai.in_out_item_id AS inOutItemId,
+        ai.each_amount AS eachAmount,
+        ai.remark,
+        ju.username
+        from jsh_account_item ai
+        left join jsh_account_head ah on ai.header_id = ah.id
+        left join jsh_user ju on ju.id = ah.creator
+        where ah.bill_time >=#{beginTime} and ah.bill_time &lt;=#{endTime}
+        and ah.`status` = '1'
+        and ifnull(ah.delete_flag,'0') !='1'
+
+        <if test="creator != null">
+            and ah.creator=#{creator}
+        </if>
+
+        <if test="inOutItemId != null and inOutItemId !=''">
+            and ai.in_out_item_id = #{inOutItemId}
+        </if>
+        <if test="offset != null and rows != null">
+            limit #{offset},#{rows}
+        </if>
+    </select>
+    <select id="getIncomeExpendDetailCount" resultType="java.lang.Integer">
+        select count(1)
+        from jsh_account_item ai
+        left join jsh_account_head ah on ai.header_id = ah.id
+        left join jsh_user ju on ju.id = ah.creator
+        where ah.bill_time >=#{beginTime} and ah.bill_time &lt;=#{endTime}
+        and ah.`status` = '1'
+        and ifnull(ah.delete_flag,'0') !='1'
+        <if test="creator != null">
+            and ah.creator=#{creator}
+        </if>
+        <if test="inOutItemId != null and inOutItemId !=''">
+            and ai.in_out_item_id = #{inOutItemId}
+        </if>
     </select>
 </mapper>
