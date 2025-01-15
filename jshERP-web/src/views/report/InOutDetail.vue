@@ -194,6 +194,9 @@ export default {
     JEllipsis
   },
   data() {
+    let flowItem = JSON.parse( window.localStorage.getItem('flowItem') || "{}")
+    window.localStorage.removeItem('flowItem')
+
     return {
       labelCol: {
         span: 5
@@ -204,6 +207,7 @@ export default {
       },
       // 查询条件
       queryParam: {
+        inOutItemId: flowItem.inOutItemId,
         organId: undefined,
         number: '',
         materialParam: '',

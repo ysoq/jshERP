@@ -1,5 +1,7 @@
-import {findBySelectSup,findBySelectCus,findBySelectRetail,findBySelectOrgan,getPlatformConfigByKey,getAccount,
-  getPersonByType,findInOutItemByParam,getCurrentSystemConfig} from '@/api/api'
+import {
+  findBySelectSup, findBySelectCus, findBySelectRetail, findBySelectOrgan, getPlatformConfigByKey, getAccount,
+  getPersonByType, findInOutItemByParam, getCurrentSystemConfig, inOutItemExcludeFinish
+} from '@/api/api'
 import { getAction } from '@/api/manage'
 import { getCheckFlag, getNowFormatDateTime } from "@/utils/util"
 import { USER_INFO } from "@/store/mutation-types"
@@ -138,21 +140,8 @@ export const FinancialModalMixin = {
         }
       })
     },
-    initInOutItem(type) {
-      let that = this
-      findInOutItemByParam({ type: type }).then((res) => {
-        if (res) {
-          const options = []
-          for (let i = 0; i < res.length; i++) {
-            let inOutItemInfo = {}
-            inOutItemInfo.value = res[i].id + '' //注意-此处value必须为字符串格式
-            inOutItemInfo.text = res[i].name
-            inOutItemInfo.title = res[i].name
-            options.push(inOutItemInfo)
-          }
-          this.inOutList = options
-        }
-      })
+    initInOutItem() {
+      inOutItemExcludeFinish(true).then(list=> this.inOutList = list)
     },
     //账户-用于主表
     initAccount(){

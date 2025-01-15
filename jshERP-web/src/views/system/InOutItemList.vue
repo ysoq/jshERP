@@ -59,8 +59,8 @@
           >
             <span slot='action' slot-scope='text, record'>
               <template v-if='record.rowIndex !== "合计"'>
-              <a @click='handleMsg(record)' v-if='btnEnableList.indexOf(1) > -1'>进度填写</a>
-              <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
+              <a @click='handleMsg(record)' v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'>进度填写</a>
+              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type='vertical' />
               <a @click='handleEdit(record)'>编辑</a>
               <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
               <a-popconfirm

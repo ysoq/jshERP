@@ -136,6 +136,8 @@ export default {
     JEllipsis
   },
   data() {
+    let flowItem = JSON.parse( window.localStorage.getItem('flowItem') || "{}")
+    window.localStorage.removeItem('flowItem')
     return {
       labelCol: {
         span: 5
@@ -146,9 +148,10 @@ export default {
       },
       // 查询条件
       queryParam: {
-        inOutItemId: '',
+        inOutItemId: flowItem.inOutItemId,
         beginTime: getPrevMonthFormatDate(3),
         endTime: getFormatDate(),
+        createTimeRange: [moment(getPrevMonthFormatDate(3)), moment(getFormatDate())],
         creator: undefined,
       },
       ipagination: {

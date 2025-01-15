@@ -19,14 +19,17 @@
       <a-spin :spinning='confirmLoading'>
         <a-timeline>
           <a-timeline-item :color='item.color' v-for='(item, index) in list' :key='index'>
-            <p style='margin-bottom: 5px;color: #555;font-size: 16px;font-weight: 600;'>时间：{{ format(item.createTime) }}</p>
-            <div style='margin-left: 8px'>
+            <p style='margin-bottom: 5px;color: #555;font-size: 14px;font-weight: 600;'>时间：{{ format(item.createTime)
+              }}</p>
+            <div>
               <template v-if="item.type === '项目进度'">
-                <p style='margin-bottom: 3px'>{{ item.msgTitle }} <span v-if='item.projectStatus'>，项目进度：<a>{{getProjectStatusText(item.projectStatus) }}</a></span> </p>
-                <p  v-if='item.msgContent'>进度：{{ item.msgContent }}</p>
+                <p style='margin-bottom: 3px'>{{ item.msgTitle }} <span
+                  v-if='item.projectStatus'>，项目进度：<a>{{ getProjectStatusText(item.projectStatus) }}</a></span></p>
+                <p v-if='item.msgContent'>进度：{{ item.msgContent }}</p>
                 <div style='display: flex;' v-if='item.recoverFile'>附件：
                   <div><p v-for='(f,i) in item.recoverFile' :key='i'><a target='_blank'
-                                                                        :href='`/jshERP-boot/systemConfig/static/${f}`'> {{ f
+                                                                        :href='`/jshERP-boot/systemConfig/static/${f}`'>
+                    {{ f
                     }}</a></p></div>
                 </div>
               </template>
@@ -34,7 +37,8 @@
                 <p style='margin-bottom: 3px'>
                   {{ item.type }}单号：<a @click='showDetail(item)'>{{ item.code }}</a>
                 </p>
-                <p>变动金额： <span style='color: orangered'>{{ (item.type === '收入' ? 1 : -1) * Math.abs(item.totalInAccount)
+                <p>变动金额： <span
+                  style='color: orangered'>{{ (item.type === '收入' ? 1 : -1) * Math.abs(item.totalInAccount)
                   }}</span>元</p>
               </template>
             </div>
@@ -42,6 +46,18 @@
           </a-timeline-item>
         </a-timeline>
       </a-spin>
+
+      <template slot='footer'>
+        <a-button @click='showDetail({type: "收支汇总", inOutItemId: `${record.id}`})'>
+          收支汇总
+        </a-button>
+        <a-button @click='showDetail({type: "领料汇总", inOutItemId: `${record.id}`})'>
+          领料汇总
+        </a-button>
+        <a-button type='primary' @click='handleCancel'>
+          关闭
+        </a-button>
+      </template>
     </a-modal>
   </div>
 </template>
@@ -59,7 +75,8 @@ export default {
       title: '项目情况',
       visible: false,
       list: [],
-      confirmLoading: false
+      confirmLoading: false,
+      record: null
     }
   },
   created() {
@@ -72,12 +89,14 @@ export default {
     edit(record) {
       this.visible = true
       this.confirmLoading = true
+      this.record = record
       projectFlow({ id: record.id }).then((res) => {
-        // item.type === '收入' || item.projectStatus === '2' ? 'green' : 'red'
         const list = res.data
-          .map(x => ({ ...x,
+          .map(x => ({
+            ...x,
             createTime: x.remark,
-            color: x.type === '收入' ? 'green' : 'red' }))
+            color: x.type === '收入' ? 'green' : 'red'
+          }))
           .concat(record.msgList.map(x => ({
             ...x,
             recoverFile: x.recoverFile ? x.recoverFile.split(',') : null,
@@ -99,8 +118,11 @@ export default {
     showDetail(item) {
       let link = ''
       window.localStorage.setItem('flowItem', JSON.stringify(item))
-
-      if (item.type === '收入') {
+      if (item.type === '收支汇总') {
+        link = this.$router.resolve(`/report/income_expend`)
+      } else if (item.type === '领料汇总') {
+        link = this.$router.resolve(`/report/in_out_detail`)
+      } else if (item.type === '收入') {
         link = this.$router.resolve(`/financial/item_in`)
       } else if (item.type === '支出') {
         link = this.$router.resolve(`/financial/item_out`)
@@ -109,7 +131,6 @@ export default {
       } else if (item.code.startsWith('XSCK')) {
         link = this.$router.resolve(`/bill/sale_out`)
       }
-
       window.open(link.href, '_target')
     }
   }

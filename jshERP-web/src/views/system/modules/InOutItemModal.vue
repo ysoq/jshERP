@@ -35,15 +35,15 @@
             </a-select>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目经理'>
-            <a-select placeholder='选择项目经理' v-decorator="['manager',validatorRules.manager]"
-                      :dropdownMatchSelectWidth='false'>
+            <a-select placeholder='选择项目经理' v-decorator="['manager',validatorRules.manager]" optionFilterProp="children"
+                      :dropdownMatchSelectWidth='false' showSearch>
               <a-select-option v-for='(item, index) in userList' :key='index' :value='item.id'>
                 {{ item.userName }}
               </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='客户'>
-            <a-select placeholder='选择客户' v-decorator="['supplierId']"
+            <a-select placeholder='选择客户' v-decorator="['supplierId']" showSearch optionFilterProp="children"
                       :dropdownMatchSelectWidth='false'>
               <a-select-option v-for='(item, index) in supplierList' :key='index' :value='item.id'>
                 {{ item.supplier }}
@@ -60,7 +60,7 @@
             ></a-input-number>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目完成时间'>
-            <j-date v-decorator="['finishTime']" dateFormat='YYYY-MM-DD'/>
+            <j-date v-decorator="['finishTime']" dateFormat='YYYY-MM-DD' />
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='排序'>
             <a-input placeholder='请输入排序' v-decorator.trim="['sort']" />
@@ -185,7 +185,7 @@ export default {
       this.$nextTick(() => {
 
         this.form.setFieldsValue(
-          pick(this.model, 'name', 'code', 'type', 'contractPrice', 'supplierId', 'manager',  'finishTime', 'sort', 'remark')
+          pick(this.model, 'name', 'code', 'type', 'contractPrice', 'supplierId', 'manager', 'finishTime', 'sort', 'remark')
         )
 
         const fileList = JSON.parse(this.model.fileList || '{}')
