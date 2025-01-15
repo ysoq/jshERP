@@ -113,26 +113,27 @@
         </section>
         <!-- table区域-end -->
         <!-- 表单区域 -->
-        <bill-detail ref='modalDetail'></bill-detail>
+        <financial-detail ref="financialDetail"></financial-detail>
       </a-card>
     </a-col>
   </a-row>
 </template>
 <script>
-import BillDetail from '../bill/dialog/BillDetail'
+
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import { getFormatDate, getNowFormatYear, getPrevMonthFormatDate } from '@/utils/util'
+import { getFormatDate, getPrevMonthFormatDate } from '@/utils/util'
 import { getAction } from '@/api/manage'
-import { findBySelectOrgan, findBillDetailByNumber, getUserList, getAllOrganizationTreeByUser } from '@/api/api'
+import {  findFinancialDetailByNumber, getUserList } from '@/api/api'
 import JEllipsis from '@/components/jeecg/JEllipsis'
 import moment from 'moment'
 import Vue from 'vue'
+import FinancialDetail from '@views/financial/dialog/FinancialDetail.vue'
 
 export default {
   name: 'OutDetail',
   mixins: [JeecgListMixin],
   components: {
-    BillDetail,
+    FinancialDetail,
     JEllipsis
   },
   data() {
@@ -246,10 +247,12 @@ export default {
     },
 
     myHandleDetail(record) {
-      findBillDetailByNumber({ number: record.number }).then((res) => {
+      let that = this
+      findFinancialDetailByNumber({ billNo: record.number }).then((res) => {
         if (res && res.code === 200) {
-          this.$refs.modalDetail.isCanBackCheck = false
-          this.handleDetail(res.data, record.newType)
+          this.$refs.financialDetail.isCanBackCheck = false
+          that.$refs.financialDetail.show(res.data, record.type);
+          that.$refs.financialDetail.title="详情";
         }
       })
     },
@@ -262,16 +265,15 @@ export default {
     },
     exportExcel() {
       let list = []
-      let head = '单据编号,条码,名称,规格,型号,颜色,品牌,制造商,单位,多属性,数量,单价,金额,往来单位,仓库,出库日期,备注'
+      let head = '单据编号,项目,金额,类型,备注,日期,操作人员'
       for (let i = 0; i < this.dataSource.length; i++) {
         let item = []
         let ds = this.dataSource[i]
-        item.push(ds.number, ds.barCode, ds.mname ,ds.standard, ds.model, ds.color, ds.brand, ds.mfrs, ds.mUnit, ds.sku,
-          ds.operNumber, ds.unitPrice, ds.allPrice, ds.sname, ds.dname, ds.operTime, ds.newRemark)
+        item.push(ds.billNo, Vue.prototype.getProjectName(ds.inOutItemId), ds.eachAmount ,ds.type, ds.remark, ds.billTime, ds.username)
         list.push(item)
       }
       let tip = '单据日期：' + this.queryParam.beginTime + '~' + this.queryParam.endTime
-      this.handleExportXlsPost('出库明细', '出库明细', head, tip, list)
+      this.handleExportXlsPost('收支汇总', '收支汇总', head, tip, list)
     }
   }
 }
