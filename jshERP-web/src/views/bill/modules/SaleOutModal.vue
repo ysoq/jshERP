@@ -71,15 +71,15 @@
               <a-input placeholder='请输入单据编号' v-decorator.trim="[ 'number' ]" />
             </a-form-item>
           </a-col>
-          <a-col :lg='6' :md='12' :sm='24'>
-            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='关联订单' data-step='3'
-                         data-title='关联订单'
-                         data-intro='销售出库单据可以通过关联订单来选择已录入的订单，选择之后会自动加载订单的内容，然后继续录入仓库等信息完成单据的提交，
-              提交之后原来的销售订单会对应的改变单据状态。另外本系统支持订单多次出库，只需选择订单之后修改对应的商品数量即可'>
-              <a-input-search placeholder='请选择关联订单' v-decorator="[ 'linkNumber' ]" @search='onSearchLinkNumber'
-                              :readOnly='true' />
-            </a-form-item>
-          </a-col>
+<!--          <a-col :lg='6' :md='12' :sm='24'>-->
+<!--            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='关联订单' data-step='3'-->
+<!--                         data-title='关联订单'-->
+<!--                         data-intro='销售出库单据可以通过关联订单来选择已录入的订单，选择之后会自动加载订单的内容，然后继续录入仓库等信息完成单据的提交，-->
+<!--              提交之后原来的销售订单会对应的改变单据状态。另外本系统支持订单多次出库，只需选择订单之后修改对应的商品数量即可'>-->
+<!--              <a-input-search placeholder='请选择关联订单' v-decorator="[ 'linkNumber' ]" @search='onSearchLinkNumber'-->
+<!--                              :readOnly='true' />-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
         </a-row>
         <j-editable-table id='billModal'
                           :ref='refKeys[0]'
@@ -109,14 +109,14 @@
                 <a-button @click='stopScan'>收起扫码</a-button>
               </a-col>
             </a-row>
-            <a-row :gutter='24' style='float:left;padding-bottom: 5px;'>
-              <a-col :md='24' :sm='24'>
-                <a-button style='margin-left: 8px' @click='handleHistoryBillList'>
-                  <a-icon type='history' />
-                  历史单据
-                </a-button>
-              </a-col>
-            </a-row>
+<!--            <a-row :gutter='24' style='float:left;padding-bottom: 5px;'>-->
+<!--              <a-col :md='24' :sm='24'>-->
+<!--                <a-button style='margin-left: 8px' @click='handleHistoryBillList'>-->
+<!--                  <a-icon type='history' />-->
+<!--                  历史单据-->
+<!--                </a-button>-->
+<!--              </a-col>-->
+<!--            </a-row>-->
             <a-row v-if='rowCanEdit' :gutter='24' style='float:left;padding-bottom: 5px;padding-left:20px;'>
               <a-button icon='import' @click='onImport(prefixNo)'>导入明细</a-button>
             </a-row>

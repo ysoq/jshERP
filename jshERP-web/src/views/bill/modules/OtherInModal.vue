@@ -24,8 +24,9 @@
       <a-form :form='form'>
         <a-row class='form-row' :gutter='24'>
           <a-col :lg='6' :md='12' :sm='24'>
-            <a-form-item :labelCol='labelCol'  :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
-              <a-select @change='clearList' placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]" :disabled='!rowCanEdit'
+            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+              <a-select @change='clearList' placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]"
+                        :disabled='!rowCanEdit'
                         :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'
               >
                 <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
@@ -155,6 +156,7 @@ import JUpload from '@/components/jeecg/JUpload'
 import JDate from '@/components/jeecg/JDate'
 import Vue from 'vue'
 import WaitBillList from '../dialog/WaitBillList'
+import { findInOutItemByParam } from '@api/api'
 
 export default {
   name: 'OtherInModal',
@@ -316,7 +318,16 @@ export default {
         this.model.tenantId = ''
         this.copyAddInit(this.prefixNo)
       }
-      this.initInOutItem('clearPackage')
+      findInOutItemByParam({ type: 'clearPackage' }).then((res) => {
+        if (res) {
+          this.inOutList = res.map(x => ({
+            value: x.id + '',
+            text: x.name,
+            title: x.name
+          }))
+        }
+      })
+
       this.initSystemConfig()
       this.initSupplier(0)
       this.initDepot()

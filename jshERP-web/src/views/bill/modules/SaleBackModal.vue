@@ -23,22 +23,22 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row class="form-row" :gutter="24">
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户">
-              <a-select placeholder="请选择客户" v-decorator="[ 'organId', validatorRules.organId ]" :disabled="!rowCanEdit"
-                :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children" @change="handleOrganChange">
-                <div slot="dropdownRender" slot-scope="menu">
-                  <v-nodes :vnodes="menu" />
-                  <a-divider style="margin: 4px 0;" />
-                  <div v-if="quickBtn.customer" style="padding: 4px 8px; cursor: pointer;"
-                       @mousedown="e => e.preventDefault()" @click="addCustomer"><a-icon type="plus" /> 新增客户</div>
-                </div>
-                <a-select-option v-for="(item,index) in cusList" :key="index" :value="item.id">
-                  {{ item.supplier }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户">-->
+<!--              <a-select placeholder="请选择客户" v-decorator="[ 'organId', validatorRules.organId ]" :disabled="!rowCanEdit"-->
+<!--                :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children" @change="handleOrganChange">-->
+<!--                <div slot="dropdownRender" slot-scope="menu">-->
+<!--                  <v-nodes :vnodes="menu" />-->
+<!--                  <a-divider style="margin: 4px 0;" />-->
+<!--                  <div v-if="quickBtn.customer" style="padding: 4px 8px; cursor: pointer;"-->
+<!--                       @mousedown="e => e.preventDefault()" @click="addCustomer"><a-icon type="plus" /> 新增客户</div>-->
+<!--                </div>-->
+<!--                <a-select-option v-for="(item,index) in cusList" :key="index" :value="item.id">-->
+<!--                  {{ item.supplier }}-->
+<!--                </a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据日期">
               <j-date v-decorator="['operTime', validatorRules.operTime]" :show-time="true"/>
@@ -97,64 +97,64 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row class="form-row" :gutter="24">
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="优惠率">
-              <a-input style="width:80%;" placeholder="请输入优惠率" v-decorator.trim="[ 'discount' ]" suffix="%" @change="onChangeDiscount"/>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="退款优惠">
-              <a-input placeholder="请输入付款优惠" v-decorator.trim="[ 'discountMoney' ]" @change="onChangeDiscountMoney"/>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="优惠后金额">
-              <a-input placeholder="请输入优惠后金额" v-decorator.trim="[ 'discountLastMoney' ]" :readOnly="true"/>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="其它费用">
-              <a-input placeholder="请输入其它费用" v-decorator.trim="[ 'otherMoney' ]" @change="onChangeOtherMoney"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row class="form-row" :gutter="24">
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结算账户">
-              <a-select style="width:80%;" placeholder="请选择结算账户" v-decorator="[ 'accountId', validatorRules.accountId ]"
-                        :dropdownMatchSelectWidth="false" allowClear @select="selectAccount">
-                <div slot="dropdownRender" slot-scope="menu">
-                  <v-nodes :vnodes="menu" />
-                  <a-divider style="margin: 4px 0;" />
-                  <div v-if="quickBtn.account" style="padding: 4px 8px; cursor: pointer;"
-                       @mousedown="e => e.preventDefault()" @click="addAccount"><a-icon type="plus" /> 新增结算账户</div>
-                </div>
-                <a-select-option v-for="(item,index) in accountList" :key="index" :value="item.id">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
-              <a-tooltip title="多账户明细">
-                <a-button type="default" icon="folder" style="margin-left: 8px;" size="small" v-show="manyAccountBtnStatus" @click="handleManyAccount"/>
-              </a-tooltip>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次退款">
-              <a-input placeholder="请输入本次退款" v-decorator.trim="[ 'changeAmount' ]" @change="onChangeChangeAmount"/>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次欠款">
-              <a-input placeholder="请输入本次欠款" v-decorator.trim="[ 'debt' ]" :readOnly="true"/>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="销售人员">
-              <j-select-multiple placeholder="请选择销售人员" v-model="personList.value" :options="personList.options"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
+<!--        <a-row class="form-row" :gutter="24">-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="优惠率">-->
+<!--              <a-input style="width:80%;" placeholder="请输入优惠率" v-decorator.trim="[ 'discount' ]" suffix="%" @change="onChangeDiscount"/>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="退款优惠">-->
+<!--              <a-input placeholder="请输入付款优惠" v-decorator.trim="[ 'discountMoney' ]" @change="onChangeDiscountMoney"/>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="优惠后金额">-->
+<!--              <a-input placeholder="请输入优惠后金额" v-decorator.trim="[ 'discountLastMoney' ]" :readOnly="true"/>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="其它费用">-->
+<!--              <a-input placeholder="请输入其它费用" v-decorator.trim="[ 'otherMoney' ]" @change="onChangeOtherMoney"/>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--        </a-row>-->
+<!--        <a-row class="form-row" :gutter="24">-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结算账户">-->
+<!--              <a-select style="width:80%;" placeholder="请选择结算账户" v-decorator="[ 'accountId', validatorRules.accountId ]"-->
+<!--                        :dropdownMatchSelectWidth="false" allowClear @select="selectAccount">-->
+<!--                <div slot="dropdownRender" slot-scope="menu">-->
+<!--                  <v-nodes :vnodes="menu" />-->
+<!--                  <a-divider style="margin: 4px 0;" />-->
+<!--                  <div v-if="quickBtn.account" style="padding: 4px 8px; cursor: pointer;"-->
+<!--                       @mousedown="e => e.preventDefault()" @click="addAccount"><a-icon type="plus" /> 新增结算账户</div>-->
+<!--                </div>-->
+<!--                <a-select-option v-for="(item,index) in accountList" :key="index" :value="item.id">-->
+<!--                  {{ item.name }}-->
+<!--                </a-select-option>-->
+<!--              </a-select>-->
+<!--              <a-tooltip title="多账户明细">-->
+<!--                <a-button type="default" icon="folder" style="margin-left: 8px;" size="small" v-show="manyAccountBtnStatus" @click="handleManyAccount"/>-->
+<!--              </a-tooltip>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次退款">-->
+<!--              <a-input placeholder="请输入本次退款" v-decorator.trim="[ 'changeAmount' ]" @change="onChangeChangeAmount"/>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次欠款">-->
+<!--              <a-input placeholder="请输入本次欠款" v-decorator.trim="[ 'debt' ]" :readOnly="true"/>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--          <a-col :lg="6" :md="12" :sm="24">-->
+<!--            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="销售人员">-->
+<!--              <j-select-multiple placeholder="请选择销售人员" v-model="personList.value" :options="personList.options"/>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+<!--        </a-row>-->
         <a-row class="form-row" :gutter="24">
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="附件">
@@ -266,9 +266,9 @@
             },
             { title: '单价', key: 'unitPrice', width: '5%', type: FormTypes.inputNumber},
             { title: '金额', key: 'allPrice', width: '5%', type: FormTypes.inputNumber, statistics: true },
-            { title: '税率', key: 'taxRate', width: '4%', type: FormTypes.inputNumber,placeholder: '%'},
-            { title: '税额', key: 'taxMoney', width: '5%', type: FormTypes.inputNumber, readonly: true, statistics: true },
-            { title: '价税合计', key: 'taxLastMoney', width: '7%', type: FormTypes.inputNumber, statistics: true },
+            // { title: '税率', key: 'taxRate', width: '4%', type: FormTypes.inputNumber,placeholder: '%'},
+            // { title: '税额', key: 'taxMoney', width: '5%', type: FormTypes.inputNumber, readonly: true, statistics: true },
+            // { title: '价税合计', key: 'taxLastMoney', width: '7%', type: FormTypes.inputNumber, statistics: true },
             { title: '备注', key: 'remark', width: '6%', type: FormTypes.input },
             { title: '关联id', key: 'linkId', width: '5%', type: FormTypes.hidden },
           ]

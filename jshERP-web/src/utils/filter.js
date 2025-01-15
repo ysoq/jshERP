@@ -28,3 +28,12 @@ Vue.filter('ellipsis', function (value, vlength = 25) {
   }
   return value
 })
+
+
+
+function sqlReplace(sql, params) {
+
+
+
+
+}
