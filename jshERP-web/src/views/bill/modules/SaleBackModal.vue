@@ -39,6 +39,16 @@
 <!--              </a-select>-->
 <!--            </a-form-item>-->
 <!--          </a-col>-->
+          <a-col :lg='6' :md='12' :sm='24'>
+            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
+              <a-select placeholder='请选择项目' @change='clearList' v-decorator="[ 'inOutItemId', validatorRules.inOutItemId ]"
+                        :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
+                <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据日期">
               <j-date v-decorator="['operTime', validatorRules.operTime]" :show-time="true"/>
@@ -244,7 +254,11 @@
               allowSearch:true, validateRules: [{ required: true, message: '${title}不能为空' }]
             },
             { title: '条码', key: 'barCode', width: '12%', type: FormTypes.popupJsh, kind: 'material', multi: true,
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              validateRules: [{ required: true, message: '${title}不能为空' }],
+              getInOutItem: () => {
+                const id = this.form.getFieldValue('inOutItemId')
+                return id
+              }
             },
             { title: '名称', key: 'name', width: '10%', type: FormTypes.normal },
             { title: '规格', key: 'standard', width: '9%', type: FormTypes.normal },
@@ -302,7 +316,7 @@
     },
     methods: {
       //调用完edit()方法之后会自动调用此方法
-      editAfter() {
+      async editAfter() {
         this.billStatus = '0'
         this.currentSelectDepotId = ''
         this.rowCanEdit = true
@@ -345,7 +359,10 @@
             linkType: 'basic'
           }
           let url = this.readOnly ? this.url.detailList : this.url.detailList;
-          this.requestSubTableData(url, params, this.materialTable);
+          await this.requestSubTableData(url, params, this.materialTable).then(list => {
+            const inOutItemId = list[0] ? list[0].inOutItemId + '' : null
+            this.form.setFieldsValue({ 'inOutItemId': inOutItemId })
+          })
         }
         //复制新增单据-初始化单号和日期
         if(this.action === 'copyAdd') {
@@ -353,6 +370,7 @@
           this.model.tenantId = ''
           this.copyAddInit(this.prefixNo)
         }
+        this.initInOutItem('')
         this.initSystemConfig()
         this.initCustomer(0)
         this.initSalesman()
@@ -370,6 +388,7 @@
         billMain.subType = '销售退货'
         for(let item of detailArr){
           totalPrice += item.allPrice-0
+          item.inOutItemId = billMain.inOutItemId
         }
         billMain.totalPrice = 0-totalPrice
         billMain.changeAmount = 0-billMain.changeAmount
@@ -399,11 +418,14 @@
         this.$refs.linkBillList.title = "请选择销售出库"
       },
       linkBillListOk(selectBillDetailRows, linkNumber, organId, discountMoney, deposit, remark) {
+
         this.rowCanEdit = false
         this.materialTable.columns[1].type = FormTypes.normal
         this.changeFormTypes(this.materialTable.columns, 'preNumber', 1)
         this.changeFormTypes(this.materialTable.columns, 'finishNumber', 1)
         if(selectBillDetailRows && selectBillDetailRows.length>0) {
+          this.form.setFieldsValue({ 'inOutItemId': selectBillDetailRows[0].inOutItemId })
+
           let listEx = []
           let allTaxLastMoney = 0
           for(let j=0; j<selectBillDetailRows.length; j++) {

@@ -152,7 +152,7 @@
         },
         // 表头
         columns: [
-          { title: '', dataIndex: 'organName',width:120, ellipsis:true},
+          // { title: '', dataIndex: 'organName',width:120, ellipsis:true},
           { title: '单据编号', dataIndex: 'number',width:130,
             scopedSlots: { customRender: 'numberCustomRender' },
           },

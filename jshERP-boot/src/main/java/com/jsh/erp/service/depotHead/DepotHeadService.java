@@ -310,8 +310,7 @@ public class DepotHeadService {
         //获取权限信息
         String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, userId.toString());
         List<Supplier> supplierList = supplierService.findBySelectCus();
-        if(BusinessConstants.SUB_TYPE_SALES_ORDER.equals(subType) || BusinessConstants.SUB_TYPE_SALES.equals(subType)
-                ||BusinessConstants.SUB_TYPE_SALES_RETURN.equals(subType) ) {
+        if(BusinessConstants.SUB_TYPE_SALES_ORDER.equals(subType)) {
             //采购订单里面选择销售订单的时候不要过滤
             if(StringUtil.isEmpty(purchaseStatus)) {
                 if (null != supplierList && supplierList.size() > 0) {
