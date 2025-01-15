@@ -155,6 +155,9 @@
       <if test="supplierId != null">
         supplier_id,
       </if>
+      <if test="finishTime != null">
+        finish_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">

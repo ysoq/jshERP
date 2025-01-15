@@ -1,10 +1,9 @@
 package com.jsh.erp.datasource.mappers;
 
-import com.jsh.erp.datasource.entities.AccountHead;
-import com.jsh.erp.datasource.entities.AccountHeadExample;
-import com.jsh.erp.datasource.entities.AccountHeadVo4ListEx;
-import com.jsh.erp.datasource.entities.AccountItem;
+import com.jsh.erp.datasource.entities.*;
+import com.jsh.erp.datasource.vo.DepotHeadVo4InDetail;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -62,4 +61,17 @@ public interface AccountHeadMapperEx {
 
     BigDecimal getFinancialAllPriceByOrganId(
             @Param("organId") Long organId);
+
+    List<DepotHeadVo4InDetail> getIncomeExpendDetail(@Param("offset") Integer offset,
+                                                     @Param("rows") Integer rows,
+                                                     @Param("beginTime") String beginTime,
+                                                     @Param("endTime") String endTime,
+                                                     @Param("creator") Long creator,
+                                                     @Param("inOutItemId") String inOutItemId);
+
+    int getIncomeExpendDetailCount(
+            @Param("beginTime") String beginTime,
+            @Param("endTime") String endTime,
+            @Param("creator") Long creator,
+            @Param("inOutItemId") String inOutItemId);
 }
