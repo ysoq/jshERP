@@ -405,7 +405,7 @@
             and m.mfrs like #{bindMfrs}
         </if>
         <if test="inOutItemId != null and inOutItemId !=''">
-            and m.in_out_item_id = #{inOutItemId}
+            and ifnull( m.in_out_item_id, #{inOutItemId} ) = #{inOutItemId}
         </if>
         <if test="idList.size()>0">
             and m.category_id in
