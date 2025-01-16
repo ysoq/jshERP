@@ -218,7 +218,9 @@ public class InOutItemService {
     public List<InOutItem> findBySelect(String type) throws Exception {
         InOutItemExample example = new InOutItemExample();
         if (type.equals("excludeFinish")) {
-            example.createCriteria().andEnabledEqualTo(true).addStatusNotEqualTo("1")
+            example.createCriteria()
+                    .andEnabledEqualTo(true)
+                    .addStatusNotEqualTo("1")
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
         } else if(type.equals("clearPackage")) {
             example.createCriteria().andEnabledEqualTo(true)
