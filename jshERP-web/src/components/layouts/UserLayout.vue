@@ -3,7 +3,7 @@
     <div id="userLayout" :class="['user-layout-wrapper', device]">
       <div class="container">
         <div class="poster-img">
-          <img src="/static/rightImg.svg?v=320" />
+          <img src="/static/logo-1.png?v=320" />
         </div>
         <div class="right-form">
           <div class="top">

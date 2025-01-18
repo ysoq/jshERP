@@ -1,6 +1,8 @@
 <template>
-  <div style="margin: 12px 12px 0px;">
-    <index-chart></index-chart>
+  <div style="width: 100%;height: 100%">
+    <div class='img-bg'>
+      <img src='/static/logo-1.png' alt=''/>
+    </div>
   </div>
 </template>
 
@@ -25,3 +27,15 @@
     }
   }
 </script>
+<style scoped>
+.img-bg  {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+}
+img {
+  width: 500px;
+}
+</style>

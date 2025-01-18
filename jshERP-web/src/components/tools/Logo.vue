@@ -1,6 +1,6 @@
 <template>
   <div class="logo">
-    <h1 v-if="showTitle">{{ title }}</h1>
+    <img src='/static/logo-2.png' alt='' />
   </div>
 </template>
 
