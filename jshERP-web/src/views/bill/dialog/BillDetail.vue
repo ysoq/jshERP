@@ -569,12 +569,6 @@
         <section ref="print" id="saleOrderPrint">
           <a-row class="form-row" :gutter="24">
             <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户">
-                <a-input v-decorator="['id']" hidden/>
-                {{model.organName}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据日期">
                 {{model.operTimeStr}}
               </a-form-item>
@@ -660,12 +654,6 @@
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户">
-                <a-input v-decorator="['id']" hidden/>
-                {{model.organName}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据日期">
                 {{model.operTimeStr}}
               </a-form-item>
@@ -673,11 +661,6 @@
             <a-col :span="6">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据编号">
                 {{model.number}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联订单">
-                <a @click="myHandleDetail(model.linkNumber)">{{model.linkNumber}}</a>
               </a-form-item>
             </a-col>
           </a-row>
@@ -708,66 +691,10 @@
             </a-col>
           </a-row>
           <a-row class="form-row" :gutter="24">
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="优惠率">
-                {{model.discount}}%
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="收款优惠">
-                {{model.discountMoney}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="{xs: { span: 24 },sm: { span: 6 }}" :wrapperCol="wrapperCol" label="优惠后金额">
-                {{model.discountLastMoney}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="其它费用">
-                {{model.otherMoney}}
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row class="form-row" :gutter="24">
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结算账户">
-                {{model.accountName}}
-              </a-form-item>
-            </a-col>
-            <a-col v-if="model.deposit" :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="扣除订金">
-                {{model.deposit}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次收款">
-                {{model.changeAmount}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次欠款">
-                {{model.debt}}
-              </a-form-item>
-            </a-col>
             <a-col v-if="model.hasBackFlag" :span="6">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="退货单号">
                 <template v-for="(item, index) in linkNumberList">
                   <a @click="myHandleDetail(item.number)">{{item.number}}</a><br/>
-                </template>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row class="form-row" :gutter="24">
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="销售人员">
-                {{model.salesManStr}}
-              </a-form-item>
-            </a-col>
-            <a-col v-if="financialBillNoList.length" :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="收款单号">
-                <template v-for="(item, index) in financialBillNoList">
-                  <a @click="myHandleFinancialDetail(item.billNo)">{{item.billNo}}</a><br/>
                 </template>
               </a-form-item>
             </a-col>
@@ -778,12 +705,6 @@
       <template v-else-if="billType === '销售退货入库'">
         <section ref="print" id="saleBackPrint">
           <a-row class="form-row" :gutter="24">
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户">
-                <a-input v-decorator="['id']" hidden/>
-                {{model.organName}}
-              </a-form-item>
-            </a-col>
             <a-col :span="6">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据日期">
                 {{model.operTimeStr}}
@@ -823,50 +744,6 @@
             <a-col :lg="24" :md="24" :sm="24">
               <a-form-item :labelCol="labelCol" :wrapperCol="{xs: { span: 24 },sm: { span: 24 }}" label="" style="padding:20px 10px;">
                 {{model.remark}}
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row class="form-row" :gutter="24">
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="优惠率">
-                {{model.discount}}%
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="退款优惠">
-                {{model.discountMoney}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="{xs: { span: 24 },sm: { span: 6 }}" :wrapperCol="wrapperCol" label="优惠后金额">
-                {{model.discountLastMoney}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="其它费用">
-                {{model.otherMoney}}
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row class="form-row" :gutter="24">
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结算账户">
-                {{model.accountName}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次退款">
-                {{model.changeAmount}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="本次欠款">
-                {{model.debt}}
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="销售人员">
-                {{model.salesManStr}}
               </a-form-item>
             </a-col>
           </a-row>

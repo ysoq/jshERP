@@ -424,7 +424,7 @@
         this.changeFormTypes(this.materialTable.columns, 'preNumber', 1)
         this.changeFormTypes(this.materialTable.columns, 'finishNumber', 1)
         if(selectBillDetailRows && selectBillDetailRows.length>0) {
-          this.form.setFieldsValue({ 'inOutItemId': selectBillDetailRows[0].inOutItemId })
+          this.form.setFieldsValue({ 'inOutItemId': `${selectBillDetailRows[0].inOutItemId || ''}` })
 
           let listEx = []
           let allTaxLastMoney = 0
