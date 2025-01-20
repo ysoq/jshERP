@@ -3,12 +3,12 @@
 <mapper namespace="com.jsh.erp.datasource.mappers.InOutItemMapperEx">
     <select id="selectByConditionInOutItem" parameterType="com.jsh.erp.datasource.entities.InOutItemExample" resultMap="com.jsh.erp.datasource.mappers.InOutItemMapper.BaseResultMap">
         SELECT        io.*,        u.username,        u.phonenum, 	io.supplier_id as supplierId,    su.supplier as  supplierName, io.finish_time as finishTime,
-                      COALESCE ( SUM( CASE WHEN f.type = '收入' THEN f.total_price ELSE 0 END ), 0 ) AS total_in_account,
-                      (COALESCE ( SUM( CASE WHEN f.type = '出库' THEN f.total_price ELSE 0 END ), 0 )
-                           + COALESCE ( -SUM( CASE WHEN f.type = '支出' THEN f.total_price ELSE 0 END ), 0 )) AS total_out_account
+                      COALESCE ( SUM( CASE WHEN f.type = '收入' THEN f.totalPrice ELSE 0 END ), 0 ) AS total_in_account,
+                      (COALESCE ( SUM( CASE WHEN f.type = '出库' THEN f.totalPrice ELSE 0 END ), 0 )
+                           + COALESCE ( -SUM( CASE WHEN f.type = '支出' THEN f.totalPrice ELSE 0 END ), 0 )) AS total_out_account
         FROM         `jsh_in_out_item` io
             LEFT JOIN `jsh_user` u ON io.manager = u.id
-            LEFT JOIN view_project_account_flow as f on f.id = io.id
+            LEFT JOIN view_project_account_flow as f on f.projectId = io.id
             left join jsh_supplier su on su.id = io.supplier_id
         where 1=1
 
@@ -59,7 +59,7 @@
         )
     </update>
 
-    <select id="selectInOutItemByFlow"  resultMap="com.jsh.erp.datasource.mappers.InOutItemMapper.BaseResultMap">
-        select header_id as id, project_name as name, type, number as code, total_price as totalIn_account, time as remark from view_project_account_flow where 1=1 and id = #{id}
+    <select id="selectInOutItemByFlow"  resultType="com.jsh.erp.datasource.entities.InOutItemFlow">
+        select * from view_project_account_flow where projectId = #{id}
     </select>
 </mapper>

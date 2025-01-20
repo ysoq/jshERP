@@ -19,7 +19,7 @@
       <a-spin :spinning='confirmLoading'>
         <a-timeline>
           <a-timeline-item :color='item.color' v-for='(item, index) in list' :key='index'>
-            <p style='margin-bottom: 5px;color: #555;font-size: 14px;font-weight: 600;'>时间：{{ format(item.createTime)
+            <p style='margin-bottom: 5px;color: #555;font-size: 14px;font-weight: 600;'>时间：{{ format(item.createTime)}}  {{item.createTime}}
               }}</p>
             <div>
               <template v-if="item.type === '项目进度'">
@@ -35,10 +35,13 @@
               </template>
               <template v-else>
                 <p style='margin-bottom: 3px'>
-                  {{ item.type }}单号：<a @click='showDetail(item)'>{{ item.code }}</a>
+                  {{ item.subType }}-{{ item.type }}
+                </p>
+                <p style='margin-bottom: 3px'>
+                 单号：<a @click='showDetail(item)'>{{ item.number }}</a>
                 </p>
                 <p>变动金额： <span
-                  style='color: orangered'>{{ (item.type === '收入' ? 1 : -1) * Math.abs(item.totalInAccount)
+                  style='color: orangered'>{{ (item.type === '收入' ? 1 : -1) * Math.abs(item.totalPrice)
                   }}</span>元</p>
               </template>
             </div>

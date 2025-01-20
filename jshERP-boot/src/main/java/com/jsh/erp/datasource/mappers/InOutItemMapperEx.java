@@ -17,7 +17,7 @@ public interface InOutItemMapperEx {
             @Param("offset") Integer offset,
             @Param("rows") Integer rows);
 
-    List<InOutItem> selectInOutItemByFlow(@Param("id") Long id);
+    List<InOutItemFlow> selectInOutItemByFlow(@Param("id") Long id);
 
     Long countsByInOutItem(
             @Param("name") String name,

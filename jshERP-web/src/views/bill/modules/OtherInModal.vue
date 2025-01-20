@@ -25,7 +25,7 @@
         <a-row class='form-row' :gutter='24'>
           <a-col :lg='6' :md='12' :sm='24'>
             <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
-              <a-select @change='clearList' placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]"
+              <a-select @change='clearList($refs[refKeys[0]])' placeholder='请选择项目' v-decorator="[ 'inOutItemId' ]"
                         :disabled='!rowCanEdit'
                         :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'
               >

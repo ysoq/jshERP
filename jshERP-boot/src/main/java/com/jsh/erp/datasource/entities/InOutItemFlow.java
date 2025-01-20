@@ -4,25 +4,31 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class InOutItemFlow {
-    private Long id;
+    private Long projectId;
+    private Long headerId;
 
     private String projectName;
     private String type;
+    private String subType;
 
     private String number;
 
     private BigDecimal totalPrice;
 
-    private Date time;
-
-    private Long tenantId;
-
-    public Long getId() {
-        return id;
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getHeaderId() {
+        return headerId;
+    }
+
+    public void setHeaderId(Long headerId) {
+        this.headerId = headerId;
     }
 
     public String getProjectName() {
@@ -31,6 +37,22 @@ public class InOutItemFlow {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public void setSubType(String subType) {
+        this.subType = subType;
     }
 
     public String getNumber() {
@@ -49,12 +71,12 @@ public class InOutItemFlow {
         this.totalPrice = totalPrice;
     }
 
-    public Date getTime() {
-        return time;
+    public String getCreateTime() {
+        return createTime;
     }
 
-    public void setTime(Date time) {
-        this.time = time;
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 
     public Long getTenantId() {
@@ -65,13 +87,8 @@ public class InOutItemFlow {
         this.tenantId = tenantId;
     }
 
+    private String createTime;
 
+    private Long tenantId;
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

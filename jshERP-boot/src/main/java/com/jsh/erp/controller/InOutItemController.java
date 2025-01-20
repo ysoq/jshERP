@@ -98,7 +98,7 @@ public class InOutItemController {
     public String projectFlow(@RequestParam("id") Long id, HttpServletRequest request) throws Exception {
         String res = null;
         try {
-            List<InOutItem> dataList = inOutItemService.projectFlow(id);
+            List<InOutItemFlow> dataList = inOutItemService.projectFlow(id);
             return backJson(new ResponseCode(ErpInfo.OK.code, dataList));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

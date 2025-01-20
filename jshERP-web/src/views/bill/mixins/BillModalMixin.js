@@ -91,8 +91,11 @@ export const BillModalMixin = {
     }
   },
   methods: {
-    clearList() {
-      this.materialTable.dataSource = [{}]
+    clearList(editTable) {
+      this.materialTable.dataSource = []
+      setTimeout(()=> {
+        editTable && editTable.handleClickAdd()
+      }, 200)
     },
     // 快捷键
     handleOkKey(e) {
@@ -416,6 +419,7 @@ export const BillModalMixin = {
       this.close()
     },
     onAdded(event) {
+      console.log(event)
       let that = this
       const { row, target } = event
       target.setValues([{ rowKey: row.id, values: { operNumber: 0 } }])

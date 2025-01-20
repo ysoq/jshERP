@@ -268,7 +268,7 @@ public class InOutItemService {
         return result;
     }
 
-    public List<InOutItem> projectFlow(Long id) {
+    public List<InOutItemFlow> projectFlow(Long id) {
         return  inOutItemMapperEx.selectInOutItemByFlow(id);
     }
 }

@@ -27,7 +27,7 @@
 
           <a-col :lg='6' :md='12' :sm='24'>
             <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
-              <a-select placeholder='请选择项目' @change='clearList' v-decorator="[ 'inOutItemId', validatorRules.inOutItemId ]" :disabled='!rowCanEdit'
+              <a-select placeholder='请选择项目' @change='clearList($refs[refKeys[0]])' v-decorator="[ 'inOutItemId', validatorRules.inOutItemId ]" :disabled='!rowCanEdit'
                         :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
                 <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
                   {{ item.text }}
