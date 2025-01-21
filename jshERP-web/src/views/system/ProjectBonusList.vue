@@ -65,7 +65,6 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDate from '@/components/jeecg/JDate'
 import { getAction, postAction } from '@api/manage'
 import { getProjectStatusText } from '@views/system/InOutItemCommon'
-import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
 
 export default {
@@ -134,7 +133,6 @@ export default {
   },
   computed: {},
   methods: {
-    ...mapGetters(['nickname']),
     loadData() {
       let params = this.getQueryParams() //查询条件
       this.loading = true
@@ -171,7 +169,6 @@ export default {
       }
       return dayjs().isAfter(row.finishTime, 'day')
     },
-
     getPrice2(price) {
       const s = parseFloat(price)
       if (typeof s === 'number') {
