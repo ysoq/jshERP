@@ -36,8 +36,12 @@
         left join jsh_account_item i on ah.id = i.header_id
         left join jsh_in_out_item io on io.id = i.in_out_item_id
         where 1=1
-        <if test="inOutItemId != null">
-            and i.in_out_item_id =#{inOutItemId}
+        <if test="inOutItemIds != null and inOutItemIds.length>0">
+            and i.in_out_item_id in (
+            <foreach collection="inOutItemIds" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
         </if>
         <if test="billNo != null">
             <bind name="bindBillNo" value="'%'+billNo+'%'"/>

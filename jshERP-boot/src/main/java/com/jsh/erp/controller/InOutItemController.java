@@ -2,11 +2,14 @@ package com.jsh.erp.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.jsh.erp.datasource.entities.InOutItem;
-import com.jsh.erp.datasource.entities.InOutItemFlow;
+import com.jsh.erp.datasource.entities.*;
+import com.jsh.erp.datasource.mappers.AccountHeadMapperEx;
+import com.jsh.erp.datasource.mappers.InOutItemMapperEx;
 import com.jsh.erp.service.inOutItem.InOutItemService;
+import com.jsh.erp.utils.BaseResponseInfo;
 import com.jsh.erp.utils.ErpInfo;
 import com.jsh.erp.utils.ResponseCode;
+import com.jsh.erp.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -15,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.jsh.erp.utils.ResponseJsonUtil.backJson;
 import static com.jsh.erp.utils.ResponseJsonUtil.returnJson;
@@ -33,6 +38,12 @@ public class InOutItemController {
 
     @Resource
     private InOutItemService inOutItemService;
+
+    @Resource
+    private InOutItemMapperEx inOutItemMapperEx;
+
+    @Resource
+    private AccountHeadMapperEx accountHeadMapperEx;
 
     /**
      * 查找收支项目信息-下拉框
@@ -107,5 +118,26 @@ public class InOutItemController {
         return res;
     }
 
+
+    @GetMapping(value = "/projectBonus")
+    @ApiOperation(value = "查找项目奖金分配")
+    public BaseResponseInfo projectBonus(@RequestParam(value = "projectId", required = false) Long projectId) {
+        // 查询所有已完成或者以开票项目  id
+        List<InOutItem> status5Or6 = inOutItemMapperEx.selectProjectByStatus(new String[]{"5", "6"});
+        List<String> ids = new ArrayList<>();
+        for(InOutItem item : status5Or6) {
+            ids.add(item.getId().toString());
+        }
+        List<InOutItem> list = inOutItemMapperEx.selectByConditionInOutItem(null, null, null, 0 ,999, StringUtil.listToStringArray(ids));
+        BaseResponseInfo res = new BaseResponseInfo();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("bonus", list);
+        map.put("status", status5Or6);
+        List<AccountHeadVo4ListEx> account = accountHeadMapperEx.selectByConditionAccountHead("分配金额", null, null, null, null, null, null, null, null ,null ,null, null, StringUtil.listToStringArray(ids), 0, 9999);
+        map.put("account", account);
+        res.code = 200;
+        res.data = map;
+        return res;
+    }
 
 }

@@ -10,8 +10,7 @@
         su.supplier AS supplierName,
         io.finish_time AS finishTime,
         COALESCE ( SUM( CASE WHEN f.type IN ( '收入' ) THEN f.totalPrice ELSE 0 END ), 0 ) AS total_in_account,
-        (
-        COALESCE ( SUM( CASE WHEN f.type = '出库' THEN f.totalPrice ELSE 0 END ), 0 ) - COALESCE( SUM( CASE WHEN f.subType = '销售退货' THEN f.totalPrice ELSE 0 END ), 0 ) + COALESCE ( SUM( CASE WHEN f.type = '支出' THEN f.totalPrice ELSE 0 END ), 0 )) AS total_out_account
+        (COALESCE ( SUM( CASE WHEN f.type in ('出库', '支出', '分配金额') THEN f.totalPrice ELSE 0 END ), 0 ) - COALESCE ( SUM( CASE WHEN f.subType = '销售退货' THEN f.totalPrice ELSE 0 END ), 0 ) ) AS total_out_account
         FROM
         `jsh_in_out_item` io
         LEFT JOIN `jsh_user` u ON io.manager = u.id
@@ -29,6 +28,13 @@
         <if test="remark != null">
             <bind name="bindRemark" value="'%'+remark+'%'"/>
             and io.remark like #{bindRemark}
+        </if>
+        <if test="ids != null">
+            and io.id in (
+            <foreach collection="ids" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
         </if>
         and ifnull(io.delete_flag,'0') !='1'
         GROUP BY io.id
@@ -68,5 +74,21 @@
 
     <select id="selectInOutItemByFlow"  resultType="com.jsh.erp.datasource.entities.InOutItemFlow">
         select * from view_project_account_flow where projectId = #{id}
+    </select>
+    <select id="selectProjectByStatus"  resultType="com.jsh.erp.datasource.entities.InOutItem">
+        select io.id,io.name, msg.project_status, io.contract_price, io.type from jsh_in_out_item as io
+        join jsh_msg msg on msg.in_out_item_id = io.id
+        join (
+        select max(create_time) as create_time ,in_out_item_id  from jsh_msg  where in_out_item_id is not null and type = '项目进度' GROUP BY in_out_item_id
+        ) last on io.id = last.in_out_item_id and msg.create_time = last.create_time
+        where project_status in (
+        <foreach collection="status" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+        and io.delete_flag != 1 and io.enabled = 1
+<!--        <if test="offset != null and rows != null">-->
+<!--            limit #{offset},#{rows}-->
+<!--        </if>-->
     </select>
 </mapper>

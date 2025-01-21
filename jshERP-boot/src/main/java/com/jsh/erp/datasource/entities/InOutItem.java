@@ -32,10 +32,13 @@ public class InOutItem {
     private Date finishTime;
 
     private String status;
+    private String projectStatus;
     private Long supplierId;
     private BigDecimal contractPrice;
     private BigDecimal totalInAccount;
     private BigDecimal totalOutAccount;
+
+
     public Date getFinishTime() {
         return finishTime;
     }
@@ -192,5 +195,13 @@ public class InOutItem {
 
     public void setTotalOutAccount(BigDecimal totalOutAccount) {
         this.totalOutAccount = totalOutAccount;
+    }
+
+    public String getProjectStatus() {
+        return projectStatus;
+    }
+
+    public void setProjectStatus(String projectStatus) {
+        this.projectStatus = projectStatus;
     }
 }

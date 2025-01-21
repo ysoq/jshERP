@@ -83,7 +83,7 @@ public class InOutItemService {
     public List<InOutItem> select(String name, String type, String remark, int offset, int rows) throws Exception {
         List<InOutItem> list = null;
         try {
-            list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows);
+            list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null);
         } catch (Exception e) {
             JshException.readFail(logger, e);
         }

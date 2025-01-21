@@ -15,7 +15,9 @@ public interface InOutItemMapperEx {
             @Param("type") String type,
             @Param("remark") String remark,
             @Param("offset") Integer offset,
-            @Param("rows") Integer rows);
+            @Param("rows") Integer rows,
+            @Param("ids") String[] ids);
+    List<InOutItem> selectProjectByStatus(@Param("status") String[] status);
 
     List<InOutItemFlow> selectInOutItemByFlow(@Param("id") Long id);
 

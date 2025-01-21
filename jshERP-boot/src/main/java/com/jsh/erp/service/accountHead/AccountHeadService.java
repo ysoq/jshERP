@@ -102,8 +102,10 @@ public class AccountHeadService {
             String [] creatorArray = getCreatorArray();
             beginTime = Tools.parseDayToTime(beginTime,BusinessConstants.DAY_FIRST_TIME);
             endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
+            String[] inOutItemIds = StringUtil.isEmpty(inOutItemId) ? null : new String[]{inOutItemId};
+
             List<AccountHeadVo4ListEx> list = accountHeadMapperEx.selectByConditionAccountHead(type, creatorArray, billNo,
-                    beginTime, endTime, organId, creator, handsPersonId, accountId, status, remark, number, inOutItemId, offset, rows);
+                    beginTime, endTime, organId, creator, handsPersonId, accountId, status, remark, number, inOutItemIds, offset, rows);
             if (null != list) {
                 for (AccountHeadVo4ListEx ah : list) {
                     if(ah.getChangeAmount() != null) {
