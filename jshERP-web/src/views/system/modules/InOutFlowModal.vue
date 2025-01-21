@@ -19,8 +19,7 @@
       <a-spin :spinning='confirmLoading'>
         <a-timeline>
           <a-timeline-item :color='item.color' v-for='(item, index) in list' :key='index'>
-            <p style='margin-bottom: 5px;color: #555;font-size: 14px;font-weight: 600;'>时间：{{ format(item.createTime)}}  {{item.createTime}}
-              }}</p>
+            <p style='margin-bottom: 5px;color: #555;font-size: 14px;font-weight: 600;'>时间：{{ format(item.createTime)}}  </p>
             <div>
               <template v-if="item.type === '项目进度'">
                 <p style='margin-bottom: 3px'>{{ item.msgTitle }} <span
@@ -41,7 +40,7 @@
                  单号：<a @click='showDetail(item)'>{{ item.number }}</a>
                 </p>
                 <p>变动金额： <span
-                  style='color: orangered'>{{ (item.type === '收入' ? 1 : -1) * Math.abs(item.totalPrice)
+                  style='color: orangered'>{{ (  item.type === '收入' || item.subType === '销售退货' ? 1 : -1) * Math.abs(item.totalPrice)
                   }}</span>元</p>
               </template>
             </div>
@@ -97,7 +96,6 @@ export default {
         const list = res.data
           .map(x => ({
             ...x,
-            createTime: x.remark,
             color: x.type === '收入' ? 'green' : 'red'
           }))
           .concat(record.msgList.map(x => ({

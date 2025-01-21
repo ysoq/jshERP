@@ -29,13 +29,8 @@
                 </a-form-item>
               </a-col>
               <a-col :md='6' :sm='24'>
-                <a-form-item label='操作员' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-                  <a-select placeholder='请选择操作员' showSearch allow-clear optionFilterProp='children'
-                            v-model='queryParam.creator'>
-                    <a-select-option v-for='(item,index) in userList' :key='index' :value='item.id'>
-                      {{ item.userName }}
-                    </a-select-option>
-                  </a-select>
+                <a-form-item>
+                  <span>总金额：{{ allPriceTotalStr }}</span>
                 </a-form-item>
               </a-col>
               <a-col :md='6' :sm='24'>
@@ -226,8 +221,13 @@ export default {
       this.loading = true
       getAction(this.url.list, params).then((res) => {
         if (res.code === 200) {
-          this.dataSource = res.data.rows
+          this.dataSource = res.data.rows.map(x=> ({
+            ...x,
+            eachAmount: (x.type === '支出' ? -1 : 1) * x.eachAmount
+          }))
           this.ipagination.total = res.data.total
+          this.allPriceTotalStr = res.data.eachAmountTotal.eachAmount
+          this.tableAddTotalRow(this.columns, this.dataSource)
         } else if (res.code === 510) {
           this.$message.warning(res.data)
         } else {

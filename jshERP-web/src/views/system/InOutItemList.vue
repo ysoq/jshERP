@@ -218,7 +218,6 @@ export default {
       ],
       url: {
         list: async (params) => {
-          console.log(this)
           const msgList = await getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
             return res.data.list
           })

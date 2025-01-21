@@ -179,7 +179,7 @@
 <script>
 import BillDetail from '../bill/dialog/BillDetail'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import { getFormatDate, getNowFormatYear, getPrevMonthFormatDate } from '@/utils/util'
+import { getFormatDate, getPrevMonthFormatDate } from '@/utils/util'
 import { getAction } from '@/api/manage'
 import { findBySelectOrgan, findBillDetailByNumber, getUserList, getAllOrganizationTreeByUser } from '@/api/api'
 import JEllipsis from '@/components/jeecg/JEllipsis'
@@ -187,14 +187,14 @@ import moment from 'moment'
 import Vue from 'vue'
 
 export default {
-  name: 'OutDetail',
+  name: 'InOutDetail',
   mixins: [JeecgListMixin],
   components: {
     BillDetail,
     JEllipsis
   },
   data() {
-    let flowItem = JSON.parse( window.localStorage.getItem('flowItem') || "{}")
+    let flowItem = JSON.parse(window.localStorage.getItem('flowItem') || '{}')
     window.localStorage.removeItem('flowItem')
 
     return {
@@ -263,11 +263,9 @@ export default {
         { title: '制造商', dataIndex: 'mfrs', width: 60, ellipsis: true },
         { title: '单位', dataIndex: 'mUnit', width: 50, ellipsis: true },
         { title: '多属性', dataIndex: 'sku', width: 100, ellipsis: true },
-        { title: '数量', dataIndex: 'operNumber', sorter: (a, b) => a.operNumber - b.operNumber, width: 60 },
+        { title: '数量', dataIndex: 'operNumber', width: 60 },
         { title: '单价', dataIndex: 'unitPrice', sorter: (a, b) => a.unitPrice - b.unitPrice, width: 60 },
-        { title: '金额', dataIndex: 'allPrice', sorter: (a, b) => a.allPrice - b.allPrice, width: 60 },
-        // {title: '税率(%)', dataIndex: 'taxRate', width: 60},
-        // {title: '税额', dataIndex: 'taxMoney', sorter: (a, b) => a.taxMoney - b.taxMoney, width: 60},
+        { title: '金额', dataIndex: 'allPrice', width: 60 },
         { title: '往来单位', dataIndex: 'sname', width: 80, ellipsis: true },
         { title: '仓库', dataIndex: 'dname', width: 80, ellipsis: true },
         { title: '日期', dataIndex: 'operTime', width: 70 },
@@ -309,7 +307,11 @@ export default {
       this.loading = true
       getAction(this.url.list, params).then((res) => {
         if (res.code === 200) {
-          this.dataSource = res.data.rows
+          this.dataSource = res.data.rows.map(x => ({
+            ...x,
+            operNumber: (x.newType === '销售退货入库' ? -1 : 1) * x.operNumber,
+            allPrice: (x.newType === '销售退货入库' ? -1 : 1) * x.allPrice
+          }))
           this.ipagination.total = res.data.total
           this.operNumberTotalStr = res.data.operNumberTotal.toFixed(2)
           this.allPriceTotalStr = res.data.allPriceTotal.toFixed(2)
@@ -376,7 +378,7 @@ export default {
       for (let i = 0; i < this.dataSource.length; i++) {
         let item = []
         let ds = this.dataSource[i]
-        item.push(ds.number, ds.barCode, ds.mname,ds.newType, Vue.prototype.getProjectName(ds.inOutItemId) ,ds.standard, ds.model, ds.color, ds.brand, ds.mfrs, ds.mUnit, ds.sku,
+        item.push(ds.number, ds.barCode, ds.mname, ds.newType, Vue.prototype.getProjectName(ds.inOutItemId), ds.standard, ds.model, ds.color, ds.brand, ds.mfrs, ds.mUnit, ds.sku,
           ds.operNumber, ds.unitPrice, ds.allPrice, ds.sname, ds.dname, ds.operTime, ds.newRemark)
         list.push(item)
       }
