@@ -74,4 +74,9 @@ public interface AccountHeadMapperEx {
             @Param("endTime") String endTime,
             @Param("creator") Long creator,
             @Param("inOutItemId") String inOutItemId);
+    List<DepotHeadVo4InDetail> getIncomeExpendStatistic(
+            @Param("beginTime") String beginTime,
+            @Param("endTime") String endTime,
+            @Param("creator") Long creator,
+            @Param("inOutItemId") String inOutItemId);
 }

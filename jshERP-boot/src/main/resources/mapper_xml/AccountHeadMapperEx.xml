@@ -285,4 +285,21 @@
             and ai.in_out_item_id = #{inOutItemId}
         </if>
     </select>
+
+    <select id="getIncomeExpendStatistic" resultMap="ResultWithInfoExMap">
+        select
+        IFNULL(SUM( CASE WHEN ah.type = '支出' THEN ai.each_amount * - 1 ELSE ai.each_amount END ),0) as eachAmount
+        from jsh_account_item ai
+        left join jsh_account_head ah on ai.header_id = ah.id
+        left join jsh_user ju on ju.id = ah.creator
+        where ah.bill_time >=#{beginTime} and ah.bill_time &lt;=#{endTime}
+        and ah.`status` = '1'
+        and ifnull(ah.delete_flag,'0') !='1'
+        <if test="creator != null">
+            and ah.creator=#{creator}
+        </if>
+        <if test="inOutItemId != null and inOutItemId !=''">
+            and ai.in_out_item_id = #{inOutItemId}
+        </if>
+    </select>
 </mapper>

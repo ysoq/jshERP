@@ -142,12 +142,14 @@ public class AccountHeadController {
         List<DepotHeadVo4InDetail> resList = new ArrayList<>();
         List<DepotHeadVo4InDetail> list  = accountHeadMapperEx.getIncomeExpendDetail((currentPage-1)*pageSize, pageSize, beginTime,endTime,creator,inOutItemId  );
         int total = accountHeadMapperEx.getIncomeExpendDetailCount( beginTime,endTime,creator,inOutItemId);
+        List<DepotHeadVo4InDetail> statistic = accountHeadMapperEx.getIncomeExpendStatistic( beginTime,endTime,creator,inOutItemId);
         //存放数据json数组
         if (null != list) {
             resList.addAll(list);
         }
         map.put("total", total);
         map.put("rows", resList);
+        map.put("eachAmountTotal", statistic.get(0));
         res.code = 200;
         res.data = map;
         return res;
