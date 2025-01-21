@@ -17,10 +17,14 @@
         LEFT JOIN view_project_account_flow AS f ON f.projectId = io.id
         LEFT JOIN jsh_supplier su ON su.id = io.supplier_id
         where 1=1
+
         and f.type != '入库' and f.subType != '其他'
         <if test="name != null">
             <bind name="bindName" value="'%'+name+'%'"/>
             and io.name like #{bindName}
+        </if>
+        <if test="manager != null">
+            and io.manager=#{manager}
         </if>
         <if test="type != null">
             and io.type=#{type}

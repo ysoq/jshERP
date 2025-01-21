@@ -128,7 +128,7 @@ public class InOutItemController {
         for(InOutItem item : status5Or6) {
             ids.add(item.getId().toString());
         }
-        List<InOutItem> list = inOutItemMapperEx.selectByConditionInOutItem(null, null, null, 0 ,999, StringUtil.listToStringArray(ids));
+        List<InOutItem> list = inOutItemMapperEx.selectByConditionInOutItem(null, null, null, 0 ,999, StringUtil.listToStringArray(ids), null);
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("bonus", list);

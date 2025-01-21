@@ -83,7 +83,14 @@ public class InOutItemService {
     public List<InOutItem> select(String name, String type, String remark, int offset, int rows) throws Exception {
         List<InOutItem> list = null;
         try {
-            list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null);
+            String manager = null;
+            User user = userService.getCurrentUser();
+            String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
+            if (BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
+                manager = user.getId().toString();
+            }
+
+            list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null, manager);
         } catch (Exception e) {
             JshException.readFail(logger, e);
         }
@@ -222,7 +229,7 @@ public class InOutItemService {
                     .andEnabledEqualTo(true)
                     .addStatusNotEqualTo("1")
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
-        } else if(type.equals("clearPackage")) {
+        } else if (type.equals("clearPackage")) {
             example.createCriteria().andEnabledEqualTo(true)
                     .andTypeEqualTo("清包")
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
@@ -247,7 +254,7 @@ public class InOutItemService {
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
         List<Long> inOutItemIds = StringUtil.strToLongList(ids);
         InOutItem inOutItem = new InOutItem();
-        if(status.equals("examine")) {
+        if (status.equals("examine")) {
             inOutItem.setStatus("1");
         } else if (status.equals("counter-audit")) {
             inOutItem.setStatus("0");
@@ -269,6 +276,6 @@ public class InOutItemService {
     }
 
     public List<InOutItemFlow> projectFlow(Long id) {
-        return  inOutItemMapperEx.selectInOutItemByFlow(id);
+        return inOutItemMapperEx.selectInOutItemByFlow(id);
     }
 }
