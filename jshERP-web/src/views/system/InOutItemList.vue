@@ -61,10 +61,11 @@
               <template v-if='record.rowIndex !== "合计"'>
               <a @click='handleMsg(record)' v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'>进度填写</a>
               <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type='vertical' />
-              <a @click='handleEdit(record)'>编辑</a>
-              <a-divider v-if='btnEnableList.indexOf(1) > -1' type='vertical' />
+              <a @click='handleEdit(record, false)' v-if='record.status !== "1"'>编辑</a>
+              <a @click='handleEdit(record, true)' v-if='record.status === "1"'>查看</a>
+              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type='vertical' />
               <a-popconfirm
-                v-if='btnEnableList.indexOf(1) > -1'
+                v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'
                 title='确定删除吗?'
                 @confirm='() => handleDelete(record.id)'
               >
@@ -332,10 +333,10 @@ export default {
       }
       return price
     },
-    handleEdit: function(record) {
+    handleEdit: function(record, disableSubmit) {
       this.$refs.modalForm.edit(record)
-      this.$refs.modalForm.title = '编辑'
-      this.$refs.modalForm.disableSubmit = false
+      this.$refs.modalForm.title = disableSubmit ? '查看' : '编辑'
+      this.$refs.modalForm.disableSubmit = !!disableSubmit
       if (this.btnEnableList.indexOf(1) === -1) {
         this.$refs.modalForm.isReadOnly = true
       }

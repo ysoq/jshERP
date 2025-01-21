@@ -7,9 +7,40 @@
           <!-- 搜索区域 -->
           <a-form layout='inline' @keyup.enter.native='searchQuery'>
             <a-row :gutter='24'>
-              <a-col :md='6' :sm='24'>
+              <a-col :md='4' :sm='24'>
                 <a-form-item label='名称' :labelCol='labelCol' :wrapperCol='wrapperCol'>
                   <a-input placeholder='请输入名称查询' v-model='queryParam.name'></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md='4' :sm='24'>
+                <a-form-item label='项目经理' :labelCol='labelCol' :wrapperCol='wrapperCol'>
+                  <a-select placeholder='选择项目经理' v-model='queryParam.manager' optionFilterProp='children'
+                            :dropdownMatchSelectWidth='false' showSearch allowClear>
+                    <a-select-option v-for='(item, index) in userList' :key='index' :value='item.id'>
+                      {{ item.userName }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md='6' :sm='24'>
+                <a-form-item label='提交时间' :labelCol='labelCol' :wrapperCol='wrapperCol'>
+                  <a-range-picker
+                    style='width:100%'
+                    v-model='queryParam.createTimeRange'
+                    format='YYYY-MM-DD'
+                    valueFormat='YYYY-MM-DD'
+                    :placeholder="['开始时间', '结束时间']"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :md='4' :sm='24'>
+                <a-form-item label='审核状态' :labelCol='labelCol' :wrapperCol='wrapperCol'>
+                  <a-select placeholder='审核状态' v-model='queryParam.status' allowClear optionFilterProp='children'
+                            :dropdownMatchSelectWidth='false' showSearch>
+                    <a-select-option value='0'>未审核</a-select-option>
+                    <a-select-option value='1'>审核通过</a-select-option>
+                  </a-select>
+
                 </a-form-item>
               </a-col>
               <span style='float: left; overflow: hidden' class='table-page-search-submitButtons'>
@@ -66,6 +97,7 @@ import JDate from '@/components/jeecg/JDate'
 import { getAction, postAction } from '@api/manage'
 import { getProjectStatusText } from '@views/system/InOutItemCommon'
 import dayjs from 'dayjs'
+import { getUserList } from '@api/api'
 
 export default {
   name: 'InOutItemListView',
@@ -84,7 +116,7 @@ export default {
         offset: 1
       },
       // 查询条件
-      queryParam: { name: '', type: '', remark: '' },
+      queryParam: { name: '', manager: '', createTimeRange: [], status: '' },
       totalColumns: ['contractPrice', 'totalInAccount', 'totalUnInAccount', 'totalOutAccount'],
       // 表头
       columns: [
@@ -117,6 +149,10 @@ export default {
           }
         },
         { title: '备注', dataIndex: 'remark', width: 100 },
+        { title: '提交时间', dataIndex: 'billTime', width: 100,
+          customRender: (text, record, index) => {
+            return record.billTime ? dayjs(record.billTime).format('YYYY-MM-DD HH:mm:ss') : ''
+          }},
         {
           title: '审核状态',
           dataIndex: 'status',
@@ -128,17 +164,26 @@ export default {
       url: {
         list: '/inOutItem/projectBonus',
         batchSetStatusUrl: '/accountHead/batchSetStatus'
-      }
+      },
+      userList: []
+
     }
   },
   computed: {},
+  created() {
+    getUserList({}).then((res) => {
+      if (res) {
+        this.userList = res
+      }
+    })
+  },
   methods: {
     loadData() {
       let params = this.getQueryParams() //查询条件
       this.loading = true
       return getAction(this.url.list, params).then((res) => {
         if (res.code === 200) {
-          const list = []
+          let list = []
           for (const item of res.data.bonus) {
             const account = res.data.account.filter(x => x.inOutItemId === item.id)[0]
             const status = res.data.status.filter(x => x.id === item.id)[0]
@@ -149,9 +194,26 @@ export default {
               status: account ? account.status : null,
               account,
               headerId: account ? account.id : null,
-              remark: account ? account.remark : null,
+              billTime: account ? account.billTime : null,
+              remark: account ? account.remark : null
             })
           }
+
+          if (this.queryParam.name) {
+            list = list.filter(x => x.name.includes(this.queryParam.name))
+          }
+          if (this.queryParam.manager) {
+            list = list.filter(x => x.manager === this.queryParam.manager)
+          }
+          if (this.queryParam.createTimeRange[0]) {
+            list = list.filter(x => x.account
+              &&  dayjs(x.account.billTime).add(-1, 'day').isBefore(this.queryParam.createTimeRange[1], 'day')
+              && dayjs(x.account.billTime).add(1, 'day').isAfter(this.queryParam.createTimeRange[0], 'day'))
+          }
+          if (this.queryParam.status) {
+            list = list.filter(x => x.status === this.queryParam.status)
+          }
+
           this.dataSource = list
           this.ipagination.total = 999
         } else if (res.code === 510) {
@@ -217,7 +279,7 @@ export default {
       if (this.selectionRows.length <= 0) {
         return this.$message.warning('请选择一条记录！')
       } else {
-        if(this.selectionRows.some(x=> !x.headerId)) {
+        if (this.selectionRows.some(x => !x.headerId)) {
           return this.$message.warning('请先分配金额')
         }
         const ids = this.selectionRows.map(x => x.headerId).join(',')

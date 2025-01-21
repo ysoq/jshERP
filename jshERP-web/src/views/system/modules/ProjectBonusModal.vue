@@ -109,7 +109,7 @@ export default {
           that.confirmLoading = true
           const args = {
             info: JSON.stringify({
-              'billTime': this.model.billTime || dayjs().format('YYYY-MM-DD'),
+              'billTime': this.model.billTime || dayjs().format('YYYY-MM-DD HH:mm:ss'),
               'billNo': this.model.billNo,
               'remark': values.remark,
               'changeAmount': values.totalPrice * -1,

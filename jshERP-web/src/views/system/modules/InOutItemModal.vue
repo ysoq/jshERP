@@ -17,18 +17,18 @@
       style='top: 10%; height: 80%'
     >
       <template slot='footer'>
-        <a-button key='back' v-if='isReadOnly' @click='handleCancel'> 取消</a-button>
+        <a-button key='back' v-if='disableSubmit' @click='handleCancel'> 取消</a-button>
       </template>
       <a-spin :spinning='confirmLoading'>
-        <a-form :form='form' id='inOutItemModal'>
+        <a-form :form='form' id='inOutItemModal' >
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='编号'>
-            <a-input placeholder='编号' v-decorator.trim="['code']" />
+            <a-input placeholder='编号' v-decorator.trim="['code']" :disabled='disableSubmit' />
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='名称'>
-            <a-input placeholder='请输入名称' v-decorator.trim="['name', validatorRules.name]" />
+            <a-input placeholder='请输入名称' v-decorator.trim="['name', validatorRules.name]" :disabled='disableSubmit'/>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='类型'>
-            <a-select placeholder='请选择类型' v-decorator="[ 'type', validatorRules.type]" :disabled='typeDisabled'>
+            <a-select placeholder='请选择类型' v-decorator="[ 'type', validatorRules.type]" :disabled='disableSubmit'>
               <a-select-option value='大包'>大包</a-select-option>
               <a-select-option value='清包'>清包</a-select-option>
               <a-select-option value='运维'>运维</a-select-option>
@@ -36,7 +36,7 @@
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目经理'>
             <a-select placeholder='选择项目经理' v-decorator="['manager',validatorRules.manager]" optionFilterProp="children"
-                      :dropdownMatchSelectWidth='false' showSearch>
+                      :dropdownMatchSelectWidth='false' showSearch :disabled='disableSubmit'>
               <a-select-option v-for='(item, index) in userList' :key='index' :value='item.id'>
                 {{ item.userName }}
               </a-select-option>
@@ -44,7 +44,7 @@
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='客户'>
             <a-select placeholder='选择客户' v-decorator="['supplierId']" showSearch optionFilterProp="children"
-                      :dropdownMatchSelectWidth='false'>
+                      :dropdownMatchSelectWidth='false' :disabled='disableSubmit'>
               <a-select-option v-for='(item, index) in supplierList' :key='index' :value='item.id'>
                 {{ item.supplier }}
               </a-select-option>
@@ -52,7 +52,7 @@
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='合同金额'>
             <a-input-number
-              style='width: 100%'
+              style='width: 100%' :disabled='disableSubmit'
               placeholder='请输入合同金额'
               v-decorator.trim="['contractPrice', validatorRules.contractPrice]"
               :min='0'
@@ -60,28 +60,28 @@
             ></a-input-number>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目完成时间'>
-            <j-date v-decorator="['finishTime']" dateFormat='YYYY-MM-DD' />
+            <j-date v-decorator="['finishTime']" dateFormat='YYYY-MM-DD' :disabled='disableSubmit'/>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='排序'>
-            <a-input placeholder='请输入排序' v-decorator.trim="['sort']" />
+            <a-input placeholder='请输入排序' v-decorator.trim="['sort']" :disabled='disableSubmit' />
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='备注'>
-            <a-textarea :rows='2' placeholder='请输入备注' v-decorator="['remark']" />
+            <a-textarea :rows='2' placeholder='请输入备注' v-decorator="['remark']" :disabled='disableSubmit'/>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='合同'>
-            <j-upload v-decorator="['file1']" bizPath='bill'></j-upload>
+            <j-upload v-decorator="['file1']" bizPath='bill' :disabled='disableSubmit'></j-upload>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='开工报告'>
-            <j-upload v-decorator="['file2']" bizPath='bill'></j-upload>
+            <j-upload v-decorator="['file2']" bizPath='bill' :disabled='disableSubmit'></j-upload>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='验收资料'>
-            <j-upload v-decorator="['file3']" bizPath='bill'></j-upload>
+            <j-upload v-decorator="['file3']" bizPath='bill' :disabled='disableSubmit'></j-upload>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='送审资料'>
-            <j-upload v-decorator="['file4']" bizPath='bill'></j-upload>
+            <j-upload v-decorator="['file4']" bizPath='bill' :disabled='disableSubmit'></j-upload>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='审价报告'>
-            <j-upload v-decorator="['file5']" bizPath='bill'></j-upload>
+            <j-upload v-decorator="['file5']" bizPath='bill' :disabled='disableSubmit'></j-upload>
           </a-form-item>
         </a-form>
       </a-spin>
@@ -105,12 +105,12 @@ export default {
     return {
       title: '操作',
       visible: false,
+      disableSubmit: false,
       model: {},
       typeParam: '',
       userList: [],
       supplierList: [],
       isReadOnly: false,
-      typeDisabled: false,
       labelCol: {
         xs: { span: 24 },
         sm: { span: 5 }
@@ -170,20 +170,8 @@ export default {
     edit(record) {
       this.form.resetFields()
       this.model = Object.assign({}, record)
-      if (this.typeParam) {
-        this.typeDisabled = true
-        if (this.typeParam === 'in') {
-          this.model.type = '收入'
-        } else if (this.typeParam === 'out') {
-          this.model.type = '支出'
-        }
-      } else {
-        this.typeDisabled = false
-      }
       this.visible = true
-
       this.$nextTick(() => {
-
         this.form.setFieldsValue(
           pick(this.model, 'name', 'code', 'type', 'contractPrice', 'supplierId', 'manager', 'finishTime', 'sort', 'remark')
         )
