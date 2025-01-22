@@ -52,6 +52,9 @@
         COUNT(id)
         FROM jsh_in_out_item
         WHERE 1=1
+        <if test="manager != null">
+            and manager=#{manager}
+        </if>
         <if test="name != null">
             <bind name="bindName" value="'%'+name+'%'"/>
             and name like #{bindName}

@@ -26,7 +26,8 @@ public interface InOutItemMapperEx {
     Long countsByInOutItem(
             @Param("name") String name,
             @Param("type") String type,
-            @Param("remark") String remark);
+            @Param("remark") String remark,
+            @Param("manager") String manager);
 
     int batchDeleteInOutItemByIds(@Param("updateTime") Date updateTime, @Param("updater") Long updater, @Param("ids") String ids[]);
 }

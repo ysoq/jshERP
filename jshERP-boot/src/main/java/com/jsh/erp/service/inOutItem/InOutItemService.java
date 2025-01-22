@@ -100,7 +100,14 @@ public class InOutItemService {
     public Long countInOutItem(String name, String type, String remark) throws Exception {
         Long result = null;
         try {
-            result = inOutItemMapperEx.countsByInOutItem(name, type, remark);
+            String manager = null;
+            User user = userService.getCurrentUser();
+            String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
+            if (BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
+                manager = user.getId().toString();
+            }
+
+            result = inOutItemMapperEx.countsByInOutItem(name, type, remark, manager);
         } catch (Exception e) {
             JshException.readFail(logger, e);
         }
