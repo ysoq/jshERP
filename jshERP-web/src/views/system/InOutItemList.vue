@@ -86,7 +86,7 @@
             <div slot='totalInAccount' slot-scope='enabled, record'>
               <span>{{ getPrice2(record.totalInAccount) }}</span>
               <span style='color: royalblue'
-                    v-if='record.contractPrice'> ({{ (record.totalInAccount / record.contractPrice * 100).toFixed(2)
+                    v-if='record.contractPrice != 0 && record.totalInAccount'> ({{ (record.totalInAccount / record.contractPrice * 100).toFixed(2)
                 }}%)</span>
 
             </div>
