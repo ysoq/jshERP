@@ -16,9 +16,7 @@
         LEFT JOIN `jsh_user` u ON io.manager = u.id
         LEFT JOIN view_project_account_flow AS f ON f.projectId = io.id
         LEFT JOIN jsh_supplier su ON su.id = io.supplier_id
-        where 1=1
-
-        AND f.subType != '其它'
+        where ifnull( f.subType, '' )  != '其它'
         <if test="name != null">
             <bind name="bindName" value="'%'+name+'%'"/>
             and io.name like #{bindName}
@@ -33,7 +31,7 @@
             <bind name="bindRemark" value="'%'+remark+'%'"/>
             and io.remark like #{bindRemark}
         </if>
-        <if test="ids != null">
+        <if test="ids != null and ids.length>0">
             and io.id in (
             <foreach collection="ids" item="id" separator=",">
                 #{id}
