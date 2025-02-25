@@ -102,7 +102,10 @@ export const JeecgListMixin = {
 
       return action.then((res) => {
         if (res.code === 200) {
-          this.dataSource = res.data.rows
+          this.dataSource = (res.data.rows || []).map(x=> ({
+            ...x,
+            type: x.type.replace('销售', '材料')
+          }))
           this.ipagination.total = res.data.total
           this.tableAddTotalRow(this.columns, this.dataSource)
         } else if (res.code === 510) {
