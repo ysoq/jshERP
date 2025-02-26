@@ -86,7 +86,7 @@
             <div slot='totalInAccount' slot-scope='enabled, record'>
               <span>{{ getPrice2(record.totalInAccount) }}</span>
               <span style='color: royalblue'
-                    v-if='record.contractPrice != 0 && record.totalInAccount'> ({{ (record.totalInAccount / record.contractPrice * 100).toFixed(2)
+                    v-if='getPrice2(record.contractPrice ) && getPrice2(record.totalInAccount)'> ({{ (record.totalInAccount / record.contractPrice * 100).toFixed(2)
                 }}%)</span>
 
             </div>
@@ -298,10 +298,12 @@ export default {
     },
     getPrice2(price) {
       const s = parseFloat(price)
-      if (typeof s === 'number') {
+      if (typeof s === 'number' && Number.isFinite(s)) {
+        console.log('111111111', price)
         return this.formatPrice(s)
       }
-      return price
+
+      return null
     },
     getPrice(record) {
       if (record.contractPrice >= 0) {

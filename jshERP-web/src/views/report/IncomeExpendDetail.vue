@@ -108,7 +108,7 @@
         </section>
         <!-- table区域-end -->
         <!-- 表单区域 -->
-        <financial-detail ref="financialDetail"></financial-detail>
+        <financial-detail ref='financialDetail'></financial-detail>
       </a-card>
     </a-col>
   </a-row>
@@ -118,11 +118,12 @@
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { getFormatDate, getPrevMonthFormatDate } from '@/utils/util'
 import { getAction } from '@/api/manage'
-import {  findFinancialDetailByNumber, getUserList } from '@/api/api'
+import { findFinancialDetailByNumber, getUserList } from '@/api/api'
 import JEllipsis from '@/components/jeecg/JEllipsis'
 import moment from 'moment'
 import Vue from 'vue'
 import FinancialDetail from '@views/financial/dialog/FinancialDetail.vue'
+import dayjs from 'dayjs'
 
 export default {
   name: 'OutDetail',
@@ -132,7 +133,7 @@ export default {
     JEllipsis
   },
   data() {
-    let flowItem = JSON.parse( window.localStorage.getItem('flowItem') || "{}")
+    let flowItem = JSON.parse(window.localStorage.getItem('flowItem') || '{}')
     window.localStorage.removeItem('flowItem')
     return {
       labelCol: {
@@ -148,7 +149,7 @@ export default {
         beginTime: getPrevMonthFormatDate(3),
         endTime: getFormatDate(),
         createTimeRange: [moment(getPrevMonthFormatDate(3)), moment(getFormatDate())],
-        creator: undefined,
+        creator: undefined
       },
       ipagination: {
         pageSize: 11,
@@ -163,7 +164,7 @@ export default {
       tabKey: '1',
       pageName: 'outDetail',
       // 默认索引
-      defDataIndex: ['rowIndex', 'billNo', 'type', 'inOutItemId', 'eachAmount', 'billTime', 'username', 'remark',],
+      defDataIndex: ['rowIndex', 'billNo', 'type', 'inOutItemId', 'eachAmount', 'billTime', 'username', 'remark'],
       // 默认列
       defColumns: [
         {
@@ -186,7 +187,7 @@ export default {
         { title: '类型', dataIndex: 'type', width: 70 },
         { title: '备注', dataIndex: 'remark', width: 100, ellipsis: true },
         { title: '日期', dataIndex: 'billTime', width: 100 },
-        { title: '操作人员', dataIndex: 'username', width: 70 },
+        { title: '操作人员', dataIndex: 'username', width: 70 }
       ],
       url: {
         list: '/accountHead/getIncomeExpendDetail'
@@ -202,6 +203,7 @@ export default {
     getQueryParams() {
       let param = Object.assign({}, this.queryParam, this.isorter)
       param.field = this.getQueryField()
+      param.endTime = dayjs(param.endTime).endOf('day').format('YYYY-MM-DD HH:mm:ss')
       param.currentPage = this.ipagination.current
       param.pageSize = this.ipagination.pageSize - 1
       return param
@@ -221,7 +223,7 @@ export default {
       this.loading = true
       getAction(this.url.list, params).then((res) => {
         if (res.code === 200) {
-          this.dataSource = res.data.rows.map(x=> ({
+          this.dataSource = res.data.rows.map(x => ({
             ...x,
             eachAmount: (x.type === '支出' ? -1 : 1) * x.eachAmount
           }))
@@ -251,8 +253,8 @@ export default {
       findFinancialDetailByNumber({ billNo: record.number }).then((res) => {
         if (res && res.code === 200) {
           this.$refs.financialDetail.isCanBackCheck = false
-          that.$refs.financialDetail.show(res.data, record.type);
-          that.$refs.financialDetail.title="详情";
+          that.$refs.financialDetail.show(res.data, record.type)
+          that.$refs.financialDetail.title = '详情'
         }
       })
     },
@@ -269,7 +271,7 @@ export default {
       for (let i = 0; i < this.dataSource.length; i++) {
         let item = []
         let ds = this.dataSource[i]
-        item.push(ds.billNo, Vue.prototype.getProjectName(ds.inOutItemId), ds.eachAmount ,ds.type, ds.remark, ds.billTime, ds.username)
+        item.push(ds.billNo, Vue.prototype.getProjectName(ds.inOutItemId), ds.eachAmount, ds.type, ds.remark, ds.billTime, ds.username)
         list.push(item)
       }
       let tip = '单据日期：' + this.queryParam.beginTime + '~' + this.queryParam.endTime
