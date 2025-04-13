@@ -117,7 +117,7 @@ public class InOutItemService {
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int insertInOutItem(JSONObject obj, HttpServletRequest request) throws Exception {
         InOutItem inOutItem = JSONObject.parseObject(obj.toJSONString(), InOutItem.class);
-        verifyNameAndCode(inOutItem.getId(), inOutItem.getName(), inOutItem.getCode());
+        verifyNameAndCode(inOutItem.getId(), inOutItem.getName(), "");
         int result = 0;
         try {
             inOutItem.setEnabled(true);
@@ -137,7 +137,9 @@ public class InOutItemService {
         if (count > 0) {
             throw new Exception("姓名已存在");
         }
-        count = checkIsCodeExist(id, code);
+        if(StringUtil.isNotEmpty(code)) {
+            count = checkIsCodeExist(id, code);
+        }
         if (count > 0) {
             throw new Exception("编号已存在");
         }
