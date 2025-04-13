@@ -138,7 +138,7 @@ export default {
         {
           title: '合同金额', dataIndex: 'contractPrice', width: 150,
           customRender: (text, record, index) => {
-            return this.getPrice2(record.contractPrice)
+            return record.contractPrice //this.getPrice2(record.contractPrice)
           }
         },
         { title: '项目经理', dataIndex: 'username', width: 100 },
@@ -185,8 +185,11 @@ export default {
         if (res.code === 200) {
           let list = []
           for (const item of res.data.bonus) {
-            const account = res.data.account.filter(x => x.inOutItemId === item.id)[0]
+            const account = res.data.account.filter(x => x.inOutItemId === item.id)[0] || {}
             const status = res.data.status.filter(x => x.id === item.id)[0]
+            if (!status) {
+              continue
+            }
             list.push({
               ...item,
               projectStatusText: getProjectStatusText(status.projectStatus),
