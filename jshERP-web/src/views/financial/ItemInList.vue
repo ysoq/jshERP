@@ -123,7 +123,7 @@
           >作废
           </a-button
           >
-          <a-button v-if="isShowExcel && btnEnableList.indexOf(3) > -1" icon="download" @click="handleExport"
+          <a-button v-if="btnEnableList.indexOf(3) > -1" icon="download" @click="handleExport"
           >导出
           </a-button
           >

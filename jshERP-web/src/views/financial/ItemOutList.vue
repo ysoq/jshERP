@@ -106,7 +106,7 @@
           </a-button>
           <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="stop" @click="batchSetStatus(2)">作废
           </a-button>
-          <a-button v-if="isShowExcel && btnEnableList.indexOf(3)>-1" icon="download" @click="handleExport">导出
+          <a-button v-if="btnEnableList.indexOf(3)>-1" icon="download" @click="handleExport">导出
           </a-button>
         </div>
         <!-- table区域-begin -->
