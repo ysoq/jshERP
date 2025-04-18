@@ -251,6 +251,9 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'customRenderStatus' },
         },
+        { title: '审核员', dataIndex: 'auditor', width: 100 },
+        { title: '审核时间', dataIndex: 'auditTime', width: 160 },
+
       ],
       url: {
         list: '/accountHead/list',

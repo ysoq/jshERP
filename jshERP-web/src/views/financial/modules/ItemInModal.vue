@@ -51,25 +51,25 @@
               <a-input placeholder='请输入单据编号' v-decorator.trim="[ 'billNo' ]" />
             </a-form-item>
           </a-col>
-          <a-col :lg='6' :md='12' :sm='24'>
-            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='财务人员'>
-              <a-select placeholder='请选择财务人员' v-decorator="[ 'handsPersonId' ]"
-                        :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
-                <div slot='dropdownRender' slot-scope='menu'>
-                  <v-nodes :vnodes='menu' />
-                  <a-divider style='margin: 4px 0;' />
-                  <div v-if='quickBtn.person' style='padding: 4px 8px; cursor: pointer;'
-                       @mousedown='e => e.preventDefault()' @click='addPerson'>
-                    <a-icon type='plus' />
-                    新增经手人
-                  </div>
-                </div>
-                <a-select-option v-for='(item,index) in personList' :key='index' :value='item.id'>
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+<!--          <a-col :lg='6' :md='12' :sm='24'>-->
+<!--            <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='财务人员'>-->
+<!--              <a-select placeholder='请选择财务人员' v-decorator="[ 'handsPersonId' ]"-->
+<!--                        :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>-->
+<!--                <div slot='dropdownRender' slot-scope='menu'>-->
+<!--                  <v-nodes :vnodes='menu' />-->
+<!--                  <a-divider style='margin: 4px 0;' />-->
+<!--                  <div v-if='quickBtn.person' style='padding: 4px 8px; cursor: pointer;'-->
+<!--                       @mousedown='e => e.preventDefault()' @click='addPerson'>-->
+<!--                    <a-icon type='plus' />-->
+<!--                    新增经手人-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <a-select-option v-for='(item,index) in personList' :key='index' :value='item.id'>-->
+<!--                  {{ item.name }}-->
+<!--                </a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
         </a-row>
         <j-editable-table
           :ref='refKeys[0]'
