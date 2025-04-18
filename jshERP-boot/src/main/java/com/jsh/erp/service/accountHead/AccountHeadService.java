@@ -306,6 +306,10 @@ public class AccountHeadService {
                     if ("0".equals(accountHead.getStatus())) {
                         ahIds.add(id);
                     }
+                } else if ("2".equals(status)) {
+                    if (!"2".equals(accountHead.getStatus())) {
+                        ahIds.add(id);
+                    }
                 }
             }
             if (ahIds.size() > 0) {
@@ -317,7 +321,7 @@ public class AccountHeadService {
                 if (result > 0) {
                     if ("0".equals(status)) {
                         auditRecordService.batchDelete(BusinessTypeEnum.ACCOUNT_HEAD.getType(), ahIds);
-                    } else {
+                    } else if ("1".equals(status)) {
                         auditRecordService.batchCreateRecords(BusinessTypeEnum.ACCOUNT_HEAD, ahIds);
                     }
                 }

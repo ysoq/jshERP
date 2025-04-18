@@ -25,11 +25,11 @@
                   />
                 </a-form-item>
               </a-col>
-              <a-col :lg='6' :md='12' :sm='24'>
-                <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目' data-step='1' data-title='项目'>
-                  <a-select placeholder='请选择项目' v-model="queryParam.inOutItemId"  allowClear
-                            :dropdownMatchSelectWidth='false' showSearch optionFilterProp='children'>
-                    <a-select-option v-for='(item,index) in inOutList' :key='index' :value='item.value'>
+              <a-col :lg="6" :md="12" :sm="24">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目" data-step="1" data-title="项目">
+                  <a-select placeholder="请选择项目" v-model="queryParam.inOutItemId" allowClear
+                            :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
+                    <a-select-option v-for="(item,index) in inOutList" :key="index" :value="item.value">
                       {{ item.text }}
                     </a-select-option>
                   </a-select>
@@ -125,13 +125,20 @@
           <a-button v-if="btnEnableList.indexOf(1) > -1" @click="myHandleAdd" type="primary" icon="plus">新增</a-button>
           <a-button v-if="btnEnableList.indexOf(1) > -1" icon="delete" @click="batchDel">删除</a-button>
           <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="check" @click="batchSetStatus(1)"
-            >审核</a-button
+          >审核
+          </a-button
           >
           <a-button v-if="checkFlag && btnEnableList.indexOf(7) > -1" icon="stop" @click="batchSetStatus(0)"
-            >反审核</a-button
+          >反审核
+          </a-button
+          >
+          <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="stop" @click="batchSetStatus(2)"
+          >作废
+          </a-button
           >
           <a-button v-if="isShowExcel && btnEnableList.indexOf(3) > -1" icon="download" @click="handleExport"
-            >导出</a-button
+          >导出
+          </a-button
           >
           <a-tooltip
             placement="left"
@@ -173,6 +180,7 @@
             <template slot="customRenderStatus" slot-scope="status">
               <a-tag v-if="status == '0'" color="red">未审核</a-tag>
               <a-tag v-if="status == '1'" color="green">已审核</a-tag>
+              <a-tag v-if="status == '2'" color="orange">作废</a-tag>
               <a-tag v-if="status == '9'" color="orange">审核中</a-tag>
             </template>
           </a-table>
@@ -194,6 +202,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { FinancialListMixin } from './mixins/FinancialListMixin'
 import JDate from '@/components/jeecg/JDate'
 import Vue from 'vue'
+
 export default {
   name: 'ItemInList',
   mixins: [JeecgListMixin, FinancialListMixin],
@@ -201,16 +210,16 @@ export default {
     ItemInModal,
     FinancialDetail,
     BillExcelIframe,
-    JDate,
+    JDate
   },
-  data() {
+  data () {
     return {
       labelCol: {
-        span: 5,
+        span: 5
       },
       wrapperCol: {
         span: 18,
-        offset: 1,
+        offset: 1
       },
       // 查询条件
       queryParam: {
@@ -223,7 +232,7 @@ export default {
         handsPersonId: undefined,
         accountId: undefined,
         status: undefined,
-        remark: '',
+        remark: ''
       },
       prefixNo: 'SR',
       // 表头
@@ -233,9 +242,9 @@ export default {
           dataIndex: 'action',
           width: 200,
           align: 'center',
-          scopedSlots: { customRender: 'action' },
+          scopedSlots: { customRender: 'action' }
         },
-        { title: '项目', dataIndex: 'projectName',width:140, ellipsis:true},
+        { title: '项目', dataIndex: 'projectName', width: 140, ellipsis: true },
         { title: '往来单位', dataIndex: 'organName', width: 140, ellipsis: true },
         { title: '单据编号', dataIndex: 'billNo', width: 160 },
         { title: '单据日期 ', dataIndex: 'billTimeStr', width: 160 },
@@ -249,29 +258,30 @@ export default {
           dataIndex: 'status',
           width: 80,
           align: 'center',
-          scopedSlots: { customRender: 'customRenderStatus' },
+          scopedSlots: { customRender: 'customRenderStatus' }
         },
         { title: '审核员', dataIndex: 'auditor', width: 100 },
-        { title: '审核时间', dataIndex: 'auditTime', width: 160 },
+        { title: '审核时间', dataIndex: 'auditTime', width: 160 }
 
       ],
       url: {
         list: '/accountHead/list',
         delete: '/accountHead/delete',
         deleteBatch: '/accountHead/deleteBatch',
-        batchSetStatusUrl: '/accountHead/batchSetStatus',
-      },
+        batchSetStatusUrl: '/accountHead/batchSetStatus'
+      }
     }
   },
   computed: {},
-  created() {
+  created () {
     this.initSystemConfig()
     this.initOrgan()
     this.initUser()
     this.initPerson()
     this.initAccount()
   },
-  mounted() {},
+  mounted () {
+  }
 }
 </script>
 <style scoped>
