@@ -75,20 +75,6 @@
                   </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="24">
-                  <a-form-item label="财务人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select
-                      placeholder="请选择财务人员"
-                      showSearch
-                      optionFilterProp="children"
-                      v-model="queryParam.handsPersonId"
-                    >
-                      <a-select-option v-for="(item, index) in personList" :key="index" :value="item.id">
-                        {{ item.name }}
-                      </a-select-option>
-                    </a-select>
-                  </a-form-item>
-                </a-col>
-                <a-col :md="6" :sm="24">
                   <a-form-item label="收入账户" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select
                       placeholder="请选择收入账户"
@@ -108,6 +94,7 @@
                       <a-select-option value="0">未审核</a-select-option>
                       <a-select-option value="9" v-if="!checkFlag">审核中</a-select-option>
                       <a-select-option value="1">已审核</a-select-option>
+                      <a-select-option value="2">作废</a-select-option>
                     </a-select>
                   </a-form-item>
                 </a-col>
@@ -249,7 +236,6 @@ export default {
         { title: '单据编号', dataIndex: 'billNo', width: 160 },
         { title: '单据日期 ', dataIndex: 'billTimeStr', width: 160 },
         { title: '操作员', dataIndex: 'userName', width: 100, ellipsis: true },
-        { title: '财务人员', dataIndex: 'handsPersonName', width: 100 },
         { title: '收入账户', dataIndex: 'accountName', width: 100, ellipsis: true },
         { title: '收入金额', dataIndex: 'changeAmount', width: 80 },
         { title: '备注', dataIndex: 'remark', width: 200 },

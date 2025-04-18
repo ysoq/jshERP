@@ -21,6 +21,9 @@ public class AuditRecordService {
     private UserService userService;
 
     public List<AuditRecord> getByBusinessTypeAndIds(BusinessTypeEnum businessType, List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
         return auditRecordMapper.selectByBusinessTypeAndIds(businessType.getType(), ids);
     }
 
