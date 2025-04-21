@@ -40,9 +40,9 @@
               <template v-if="toggleSearchStatus">
                 <a-col :md="6" :sm="24">
                   <a-form-item label="项目经理" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder='请选择' v-model="queryParam.manager" optionFilterProp="children"
-                              :dropdownMatchSelectWidth='false' showSearch >
-                      <a-select-option v-for='(item, index) in userList' :key='index' :value='item.id'>
+                    <a-select placeholder="请选择" v-model="queryParam.manager" optionFilterProp="children"
+                              :dropdownMatchSelectWidth="false" showSearch>
+                      <a-select-option v-for="(item, index) in userList" :key="index" :value="item.id">
                         {{ item.userName }}
                       </a-select-option>
                     </a-select>
@@ -50,9 +50,10 @@
                 </a-col>
                 <a-col :md="6" :sm="24">
                   <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder='请选择' v-model="queryParam.supplierId" showSearch optionFilterProp="children"
-                              :dropdownMatchSelectWidth='false' >
-                      <a-select-option v-for='(item, index) in supplierList' :key='index' :value='item.id'>
+                    <a-select placeholder="请选择" v-model="queryParam.supplierId" showSearch
+                              optionFilterProp="children"
+                              :dropdownMatchSelectWidth="false">
+                      <a-select-option v-for="(item, index) in supplierList" :key="index" :value="item.id">
                         {{ item.supplier }}
                       </a-select-option>
                     </a-select>
@@ -84,6 +85,7 @@
           >禁用
           </a-button
           >
+          <a-button icon="download" @click="handleExport">导出</a-button>
         </div>
         <!-- table区域-begin -->
         <div>
@@ -418,6 +420,27 @@ export default {
         inOutItemId: record.id,
         projectStatus: record.projectStatus
       })
+    },
+    //导出单据
+    handleExport () {
+      let list = []
+      let head = '#,编号,名称,类型,项目经理,联系方式,客户,项目完成日期,项目进度,合同金额,已回款金额,未回款金额,支出金额,状态,备注'
+      for (let i = 0; i < this.dataSource.length; i++) {
+        let item = []
+        let ds = this.dataSource[i]
+        const status = ds.enabled ? '启用' : ds.enabled === false ? '禁用' : ''
+        item.push(ds.rowIndex, ds.code, ds.name,
+          ds.type, ds.username, ds.phonenum,
+          ds.supplierName, ds.finishTimeStr, ds.projectStatus,
+          this.getPrice2(ds.contractPrice),
+          this.getPrice2(ds.totalInAccount),
+          this.getPrice(ds),
+          this.getPrice2(ds.totalOutAccount),
+          status, ds.remark)
+        list.push(item)
+      }
+      let tip = '项目管理'
+      this.handleExportXlsPost(tip, tip, head, tip, list)
     }
   }
 }
