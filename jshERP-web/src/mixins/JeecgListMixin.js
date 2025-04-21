@@ -186,7 +186,22 @@ export const JeecgListMixin = {
           return reject()
         } else {
           var ids = ''
+          const stats = {
+            '0': '未审核',
+            '1': '审核',
+            '2': '作废'
+          }
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            const item = this.dataSource.find(x => x.id === this.selectedRowKeys[a])
+            console.log(item.status , status)
+            if(item && item.status === status) {
+              this.$message.warning(`${item.billNo}状态为【${stats[status]}】，无需重复操作!`)
+              return reject()
+            }
+            if(item && item.status === '2') {
+              this.$message.warning(`${item.billNo}已作废，无法操作!`)
+              return reject()
+            }
             ids += this.selectedRowKeys[a] + ','
           }
           var that = this

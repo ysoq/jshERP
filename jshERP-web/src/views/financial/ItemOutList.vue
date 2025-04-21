@@ -8,23 +8,7 @@
           <!-- 搜索区域 -->
           <a-form layout="inline" @keyup.enter.native="searchQuery">
             <a-row :gutter="24">
-              <a-col :md="6" :sm="24">
-                <a-form-item label="单据编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input placeholder="请输入单据编号" v-model="queryParam.billNo"></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="6" :sm="24">
-                <a-form-item label="单据日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-range-picker
-                    style="width:100%"
-                    v-model="queryParam.createTimeRange"
-                    format="YYYY-MM-DD"
-                    :placeholder="['开始时间', '结束时间']"
-                    @change="onDateChange"
-                    @ok="onDateOk"
-                  />
-                </a-form-item>
-              </a-col>
+
               <a-col :lg="6" :md="12" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目" data-step="1" data-title="项目">
                   <a-select placeholder="请选择项目" v-model="queryParam.inOutItemId" allowClear
@@ -33,6 +17,21 @@
                       {{ item.text }}
                     </a-select-option>
                   </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="24">
+                <a-form-item label="往来单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select placeholder="请选择往来单位" showSearch optionFilterProp="children"
+                            v-model="queryParam.organId">
+                    <a-select-option v-for="(item,index) in organList" :key="index" :value="item.id">
+                      {{ item.supplier }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="24">
+                <a-form-item label="单据编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input placeholder="请输入单据编号" v-model="queryParam.billNo"></a-input>
                 </a-form-item>
               </a-col>
 
@@ -48,13 +47,15 @@
               </span>
               <template v-if="toggleSearchStatus">
                 <a-col :md="6" :sm="24">
-                  <a-form-item label="往来单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder="请选择往来单位" showSearch optionFilterProp="children"
-                              v-model="queryParam.organId">
-                      <a-select-option v-for="(item,index) in organList" :key="index" :value="item.id">
-                        {{ item.supplier }}
-                      </a-select-option>
-                    </a-select>
+                  <a-form-item label="单据日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-range-picker
+                      style="width:100%"
+                      v-model="queryParam.createTimeRange"
+                      format="YYYY-MM-DD"
+                      :placeholder="['开始时间', '结束时间']"
+                      @change="onDateChange"
+                      @ok="onDateOk"
+                    />
                   </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="24">
@@ -100,11 +101,11 @@
         <div class="table-operator" style="margin-top: 5px">
           <a-button v-if="btnEnableList.indexOf(1)>-1" @click="myHandleAdd" type="primary" icon="plus">新增</a-button>
           <a-button v-if="btnEnableList.indexOf(1)>-1" icon="delete" @click="batchDel">删除</a-button>
-          <a-button v-if="checkFlag && btnEnableList.indexOf(2)>-1" icon="check" @click="batchSetStatus(1)">审核
+          <a-button v-if="checkFlag && btnEnableList.indexOf(2)>-1" icon="check" @click="batchSetStatus('1')">审核
           </a-button>
-          <a-button v-if="checkFlag && btnEnableList.indexOf(7)>-1" icon="stop" @click="batchSetStatus(0)">反审核
+          <a-button v-if="checkFlag && btnEnableList.indexOf(7)>-1" icon="stop" @click="batchSetStatus('0')">反审核
           </a-button>
-          <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="stop" @click="batchSetStatus(2)">作废
+          <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="stop" @click="batchSetStatus('2')">作废
           </a-button>
           <a-button v-if="btnEnableList.indexOf(3)>-1" icon="download" @click="handleExport">导出
           </a-button>
