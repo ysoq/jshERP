@@ -1,43 +1,86 @@
 <template>
-  <a-row :gutter='24'>
-    <a-col :md='24'>
-      <a-card :style='cardStyle' :bordered='false'>
+  <a-row :gutter="24">
+    <a-col :md="24">
+      <a-card :style="cardStyle" :bordered="false">
         <!-- 查询区域 -->
-        <div class='table-page-search-wrapper'>
+        <div class="table-page-search-wrapper">
           <!-- 搜索区域 -->
-          <a-form layout='inline' @keyup.enter.native='searchQuery'>
-            <a-row :gutter='24'>
-              <a-col :md='6' :sm='24'>
-                <a-form-item label='名称' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-                  <a-input placeholder='请输入名称查询' v-model='queryParam.name'></a-input>
+          <a-form layout="inline" @keyup.enter.native="searchQuery">
+            <a-row :gutter="24">
+              <a-col :md="6" :sm="24">
+                <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input placeholder="请输入" v-model="queryParam.name"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md='6' :sm='24'>
-                <a-form-item label='备注' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-                  <a-input placeholder='请输入备注查询' v-model='queryParam.remark'></a-input>
+              <a-col :md="6" :sm="24">
+                <a-form-item label="编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input placeholder="请输入" v-model="queryParam.code"></a-input>
                 </a-form-item>
               </a-col>
-              <span style='float: left; overflow: hidden' class='table-page-search-submitButtons'>
-                <a-col :md='6' :sm='24'>
-                  <a-button type='primary' @click='searchQuery'>查询</a-button>
-                  <a-button style='margin-left: 8px' @click='searchReset'>重置</a-button>
+              <a-col :md="6" :sm="24">
+                <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select placeholder="请选择" v-model="queryParam.type">
+                    <a-select-option value="大包">大包</a-select-option>
+                    <a-select-option value="清包">清包</a-select-option>
+                    <a-select-option value="运维">运维</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+
+              <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
+                <a-col :md="6" :sm="24">
+                  <a-button type="primary" @click="searchQuery">查询</a-button>
+                  <a-button style="margin-left: 8px" @click="searchReset">重置</a-button>
+                  <a @click="handleToggleSearch" style="margin-left: 8px">
+                    {{ toggleSearchStatus ? '收起' : '展开' }}
+                    <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
+                  </a>
                 </a-col>
               </span>
+              <template v-if="toggleSearchStatus">
+                <a-col :md="6" :sm="24">
+                  <a-form-item label="项目经理" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-select placeholder='请选择' v-model="queryParam.manager" optionFilterProp="children"
+                              :dropdownMatchSelectWidth='false' showSearch >
+                      <a-select-option v-for='(item, index) in userList' :key='index' :value='item.id'>
+                        {{ item.userName }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="24">
+                  <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-select placeholder='请选择' v-model="queryParam.supplierId" showSearch optionFilterProp="children"
+                              :dropdownMatchSelectWidth='false' >
+                      <a-select-option v-for='(item, index) in supplierList' :key='index' :value='item.id'>
+                        {{ item.supplier }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="24">
+                  <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input placeholder="请输入" v-model="queryParam.remark"></a-input>
+                  </a-form-item>
+                </a-col>
+              </template>
+
+
             </a-row>
           </a-form>
         </div>
         <!-- 操作按钮区域 -->
-        <div class='table-operator' style='margin-top: 5px'>
-          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='handleAdd' type='primary' icon='plus'>新增</a-button>
-          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='batchDel' icon='delete'>删除</a-button>
-          <a-button v-if='btnEnableList.indexOf(2)>-1' icon='check' @click="handleSetStatus('examine')">审核</a-button>
-          <a-button v-if='btnEnableList.indexOf(7)>-1' icon='stop' @click="handleSetStatus('counter-audit')">反审核
+        <div class="table-operator" style="margin-top: 5px">
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="handleAdd" type="primary" icon="plus">新增</a-button>
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="batchDel" icon="delete">删除</a-button>
+          <a-button v-if="btnEnableList.indexOf(2)>-1" icon="check" @click="handleSetStatus('examine')">审核</a-button>
+          <a-button v-if="btnEnableList.indexOf(7)>-1" icon="stop" @click="handleSetStatus('counter-audit')">反审核
           </a-button>
-          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='handleSetStatus("enable")' icon='check-square'
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click='handleSetStatus("enable")' icon="check-square"
           >启用
           </a-button
           >
-          <a-button v-if='btnEnableList.indexOf(1) > -1' @click='handleSetStatus("disabled")' icon='close-square'
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click='handleSetStatus("disabled")' icon="close-square"
           >禁用
           </a-button
           >
@@ -45,66 +88,66 @@
         <!-- table区域-begin -->
         <div>
           <a-table
-            ref='table'
-            size='middle'
+            ref="table"
+            size="middle"
             bordered
-            rowKey='id'
-            :columns='columns'
-            :dataSource='dataSource'
-            :pagination='ipagination'
-            :scroll='scroll'
-            :loading='loading'
-            :rowSelection='{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }'
-            @change='handleTableChange'
+            rowKey="id"
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="ipagination"
+            :scroll="scroll"
+            :loading="loading"
+            :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+            @change="handleTableChange"
           >
-            <span slot='action' slot-scope='text, record'>
+            <span slot="action" slot-scope="text, record">
               <template v-if='record.rowIndex !== "合计"'>
-              <a @click='handleMsg(record)' v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'>进度填写</a>
-              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type='vertical' />
-              <a @click='handleEdit(record, false)' v-if='record.status !== "1"'>编辑</a>
-              <a @click='handleEdit(record, true)' v-if='record.status === "1"'>查看</a>
-              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type='vertical' />
+              <a @click="handleMsg(record)" v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'>进度填写</a>
+              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type="vertical" />
+              <a @click="handleEdit(record, false)" v-if='record.status !== "1"'>编辑</a>
+              <a @click="handleEdit(record, true)" v-if='record.status === "1"'>查看</a>
+              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type="vertical" />
               <a-popconfirm
                 v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'
-                title='确定删除吗?'
-                @confirm='() => handleDelete(record.id)'
+                title="确定删除吗?"
+                @confirm="() => handleDelete(record.id)"
               >
                 <a>删除</a>
               </a-popconfirm>
             </template>
 
             </span>
-            <span slot='name' slot-scope='name, record'>
-               <a @click='handleFlow(record)'> {{ name }}</a>
+            <span slot="name" slot-scope="name, record">
+               <a @click="handleFlow(record)"> {{ name }}</a>
             </span>
-            <span slot='totalUnInAccount' slot-scope='enabled, record'>
+            <span slot="totalUnInAccount" slot-scope="enabled, record">
               {{ getPrice(record) }}
             </span>
-            <span slot='contractPrice' slot-scope='enabled, record'>
+            <span slot="contractPrice" slot-scope="enabled, record">
               {{ getPrice2(record.contractPrice) }}
             </span>
-            <div slot='totalInAccount' slot-scope='enabled, record'>
+            <div slot="totalInAccount" slot-scope="enabled, record">
               <span>{{ getPrice2(record.totalInAccount) }}</span>
-              <span style='color: royalblue'
-                    v-if='getPrice2(record.contractPrice ) && getPrice2(record.totalInAccount)'> ({{ (record.totalInAccount / record.contractPrice * 100).toFixed(2)
+              <span style="color: royalblue"
+                    v-if="getPrice2(record.contractPrice ) && getPrice2(record.totalInAccount)"> ({{ (record.totalInAccount / record.contractPrice * 100).toFixed(2)
                 }}%)</span>
 
             </div>
-            <span slot='totalOutAccount' slot-scope='enabled, record'>
+            <span slot="totalOutAccount" slot-scope="enabled, record">
               {{ getPrice2(record.totalOutAccount) }}
             </span>
-            <span slot='finishTime' slot-scope='finishTime, record'>
+            <span slot="finishTime" slot-scope="finishTime, record">
               <span :style='{color: isAfterNow(record) ? "red": ""}'>{{ finishTime }}</span>
             </span>
             <!-- 状态渲染模板 -->
-            <span slot='customRenderFlag' slot-scope='enabled,record'>
+            <span slot="customRenderFlag" slot-scope="enabled,record">
               <template v-if='record.rowIndex !== "合计"'>
 
-                <a-tag v-if='enabled' color='green'>启用</a-tag>
-                <a-tag v-if='!enabled' color='orange'>禁用</a-tag>
+                <a-tag v-if="enabled" color="green">启用</a-tag>
+                <a-tag v-if="!enabled" color="orange">禁用</a-tag>
               </template>
             </span>
-            <span slot='projectStatus' slot-scope='projectStatus,record'>
+            <span slot="projectStatus" slot-scope="projectStatus,record">
               <template v-if='record.rowIndex !== "合计"'>
                 <a-tag
                   :color='record.status==="1" ? "green":"blue"'>{{ getProjectStatusText(projectStatus, record.status)
@@ -115,9 +158,9 @@
         </div>
         <!-- table区域-end -->
         <!-- 表单区域 -->
-        <inOutItem-modal ref='modalForm' @ok='handleFormOk'></inOutItem-modal>
-        <InOutFlowModal ref='flowModal'></InOutFlowModal>
-        <InOutMsgModal ref='msg' @ok='modalFormOk' />
+        <inOutItem-modal ref="modalForm" @ok="handleFormOk"></inOutItem-modal>
+        <InOutFlowModal ref="flowModal"></InOutFlowModal>
+        <InOutMsgModal ref="msg" @ok="modalFormOk" />
       </a-card>
     </a-col>
   </a-row>
@@ -133,6 +176,7 @@ import { getAction, postAction } from '@api/manage'
 import { getProjectStatusText } from '@views/system/InOutItemCommon'
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
+import { getUserList } from '@api/api'
 
 export default {
   name: 'InOutItemListView',
@@ -143,7 +187,7 @@ export default {
     InOutMsgModal,
     JDate
   },
-  data() {
+  data () {
     return {
       labelCol: {
         span: 5
@@ -152,6 +196,8 @@ export default {
         span: 18,
         offset: 1
       },
+      userList: [],
+      supplierList: [],
       // 查询条件
       queryParam: { name: '', type: '', remark: '' },
       totalColumns: ['contractPrice', 'totalInAccount', 'totalUnInAccount', 'totalOutAccount'],
@@ -228,7 +274,7 @@ export default {
             item.projectStatus = (item.msgList[0] || { projectStatus: '1' }).projectStatus
           }
 
-          function getTotal(key) {
+          function getTotal (key) {
             return list.data.rows.reduce((a, b) => a + b[key], 0).toFixed(2)
           }
 
@@ -246,11 +292,28 @@ export default {
       }
     }
   },
+  created () {
+    getUserList({}).then((res) => {
+      if (res) {
+        this.userList = res
+      }
+    })
+    const args = {
+      search: `{"supplier":"","type":"客户","telephone":"","phonenum":""}`,
+      currentPage: 1,
+      pageSize: 1000,
+      column: 'createTime',
+      order: 'desc'
+    }
+    getAction('/supplier/list', args).then(res => {
+      this.supplierList = res.data.rows
+    })
+  },
   computed: {},
   methods: {
     ...mapGetters(['nickname']),
     getProjectStatusText,
-    handleSetStatus(status) {
+    handleSetStatus (status) {
       console.log(this.selectionRows)
       if (!this.selectionRows.every(x => x.projectStatus === '5' && x.status !== '1') && status === 'examine') {
         this.$message.error(`只能选择${getProjectStatusText('5')}状态数据`)
@@ -271,13 +334,13 @@ export default {
         await this.modalFormOk()
       })
     },
-    isAfterNow(row) {
+    isAfterNow (row) {
       if (row.projectStatus === '5' || row.status === '1') {
         return false
       }
       return dayjs().isAfter(row.finishTime, 'day')
     },
-    async handleFormOk(type) {
+    async handleFormOk (type) {
       await this.modalFormOk()
       if (type === 'insert') {
         const item = this.dataSource[0]
@@ -285,7 +348,7 @@ export default {
         await this.modalFormOk()
       }
     },
-    addMsg(title, id, projectStatus) {
+    addMsg (title, id, projectStatus) {
       let msgParam = {
         msgTitle: title,
         msgContent: '',
@@ -296,16 +359,15 @@ export default {
       }
       return postAction('/msg/add', msgParam)
     },
-    getPrice2(price) {
+    getPrice2 (price) {
       const s = parseFloat(price)
       if (typeof s === 'number' && Number.isFinite(s)) {
-        console.log('111111111', price)
         return this.formatPrice(s)
       }
 
       return null
     },
-    getPrice(record) {
+    getPrice (record) {
       if (record.contractPrice >= 0) {
         if (record.totalInAccount > record.contractPrice) {
           return '0.00'
@@ -315,7 +377,7 @@ export default {
       }
       return ''
     },
-    formatPrice(price) {
+    formatPrice (price) {
       const num = parseFloat(price)
       if (typeof num === 'number') {
         const amount = num.toFixed(2)
@@ -343,13 +405,13 @@ export default {
         this.$refs.modalForm.isReadOnly = true
       }
     },
-    handleFlow(record) {
+    handleFlow (record) {
       this.$refs.flowModal.edit({
         ...record,
         msgList: record.msgList || []
       })
     },
-    handleMsg(record) {
+    handleMsg (record) {
       this.$refs.msg.add({
         username: record.username,
         manager: record.manager,

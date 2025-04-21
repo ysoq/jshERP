@@ -17,7 +17,9 @@ public interface InOutItemMapperEx {
             @Param("offset") Integer offset,
             @Param("rows") Integer rows,
             @Param("ids") String[] ids,
-            @Param("manager") String manager);
+            @Param("manager") String manager,
+            @Param("code") String code,
+            @Param("supplierId") String supplierId);
 
     List<InOutItem> selectProjectByStatus(@Param("status") String[] status);
 

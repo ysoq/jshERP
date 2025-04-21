@@ -31,6 +31,12 @@
             <bind name="bindRemark" value="'%'+remark+'%'"/>
             and io.remark like #{bindRemark}
         </if>
+        <if test="code != null">
+            and io.code=#{code}
+        </if>
+        <if test="supplierId != null">
+            and io.supplier_id=#{supplierId}
+        </if>
         <if test="ids != null and ids.length>0">
             and io.id in (
             <foreach collection="ids" item="id" separator=",">

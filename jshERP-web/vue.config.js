@@ -49,7 +49,9 @@ module.exports = {
         proxy: {
             '/jshERP-boot': {
                 // target: 'http://192.168.0.30',
+                // target: 'http://192.168.123.5:4783',
                 target: 'http://localhost:4783',
+                // target: 'http://erp.akeem.cn',
                 ws: false,
                 changeOrigin: true
             }

@@ -80,17 +80,28 @@ public class InOutItemService {
         return list;
     }
 
-    public List<InOutItem> select(String name, String type, String remark, int offset, int rows) throws Exception {
+    public List<InOutItem> select(
+            String name,
+            String type,
+            String remark,
+            String code,
+            String manager,
+            String supplierId,
+            int offset, int rows) throws Exception {
         List<InOutItem> list = null;
         try {
-            String manager = null;
-            User user = userService.getCurrentUser();
-            String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
-            if (BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
-                manager = user.getId().toString();
+
+            if(StringUtil.isEmpty(manager)) {
+                User user = userService.getCurrentUser();
+                String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
+                if (BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
+                    manager = user.getId().toString();
+                }
             }
 
-            list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null, manager);
+            list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null, manager,
+                    code, supplierId
+                    );
         } catch (Exception e) {
             JshException.readFail(logger, e);
         }
@@ -135,7 +146,7 @@ public class InOutItemService {
     private void verifyNameAndCode(Long id, String name, String code) throws Exception {
         int count = checkIsNameExist(id, name);
         if (count > 0) {
-            throw new Exception("姓名已存在");
+            throw new Exception("名称已存在");
         }
         if(StringUtil.isNotEmpty(code)) {
             count = checkIsCodeExist(id, code);
