@@ -9,7 +9,7 @@
           <a-form layout="inline" @keyup.enter.native="searchQuery">
             <a-row :gutter="24">
 
-              <a-col :lg="6" :md="12" :sm="24">
+              <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目" data-step="1" data-title="项目">
                   <a-select placeholder="请选择项目" v-model="queryParam.inOutItemId" allowClear
                             :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
@@ -19,7 +19,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="24">
+              <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item label="往来单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-select placeholder="请选择往来单位" showSearch optionFilterProp="children"
                             v-model="queryParam.organId">
@@ -29,14 +29,25 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="24">
+              <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item label="单据编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input placeholder="请输入单据编号" v-model="queryParam.billNo"></a-input>
                 </a-form-item>
               </a-col>
-
+              <a-col :md="5" :sm="24">
+                <a-form-item label="单据日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-range-picker
+                    style="width:100%"
+                    v-model="queryParam.createTimeRange"
+                    format="YYYY-MM-DD"
+                    :placeholder="['开始时间', '结束时间']"
+                    @change="onDateChange"
+                    @ok="onDateOk"
+                  />
+                </a-form-item>
+              </a-col>
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-                <a-col :md="6" :sm="24">
+                <a-col :md="4" :sm="24">
                   <a-button type="primary" @click="searchQuery">查询</a-button>
                   <a-button style="margin-left: 8px" @click="searchReset">重置</a-button>
                   <a @click="handleToggleSearch" style="margin-left: 8px">
@@ -46,19 +57,8 @@
                 </a-col>
               </span>
               <template v-if="toggleSearchStatus">
-                <a-col :md="6" :sm="24">
-                  <a-form-item label="单据日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-range-picker
-                      style="width:100%"
-                      v-model="queryParam.createTimeRange"
-                      format="YYYY-MM-DD"
-                      :placeholder="['开始时间', '结束时间']"
-                      @change="onDateChange"
-                      @ok="onDateOk"
-                    />
-                  </a-form-item>
-                </a-col>
-                <a-col :md="6" :sm="24">
+
+                <a-col :md="5" :sm="24">
                   <a-form-item label="操作员" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择操作员" showSearch optionFilterProp="children"
                               v-model="queryParam.creator">
@@ -68,7 +68,7 @@
                     </a-select>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="24">
+                <a-col :md="5" :sm="24">
                   <a-form-item label="支出账户" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择支出账户" showSearch optionFilterProp="children"
                               v-model="queryParam.accountId">
@@ -78,7 +78,7 @@
                     </a-select>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="24">
+                <a-col :md="5" :sm="24">
                   <a-form-item label="单据状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择单据状态" v-model="queryParam.status">
                       <a-select-option value="0">未审核</a-select-option>
@@ -88,7 +88,7 @@
                     </a-select>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="24">
+                <a-col :md="5" :sm="24">
                   <a-form-item label="单据备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-input placeholder="请输入单据备注" v-model="queryParam.remark"></a-input>
                   </a-form-item>
