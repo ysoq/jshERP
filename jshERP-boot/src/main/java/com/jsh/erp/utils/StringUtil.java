@@ -1,5 +1,6 @@
 package com.jsh.erp.utils;
 
+import com.jsh.erp.datasource.entities.InvoiceRecord;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -369,5 +370,17 @@ public class StringUtil {
     public static void main(String[] args) {
         int i = 10/3;
         System.out.println(i);
+    }
+
+    public static String listToIds(List<Long> Ids) {
+        if (Ids != null && !Ids.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Long id : Ids) {
+                sb.append(id).append(",");
+            }
+            return sb.substring(0, sb.length() - 1);
+        } else {
+            return "";
+        }
     }
 }

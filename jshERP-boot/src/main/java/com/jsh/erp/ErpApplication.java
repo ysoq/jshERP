@@ -17,7 +17,6 @@ import java.io.IOException;
 @MapperScan("com.jsh.erp.datasource.mappers")
 @ServletComponentScan
 @EnableScheduling
-
 public class ErpApplication{
     public static void main(String[] args) throws IOException {
         ConfigurableApplicationContext context = SpringApplication.run(ErpApplication.class, args);

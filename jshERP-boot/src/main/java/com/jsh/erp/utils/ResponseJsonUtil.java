@@ -3,6 +3,7 @@ package com.jsh.erp.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.serializer.ValueFilter;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -80,4 +81,14 @@ public class ResponseJsonUtil {
         map.put("message", message);
         return backJson(new ResponseCode(code, map));
     }
+
+
+
+    public static <T> String backJson(IPage<T> list, String message, int code) {
+        Map<String, Object> objectMap = new HashMap<String, Object>();
+        objectMap.put("rows", list.getRecords());
+        objectMap.put("total", list.getTotal());
+        return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
+    }
+
 }
