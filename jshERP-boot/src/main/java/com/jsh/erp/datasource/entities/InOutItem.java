@@ -60,4 +60,6 @@ public class InOutItem implements Serializable {
     @TableField(exist = false)
     private BigDecimal totalOutAccount;
 
+    @TableField(exist = false)
+    private BigDecimal taxAmount;
 }

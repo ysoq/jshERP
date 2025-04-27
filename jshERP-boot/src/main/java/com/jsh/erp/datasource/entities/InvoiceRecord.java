@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class InvoiceRecord implements Serializable {
     /**
      *  开票含税金额
      */
-    private Float taxAmount;
+    private BigDecimal taxAmount;
 
     /**
      *  单据日期

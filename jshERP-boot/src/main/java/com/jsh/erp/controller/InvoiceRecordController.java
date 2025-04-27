@@ -6,11 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jsh.erp.constants.BusinessTypeEnum;
-import com.jsh.erp.datasource.entities.AuditRecord;
 import com.jsh.erp.datasource.entities.InvoiceDetail;
 import com.jsh.erp.datasource.entities.InvoiceRecord;
-import com.jsh.erp.datasource.entities.Supplier;
-import com.jsh.erp.datasource.mappers.AuditRecordMapper;
 import com.jsh.erp.datasource.mappers.InvoiceDetailMapper;
 import com.jsh.erp.datasource.mappers.InvoiceRecordMapper;
 import com.jsh.erp.datasource.vo.InvoiceRecordSearch;
@@ -19,20 +16,15 @@ import com.jsh.erp.datasource.vo.QueryVo;
 import com.jsh.erp.service.audit.AuditRecordService;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.*;
-import lombok.val;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import com.jsh.erp.service.InvoiceRecordService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -83,7 +75,7 @@ public class InvoiceRecordController {
         queryWrapper.eq(StringUtil.isNotEmpty(params.getStatus()), InvoiceRecord::getStatus, params.getStatus());
         queryWrapper.ge(params.getBeginTime() != null, InvoiceRecord::getInvoiceDate, params.getBeginTime());
         queryWrapper.le(params.getEndTime() != null, InvoiceRecord::getInvoiceDate, Tools.getDate235959(params.getEndTime()));
-
+        queryWrapper.orderByDesc(InvoiceRecord::getUpdateTime);
         IPage<InvoiceRecord> list = invoiceRecordMapper.selectPage(page, queryWrapper);
         IPage<InvoiceRecordVo> result = new Page<>();
         List<InvoiceRecordVo> resultList = new ArrayList<>();

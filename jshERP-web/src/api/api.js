@@ -117,7 +117,10 @@ const getBatchNumberList = (params) => getAction('/depotItem/getBatchNumberList'
 const findFinancialDetailByNumber = (params) => getAction('/accountHead/getDetailByNumber', params)
 
 function inOutItemExcludeFinish(excludeFinish = false) {
-  return findInOutItemByParam({ type: excludeFinish ? 'excludeFinish' : '' }).then((res) => {
+  return getProjectSelect(excludeFinish ? 'excludeFinish' : '')
+}
+function getProjectSelect(type) {
+  return findInOutItemByParam({ type }).then((res) => {
     if (res) {
       return res.map(x => ({
         value: x.id + '',
@@ -224,7 +227,8 @@ export {
   findStockByDepotAndBarCode,
   getBatchNumberList,
   findFinancialDetailByNumber,
-  inOutItemExcludeFinish
+  inOutItemExcludeFinish,
+  getProjectSelect
 }
 
 

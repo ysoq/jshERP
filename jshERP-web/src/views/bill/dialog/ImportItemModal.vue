@@ -79,6 +79,8 @@
           this.tmpUrl = '/doc/buy_sale_item_template.xls'
         } else if(prefixNo === 'QTRK' || prefixNo === 'QTCK') {
           this.tmpUrl = '/doc/in_out_item_template.xls'
+        }else if(prefixNo === 'invoice') {
+          this.tmpUrl = '/doc/invoice_template.xls'
         }
         this.form.resetFields()
         this.model = Object.assign({}, {})

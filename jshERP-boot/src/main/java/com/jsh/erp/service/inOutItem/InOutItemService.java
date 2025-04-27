@@ -13,11 +13,13 @@ import com.jsh.erp.datasource.mappers.InOutItemMapper;
 import com.jsh.erp.datasource.mappers.InOutItemMapperEx;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
+import com.jsh.erp.service.InvoiceRecord.InvoiceRecordServiceImpl;
 import com.jsh.erp.service.log.LogService;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -47,6 +49,9 @@ public class InOutItemService {
     private LogService logService;
     @Resource
     private AccountItemMapperEx accountItemMapperEx;
+
+    @Autowired
+    private InvoiceRecordServiceImpl invoiceRecordServiceImpl;
 
     public InOutItem getInOutItem(long id) throws Exception {
         InOutItem result = null;
@@ -105,6 +110,8 @@ public class InOutItemService {
             list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null, manager,
                     code, supplierId
                     );
+            invoiceRecordServiceImpl.assignTaxInclusiveInvoiceAmount(list);
+
         } catch (Exception e) {
             JshException.readFail(logger, e);
         }
