@@ -72,11 +72,12 @@ public class DepotItemController {
     @Resource
     private SystemConfigService systemConfigService;
 
-    @Value(value="${file.uploadType}")
+    @Value(value = "${file.uploadType}")
     private Long fileUploadType;
 
     /**
      * 根据仓库和商品查询单据列表
+     *
      * @param mId
      * @param request
      * @return
@@ -86,35 +87,35 @@ public class DepotItemController {
     public String findDetailByDepotIdsAndMaterialId(
             @RequestParam(value = Constants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(value = Constants.CURRENT_PAGE, required = false) Integer currentPage,
-            @RequestParam(value = "depotIds",required = false) String depotIds,
-            @RequestParam(value = "sku",required = false) String sku,
-            @RequestParam(value = "batchNumber",required = false) String batchNumber,
-            @RequestParam(value = "number",required = false) String number,
-            @RequestParam(value = "beginTime",required = false) String beginTime,
-            @RequestParam(value = "endTime",required = false) String endTime,
+            @RequestParam(value = "depotIds", required = false) String depotIds,
+            @RequestParam(value = "sku", required = false) String sku,
+            @RequestParam(value = "batchNumber", required = false) String batchNumber,
+            @RequestParam(value = "number", required = false) String number,
+            @RequestParam(value = "beginTime", required = false) String beginTime,
+            @RequestParam(value = "endTime", required = false) String endTime,
             @RequestParam("materialId") Long mId,
-            HttpServletRequest request)throws Exception {
+            HttpServletRequest request) throws Exception {
         Map<String, Object> objectMap = new HashMap<>();
-        if(StringUtil.isNotEmpty(beginTime)) {
+        if (StringUtil.isNotEmpty(beginTime)) {
             beginTime = beginTime + BusinessConstants.DAY_FIRST_TIME;
         }
-        if(StringUtil.isNotEmpty(endTime)) {
+        if (StringUtil.isNotEmpty(endTime)) {
             endTime = endTime + BusinessConstants.DAY_LAST_TIME;
         }
         Boolean forceFlag = systemConfigService.getForceApprovalFlag();
         Boolean inOutManageFlag = systemConfigService.getInOutManageFlag();
         List<DepotItemVo4DetailByTypeAndMId> list = depotItemService.findDetailByDepotIdsAndMaterialIdList(depotIds, forceFlag, inOutManageFlag, sku,
-                batchNumber, StringUtil.toNull(number), beginTime, endTime, mId, (currentPage-1)*pageSize, pageSize);
+                batchNumber, StringUtil.toNull(number), beginTime, endTime, mId, (currentPage - 1) * pageSize, pageSize);
         JSONArray dataArray = new JSONArray();
         if (list != null) {
-            for (DepotItemVo4DetailByTypeAndMId d: list) {
+            for (DepotItemVo4DetailByTypeAndMId d : list) {
                 JSONObject item = new JSONObject();
                 item.put("number", d.getNumber()); //编号
                 item.put("barCode", d.getBarCode()); //条码
                 item.put("materialName", d.getMaterialName()); //名称
                 String type = d.getType();
                 String subType = d.getSubType();
-                if(("其它").equals(type)) {
+                if (("其它").equals(type)) {
                     item.put("type", subType); //进出类型
                 } else {
                     item.put("type", subType + type); //进出类型
@@ -140,6 +141,7 @@ public class DepotItemController {
 
     /**
      * 根据商品条码和仓库id查询库存数量
+     *
      * @param depotId
      * @param barCode
      * @param request
@@ -149,21 +151,21 @@ public class DepotItemController {
     @GetMapping(value = "/findStockByDepotAndBarCode")
     @ApiOperation(value = "根据商品条码和仓库id查询库存数量")
     public BaseResponseInfo findStockByDepotAndBarCode(
-            @RequestParam(value = "depotId",required = false) Long depotId,
+            @RequestParam(value = "depotId", required = false) Long depotId,
             @RequestParam("barCode") String barCode,
-            HttpServletRequest request) throws Exception{
+            HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             BigDecimal stock = BigDecimal.ZERO;
             List<MaterialVo4Unit> list = materialService.getMaterialByBarCode(barCode);
-            if(list!=null && list.size()>0) {
+            if (list != null && list.size() > 0) {
                 MaterialVo4Unit materialVo4Unit = list.get(0);
-                if(StringUtil.isNotEmpty(materialVo4Unit.getSku())){
-                    stock = depotItemService.getSkuStockByParam(depotId,materialVo4Unit.getMeId(),null,null);
+                if (StringUtil.isNotEmpty(materialVo4Unit.getSku())) {
+                    stock = depotItemService.getSkuStockByParam(depotId, materialVo4Unit.getMeId(), null, null);
                 } else {
                     stock = depotItemService.getCurrentStockByParam(depotId, materialVo4Unit.getId());
-                    if(materialVo4Unit.getUnitId()!=null) {
+                    if (materialVo4Unit.getUnitId() != null) {
                         Unit unit = unitService.getUnit(materialVo4Unit.getUnitId());
                         String commodityUnit = materialVo4Unit.getCommodityUnit();
                         stock = unitService.parseStockByUnit(stock, unit, commodityUnit);
@@ -183,6 +185,7 @@ public class DepotItemController {
 
     /**
      * 单据明细列表
+     *
      * @param headerId
      * @param mpList
      * @param request
@@ -192,17 +195,17 @@ public class DepotItemController {
     @GetMapping(value = "/getDetailList")
     @ApiOperation(value = "单据明细列表")
     public BaseResponseInfo getDetailList(@RequestParam("headerId") Long headerId,
-                              @RequestParam("mpList") String mpList,
-                              @RequestParam(value = "linkType", required = false) String linkType,
-                              @RequestParam(value = "isReadOnly", required = false) String isReadOnly,
-                              HttpServletRequest request)throws Exception {
+                                          @RequestParam("mpList") String mpList,
+                                          @RequestParam(value = "linkType", required = false) String linkType,
+                                          @RequestParam(value = "isReadOnly", required = false) String isReadOnly,
+                                          HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         try {
             Long userId = userService.getUserId(request);
             String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
             List<DepotItemVo4WithInfoEx> dataList = new ArrayList<>();
             String billCategory = depotHeadService.getBillCategory(depotHeadService.getDepotHead(headerId).getSubType());
-            if(headerId != 0) {
+            if (headerId != 0) {
                 dataList = depotItemService.getDetailList(headerId);
             }
             String[] mpArr = mpList.split(",");
@@ -233,10 +236,10 @@ public class DepotItemController {
                     BigDecimal stock;
                     Unit unitInfo = materialService.findUnit(diEx.getMaterialId()); //查询多单位信息
                     String materialUnit = diEx.getMaterialUnit();
-                    if(StringUtil.isNotEmpty(diEx.getSku())){
-                        stock = depotItemService.getSkuStockByParam(diEx.getDepotId(),diEx.getMaterialExtendId(),null,null);
+                    if (StringUtil.isNotEmpty(diEx.getSku())) {
+                        stock = depotItemService.getSkuStockByParam(diEx.getDepotId(), diEx.getMaterialExtendId(), null, null);
                     } else {
-                        stock = depotItemService.getCurrentStockByParam(diEx.getDepotId(),diEx.getMaterialId());
+                        stock = depotItemService.getCurrentStockByParam(diEx.getDepotId(), diEx.getMaterialId());
                         if (StringUtil.isNotEmpty(unitInfo.getName())) {
                             stock = unitService.parseStockByUnit(stock, unitInfo, materialUnit);
                         }
@@ -254,7 +257,7 @@ public class DepotItemController {
                     item.put("preNumber", diEx.getOperNumber()); //原数量
                     item.put("finishNumber", depotItemService.getFinishNumber(diEx.getMaterialExtendId(), diEx.getId(), diEx.getHeaderId(), unitInfo, materialUnit, linkType)); //已入库|已出库
                     item.put("purchaseDecimal", roleService.parseBillPriceByLimit(diEx.getPurchaseDecimal(), billCategory, priceLimit, request));  //采购价
-                    if("basic".equals(linkType) || "1".equals(isReadOnly)) {
+                    if ("basic".equals(linkType) || "1".equals(isReadOnly)) {
                         //正常情况显示金额，而以销定购的情况不能显示金额
                         item.put("unitPrice", roleService.parseBillPriceByLimit(diEx.getUnitPrice(), billCategory, priceLimit, request));
                         item.put("taxUnitPrice", roleService.parseBillPriceByLimit(diEx.getTaxUnitPrice(), billCategory, priceLimit, request));
@@ -263,12 +266,12 @@ public class DepotItemController {
                         item.put("taxMoney", roleService.parseBillPriceByLimit(diEx.getTaxMoney(), billCategory, priceLimit, request));
                         item.put("taxLastMoney", roleService.parseBillPriceByLimit(diEx.getTaxLastMoney(), billCategory, priceLimit, request));
                     }
-                    BigDecimal allWeight = diEx.getBasicNumber()==null||diEx.getWeight()==null?BigDecimal.ZERO:diEx.getBasicNumber().multiply(diEx.getWeight());
+                    BigDecimal allWeight = diEx.getBasicNumber() == null || diEx.getWeight() == null ? BigDecimal.ZERO : diEx.getBasicNumber().multiply(diEx.getWeight());
                     item.put("weight", allWeight);
                     item.put("position", diEx.getPosition());
                     item.put("remark", diEx.getRemark());
                     item.put("imgName", diEx.getImgName());
-                    if(fileUploadType == 2) {
+                    if (fileUploadType == 2) {
                         item.put("imgSmall", "small");
                         item.put("imgLarge", "large");
                     } else {
@@ -284,13 +287,13 @@ public class DepotItemController {
                     item.put("op", 1);
                     dataArray.add(item);
                     //合计数据汇总
-                    totalOperNumber = totalOperNumber.add(diEx.getOperNumber()==null?BigDecimal.ZERO:diEx.getOperNumber());
-                    totalAllPrice = totalAllPrice.add(diEx.getAllPrice()==null?BigDecimal.ZERO:diEx.getAllPrice());
-                    totalTaxMoney = totalTaxMoney.add(diEx.getTaxMoney()==null?BigDecimal.ZERO:diEx.getTaxMoney());
-                    totalTaxLastMoney = totalTaxLastMoney.add(diEx.getTaxLastMoney()==null?BigDecimal.ZERO:diEx.getTaxLastMoney());
+                    totalOperNumber = totalOperNumber.add(diEx.getOperNumber() == null ? BigDecimal.ZERO : diEx.getOperNumber());
+                    totalAllPrice = totalAllPrice.add(diEx.getAllPrice() == null ? BigDecimal.ZERO : diEx.getAllPrice());
+                    totalTaxMoney = totalTaxMoney.add(diEx.getTaxMoney() == null ? BigDecimal.ZERO : diEx.getTaxMoney());
+                    totalTaxLastMoney = totalTaxLastMoney.add(diEx.getTaxLastMoney() == null ? BigDecimal.ZERO : diEx.getTaxLastMoney());
                     totalWeight = totalWeight.add(allWeight);
                 }
-                if(StringUtil.isNotEmpty(isReadOnly) && "1".equals(isReadOnly)) {
+                if (StringUtil.isNotEmpty(isReadOnly) && "1".equals(isReadOnly)) {
                     JSONObject footItem = new JSONObject();
                     footItem.put("operNumber", totalOperNumber);
                     footItem.put("allPrice", roleService.parseBillPriceByLimit(totalAllPrice, billCategory, priceLimit, request));
@@ -313,6 +316,7 @@ public class DepotItemController {
 
     /**
      * 进销存统计-即将废弃
+     *
      * @param currentPage
      * @param pageSize
      * @param depotIds
@@ -327,25 +331,25 @@ public class DepotItemController {
     @ApiOperation(value = "查找所有的明细")
     public BaseResponseInfo findByAll(@RequestParam("currentPage") Integer currentPage,
                                       @RequestParam("pageSize") Integer pageSize,
-                                      @RequestParam(value = "depotIds",required = false) String depotIds,
+                                      @RequestParam(value = "depotIds", required = false) String depotIds,
                                       @RequestParam(value = "categoryId", required = false) Long categoryId,
                                       @RequestParam("monthTime") String monthTime,
                                       @RequestParam("materialParam") String materialParam,
                                       @RequestParam("mpList") String mpList,
-                                      HttpServletRequest request)throws Exception {
+                                      HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<>();
         try {
             Boolean moveAvgPriceFlag = systemConfigService.getMoveAvgPriceFlag();
             List<Long> categoryIdList = new ArrayList<>();
-            if(categoryId != null){
+            if (categoryId != null) {
                 categoryIdList = materialService.getListByParentId(categoryId);
             }
             String timeA = Tools.firstDayOfMonth(monthTime) + BusinessConstants.DAY_FIRST_TIME;
             String timeB = Tools.lastDayOfMonth(monthTime) + BusinessConstants.DAY_LAST_TIME;
             List<Long> depotList = parseListByDepotIds(depotIds);
             List<DepotItemVo4WithInfoEx> dataList = depotItemService.getInOutStock(StringUtil.toNull(materialParam),
-                    categoryIdList, timeB,(currentPage-1)*pageSize, pageSize);
+                    categoryIdList, timeB, (currentPage - 1) * pageSize, pageSize);
             String[] mpArr = mpList.split(",");
             int total = depotItemService.getInOutStockCount(StringUtil.toNull(materialParam), categoryIdList, timeB);
             map.put("total", total);
@@ -364,9 +368,9 @@ public class DepotItemController {
                     item.put("materialOther", materialOther);
                     item.put("materialColor", diEx.getMColor());
                     item.put("unitId", diEx.getUnitId());
-                    item.put("unitName", null!=diEx.getUnitId() ? diEx.getMaterialUnit()+"[多单位]" : diEx.getMaterialUnit());
-                    BigDecimal prevSum = depotItemService.getStockByParamWithDepotList(depotList,mId,null,timeA);
-                    Map<String,BigDecimal> intervalMap = depotItemService.getIntervalMapByParamWithDepotList(depotList,mId,timeA,timeB);
+                    item.put("unitName", null != diEx.getUnitId() ? diEx.getMaterialUnit() + "[多单位]" : diEx.getMaterialUnit());
+                    BigDecimal prevSum = depotItemService.getStockByParamWithDepotList(depotList, mId, null, timeA);
+                    Map<String, BigDecimal> intervalMap = depotItemService.getIntervalMapByParamWithDepotList(depotList, mId, timeA, timeB);
                     BigDecimal inSum = intervalMap.get("inSum");
                     BigDecimal outSum = intervalMap.get("outSum");
                     BigDecimal thisSum = prevSum.add(inSum).subtract(outSum);
@@ -376,12 +380,12 @@ public class DepotItemController {
                     item.put("thisSum", thisSum);
                     //将小单位的库存换算为大单位的库存
                     item.put("bigUnitStock", materialService.getBigUnitStock(thisSum, diEx.getUnitId()));
-                    if(moveAvgPriceFlag) {
+                    if (moveAvgPriceFlag) {
                         item.put("unitPrice", diEx.getCurrentUnitPrice());
                     } else {
                         item.put("unitPrice", diEx.getPurchaseDecimal());
                     }
-                    if(moveAvgPriceFlag) {
+                    if (moveAvgPriceFlag) {
                         item.put("thisAllPrice", thisSum.multiply(diEx.getCurrentUnitPrice()));
                     } else {
                         item.put("thisAllPrice", thisSum.multiply(diEx.getPurchaseDecimal()));
@@ -395,7 +399,7 @@ public class DepotItemController {
         } catch (BusinessRunTimeException e) {
             res.code = e.getCode();
             res.data = e.getData().get("message");
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -405,6 +409,7 @@ public class DepotItemController {
 
     /**
      * 进销存统计总计金额-即将废弃
+     *
      * @param depotIds
      * @param monthTime
      * @param materialParam
@@ -413,17 +418,17 @@ public class DepotItemController {
      */
     @GetMapping(value = "/totalCountMoney")
     @ApiOperation(value = "统计总计金额")
-    public BaseResponseInfo totalCountMoney(@RequestParam(value = "depotIds",required = false) String depotIds,
+    public BaseResponseInfo totalCountMoney(@RequestParam(value = "depotIds", required = false) String depotIds,
                                             @RequestParam(value = "categoryId", required = false) Long categoryId,
                                             @RequestParam("monthTime") String monthTime,
                                             @RequestParam("materialParam") String materialParam,
-                                            HttpServletRequest request) throws Exception{
+                                            HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<>();
         try {
             Boolean moveAvgPriceFlag = systemConfigService.getMoveAvgPriceFlag();
             List<Long> categoryIdList = new ArrayList<>();
-            if(categoryId != null){
+            if (categoryId != null) {
                 categoryIdList = materialService.getListByParentId(categoryId);
             }
             String endTime = Tools.lastDayOfMonth(monthTime) + BusinessConstants.DAY_LAST_TIME;
@@ -435,15 +440,15 @@ public class DepotItemController {
             if (null != dataList) {
                 for (DepotItemVo4WithInfoEx diEx : dataList) {
                     Long mId = diEx.getMId();
-                    BigDecimal thisSum = depotItemService.getStockByParamWithDepotList(depotList,mId,null,endTime);
+                    BigDecimal thisSum = depotItemService.getStockByParamWithDepotList(depotList, mId, null, endTime);
                     thisAllStock = thisAllStock.add(thisSum);
                     BigDecimal unitPrice = null;
-                    if(moveAvgPriceFlag) {
+                    if (moveAvgPriceFlag) {
                         unitPrice = diEx.getCurrentUnitPrice();
                     } else {
                         unitPrice = diEx.getPurchaseDecimal();
                     }
-                    if(unitPrice == null) {
+                    if (unitPrice == null) {
                         unitPrice = BigDecimal.ZERO;
                     }
                     thisAllPrice = thisAllPrice.add(thisSum.multiply(unitPrice));
@@ -456,7 +461,7 @@ public class DepotItemController {
         } catch (BusinessRunTimeException e) {
             res.code = e.getCode();
             res.data = e.getData().get("message");
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -466,6 +471,7 @@ public class DepotItemController {
 
     /**
      * 进销存统计查询
+     *
      * @param currentPage
      * @param pageSize
      * @param depotIds
@@ -480,27 +486,27 @@ public class DepotItemController {
     @GetMapping(value = "/getInOutStock")
     @ApiOperation(value = "进销存统计查询")
     public BaseResponseInfo getInOutStock(@RequestParam("currentPage") Integer currentPage,
-                                      @RequestParam("pageSize") Integer pageSize,
-                                      @RequestParam(value = "depotIds",required = false) String depotIds,
-                                      @RequestParam(value = "categoryId", required = false) Long categoryId,
-                                      @RequestParam("beginTime") String beginTime,
-                                      @RequestParam("endTime") String endTime,
-                                      @RequestParam("materialParam") String materialParam,
-                                      @RequestParam("mpList") String mpList,
-                                      HttpServletRequest request)throws Exception {
+                                          @RequestParam("pageSize") Integer pageSize,
+                                          @RequestParam(value = "depotIds", required = false) String depotIds,
+                                          @RequestParam(value = "categoryId", required = false) Long categoryId,
+                                          @RequestParam("beginTime") String beginTime,
+                                          @RequestParam("endTime") String endTime,
+                                          @RequestParam("materialParam") String materialParam,
+                                          @RequestParam("mpList") String mpList,
+                                          HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<>();
         try {
             Boolean moveAvgPriceFlag = systemConfigService.getMoveAvgPriceFlag();
             List<Long> categoryIdList = new ArrayList<>();
-            if(categoryId != null){
+            if (categoryId != null) {
                 categoryIdList = materialService.getListByParentId(categoryId);
             }
             beginTime = Tools.parseDayToTime(beginTime, BusinessConstants.DAY_FIRST_TIME);
-            endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
+            endTime = Tools.parseDayToTime(endTime, BusinessConstants.DAY_LAST_TIME);
             List<Long> depotList = parseListByDepotIds(depotIds);
             List<DepotItemVo4WithInfoEx> dataList = depotItemService.getInOutStock(StringUtil.toNull(materialParam),
-                    categoryIdList, endTime,(currentPage-1)*pageSize, pageSize);
+                    categoryIdList, endTime, (currentPage - 1) * pageSize, pageSize);
             String[] mpArr = mpList.split(",");
             int total = depotItemService.getInOutStockCount(StringUtil.toNull(materialParam), categoryIdList, endTime);
             map.put("total", total);
@@ -521,9 +527,9 @@ public class DepotItemController {
                     String materialOther = depotItemService.getOtherInfo(mpArr, diEx);
                     item.put("materialOther", materialOther);
                     item.put("unitId", diEx.getUnitId());
-                    item.put("unitName", null!=diEx.getUnitId() ? diEx.getMaterialUnit()+"[多单位]" : diEx.getMaterialUnit());
-                    BigDecimal prevSum = depotItemService.getStockByParamWithDepotList(depotList,mId,null,beginTime);
-                    Map<String,BigDecimal> intervalMap = depotItemService.getIntervalMapByParamWithDepotList(depotList,mId,beginTime,endTime);
+                    item.put("unitName", null != diEx.getUnitId() ? diEx.getMaterialUnit() + "[多单位]" : diEx.getMaterialUnit());
+                    BigDecimal prevSum = depotItemService.getStockByParamWithDepotList(depotList, mId, null, beginTime);
+                    Map<String, BigDecimal> intervalMap = depotItemService.getIntervalMapByParamWithDepotList(depotList, mId, beginTime, endTime);
                     BigDecimal inSum = intervalMap.get("inSum");
                     BigDecimal outSum = intervalMap.get("outSum");
                     BigDecimal thisSum = prevSum.add(inSum).subtract(outSum);
@@ -533,12 +539,12 @@ public class DepotItemController {
                     item.put("thisSum", thisSum);
                     //将小单位的库存换算为大单位的库存
                     item.put("bigUnitStock", materialService.getBigUnitStock(thisSum, diEx.getUnitId()));
-                    if(moveAvgPriceFlag) {
+                    if (moveAvgPriceFlag) {
                         item.put("unitPrice", diEx.getCurrentUnitPrice());
                     } else {
                         item.put("unitPrice", diEx.getPurchaseDecimal());
                     }
-                    if(moveAvgPriceFlag) {
+                    if (moveAvgPriceFlag) {
                         item.put("thisAllPrice", thisSum.multiply(diEx.getCurrentUnitPrice()));
                     } else {
                         item.put("thisAllPrice", thisSum.multiply(diEx.getPurchaseDecimal()));
@@ -552,7 +558,7 @@ public class DepotItemController {
         } catch (BusinessRunTimeException e) {
             res.code = e.getCode();
             res.data = e.getData().get("message");
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -562,6 +568,7 @@ public class DepotItemController {
 
     /**
      * 进销存统计总计金额
+     *
      * @param depotIds
      * @param endTime
      * @param materialParam
@@ -570,20 +577,20 @@ public class DepotItemController {
      */
     @GetMapping(value = "/getInOutStockCountMoney")
     @ApiOperation(value = "进销存统计总计金额")
-    public BaseResponseInfo getInOutStockCountMoney(@RequestParam(value = "depotIds",required = false) String depotIds,
-                                            @RequestParam(value = "categoryId", required = false) Long categoryId,
-                                            @RequestParam("endTime") String endTime,
-                                            @RequestParam("materialParam") String materialParam,
-                                            HttpServletRequest request) throws Exception{
+    public BaseResponseInfo getInOutStockCountMoney(@RequestParam(value = "depotIds", required = false) String depotIds,
+                                                    @RequestParam(value = "categoryId", required = false) Long categoryId,
+                                                    @RequestParam("endTime") String endTime,
+                                                    @RequestParam("materialParam") String materialParam,
+                                                    HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<>();
         try {
             Boolean moveAvgPriceFlag = systemConfigService.getMoveAvgPriceFlag();
             List<Long> categoryIdList = new ArrayList<>();
-            if(categoryId != null){
+            if (categoryId != null) {
                 categoryIdList = materialService.getListByParentId(categoryId);
             }
-            endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
+            endTime = Tools.parseDayToTime(endTime, BusinessConstants.DAY_LAST_TIME);
             List<Long> depotList = parseListByDepotIds(depotIds);
             List<DepotItemVo4WithInfoEx> dataList = depotItemService.getInOutStock(StringUtil.toNull(materialParam),
                     categoryIdList, endTime, null, null);
@@ -592,15 +599,15 @@ public class DepotItemController {
             if (null != dataList) {
                 for (DepotItemVo4WithInfoEx diEx : dataList) {
                     Long mId = diEx.getMId();
-                    BigDecimal thisSum = depotItemService.getStockByParamWithDepotList(depotList,mId,null,endTime);
+                    BigDecimal thisSum = depotItemService.getStockByParamWithDepotList(depotList, mId, null, endTime);
                     thisAllStock = thisAllStock.add(thisSum);
                     BigDecimal unitPrice = null;
-                    if(moveAvgPriceFlag) {
+                    if (moveAvgPriceFlag) {
                         unitPrice = diEx.getCurrentUnitPrice();
                     } else {
                         unitPrice = diEx.getPurchaseDecimal();
                     }
-                    if(unitPrice == null) {
+                    if (unitPrice == null) {
                         unitPrice = BigDecimal.ZERO;
                     }
                     thisAllPrice = thisAllPrice.add(thisSum.multiply(unitPrice));
@@ -613,7 +620,7 @@ public class DepotItemController {
         } catch (BusinessRunTimeException e) {
             res.code = e.getCode();
             res.data = e.getData().get("message");
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -623,17 +630,17 @@ public class DepotItemController {
 
     private List<Long> parseListByDepotIds(@RequestParam("depotIds") String depotIds) throws Exception {
         List<Long> depotList = new ArrayList<>();
-        if(StringUtil.isNotEmpty(depotIds)) {
+        if (StringUtil.isNotEmpty(depotIds)) {
             depotList = StringUtil.strToLongList(depotIds);
         } else {
             //未选择仓库时默认为当前用户有权限的仓库
             JSONArray depotArr = depotService.findDepotByCurrentUser();
-            for(Object obj: depotArr) {
+            for (Object obj : depotArr) {
                 JSONObject object = JSONObject.parseObject(obj.toString());
                 depotList.add(object.getLong("id"));
             }
             //如果有权限的仓库数量太多则提示要选择仓库
-            if(depotList.size()>20) {
+            if (depotList.size() > 20) {
                 throw new BusinessRunTimeException(ExceptionConstants.REPORT_TWO_MANY_DEPOT_FAILED_CODE,
                         ExceptionConstants.REPORT_TWO_MANY_DEPOT_FAILED_MSG);
             }
@@ -643,6 +650,7 @@ public class DepotItemController {
 
     /**
      * 采购统计
+     *
      * @param currentPage
      * @param pageSize
      * @param beginTime
@@ -663,21 +671,21 @@ public class DepotItemController {
                                   @RequestParam(value = "organizationId", required = false) Long organizationId,
                                   @RequestParam("materialParam") String materialParam,
                                   @RequestParam("mpList") String mpList,
-                                  HttpServletRequest request)throws Exception {
+                                  HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<String, Object>();
         beginTime = Tools.parseDayToTime(beginTime, BusinessConstants.DAY_FIRST_TIME);
-        endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
+        endTime = Tools.parseDayToTime(endTime, BusinessConstants.DAY_LAST_TIME);
         try {
-            String [] creatorArray = depotHeadService.getCreatorArray();
-            if(creatorArray == null && organizationId != null) {
+            String[] creatorArray = depotHeadService.getCreatorArray();
+            if (creatorArray == null && organizationId != null) {
                 creatorArray = depotHeadService.getCreatorArrayByOrg(organizationId);
             }
-            String [] organArray = null;
+            String[] organArray = null;
             List<Long> depotList = depotService.parseDepotList(depotId);
             Boolean forceFlag = systemConfigService.getForceApprovalFlag();
             List<DepotItemVo4WithInfoEx> dataList = depotItemService.getListWithBuyOrSale(StringUtil.toNull(materialParam),
-                    "buy", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag, (currentPage-1)*pageSize, pageSize);
+                    "buy", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag, (currentPage - 1) * pageSize, pageSize);
             String[] mpArr = mpList.split(",");
             int total = depotItemService.getListWithBuyOrSaleCount(StringUtil.toNull(materialParam),
                     "buy", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag);
@@ -708,7 +716,7 @@ public class DepotItemController {
                     item.put("outSum", OutSum);
                     item.put("inSumPrice", InSumPrice);
                     item.put("outSumPrice", OutSumPrice);
-                    item.put("inOutSumPrice",InOutSumPrice);//实际采购金额
+                    item.put("inOutSumPrice", InOutSumPrice);//实际采购金额
                     dataArray.add(item);
                 }
             }
@@ -719,7 +727,7 @@ public class DepotItemController {
             map.put("realityPriceTotal", realityPriceTotal);
             res.code = 200;
             res.data = map;
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -729,6 +737,7 @@ public class DepotItemController {
 
     /**
      * 零售统计
+     *
      * @param currentPage
      * @param pageSize
      * @param beginTime
@@ -749,21 +758,21 @@ public class DepotItemController {
                                       @RequestParam(value = "organizationId", required = false) Long organizationId,
                                       @RequestParam("materialParam") String materialParam,
                                       @RequestParam("mpList") String mpList,
-                                      HttpServletRequest request)throws Exception {
+                                      HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<String, Object>();
         beginTime = Tools.parseDayToTime(beginTime, BusinessConstants.DAY_FIRST_TIME);
-        endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
+        endTime = Tools.parseDayToTime(endTime, BusinessConstants.DAY_LAST_TIME);
         try {
-            String [] creatorArray = depotHeadService.getCreatorArray();
-            if(creatorArray == null && organizationId != null) {
+            String[] creatorArray = depotHeadService.getCreatorArray();
+            if (creatorArray == null && organizationId != null) {
                 creatorArray = depotHeadService.getCreatorArrayByOrg(organizationId);
             }
-            String [] organArray = null;
+            String[] organArray = null;
             List<Long> depotList = depotService.parseDepotList(depotId);
             Boolean forceFlag = systemConfigService.getForceApprovalFlag();
             List<DepotItemVo4WithInfoEx> dataList = depotItemService.getListWithBuyOrSale(StringUtil.toNull(materialParam),
-                    "retail", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag, (currentPage-1)*pageSize, pageSize);
+                    "retail", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag, (currentPage - 1) * pageSize, pageSize);
             String[] mpArr = mpList.split(",");
             int total = depotItemService.getListWithBuyOrSaleCount(StringUtil.toNull(materialParam),
                     "retail", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag);
@@ -794,7 +803,7 @@ public class DepotItemController {
                     item.put("inSum", InSumRetail);
                     item.put("outSumPrice", OutSumRetailPrice);
                     item.put("inSumPrice", InSumRetailPrice);
-                    item.put("outInSumPrice",OutInSumPrice);//实际销售金额
+                    item.put("outInSumPrice", OutInSumPrice);//实际销售金额
                     dataArray.add(item);
                 }
             }
@@ -805,7 +814,7 @@ public class DepotItemController {
             map.put("realityPriceTotal", realityPriceTotal);
             res.code = 200;
             res.data = map;
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -816,6 +825,7 @@ public class DepotItemController {
 
     /**
      * 销售统计
+     *
      * @param currentPage
      * @param pageSize
      * @param beginTime
@@ -836,21 +846,21 @@ public class DepotItemController {
                                     @RequestParam(value = "organizationId", required = false) Long organizationId,
                                     @RequestParam("materialParam") String materialParam,
                                     @RequestParam("mpList") String mpList,
-                                    HttpServletRequest request)throws Exception {
+                                    HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<String, Object>();
         beginTime = Tools.parseDayToTime(beginTime, BusinessConstants.DAY_FIRST_TIME);
-        endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
+        endTime = Tools.parseDayToTime(endTime, BusinessConstants.DAY_LAST_TIME);
         try {
-            String [] creatorArray = depotHeadService.getCreatorArray();
-            if(creatorArray == null && organizationId != null) {
+            String[] creatorArray = depotHeadService.getCreatorArray();
+            if (creatorArray == null && organizationId != null) {
                 creatorArray = depotHeadService.getCreatorArrayByOrg(organizationId);
             }
-            String [] organArray = depotHeadService.getOrganArray("销售", "");
+            String[] organArray = depotHeadService.getOrganArray("销售", "");
             List<Long> depotList = depotService.parseDepotList(depotId);
             Boolean forceFlag = systemConfigService.getForceApprovalFlag();
             List<DepotItemVo4WithInfoEx> dataList = depotItemService.getListWithBuyOrSale(StringUtil.toNull(materialParam),
-                    "sale", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag, (currentPage-1)*pageSize, pageSize);
+                    "sale", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag, (currentPage - 1) * pageSize, pageSize);
             String[] mpArr = mpList.split(",");
             int total = depotItemService.getListWithBuyOrSaleCount(StringUtil.toNull(materialParam),
                     "sale", beginTime, endTime, creatorArray, organId, organArray, depotList, forceFlag);
@@ -881,7 +891,7 @@ public class DepotItemController {
                     item.put("inSum", InSum);
                     item.put("outSumPrice", OutSumPrice);
                     item.put("inSumPrice", InSumPrice);
-                    item.put("outInSumPrice",OutInSumPrice);//实际销售金额
+                    item.put("outInSumPrice", OutInSumPrice);//实际销售金额
                     dataArray.add(item);
                 }
             }
@@ -892,7 +902,7 @@ public class DepotItemController {
             map.put("realityPriceTotal", realityPriceTotal);
             res.code = 200;
             res.data = map;
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -902,15 +912,16 @@ public class DepotItemController {
 
     /**
      * 获取单位
+     *
      * @param materialUnit
      * @param uName
      * @return
      */
     public String getUName(String materialUnit, String uName) {
         String unitName = null;
-        if(StringUtil.isNotEmpty(materialUnit)) {
+        if (StringUtil.isNotEmpty(materialUnit)) {
             unitName = materialUnit;
-        } else if(StringUtil.isNotEmpty(uName)) {
+        } else if (StringUtil.isNotEmpty(uName)) {
             unitName = uName;
         }
         return unitName;
@@ -918,6 +929,7 @@ public class DepotItemController {
 
     /**
      * 库存预警报表
+     *
      * @param currentPage
      * @param pageSize
      * @return
@@ -928,23 +940,23 @@ public class DepotItemController {
                                                   @RequestParam("pageSize") Integer pageSize,
                                                   @RequestParam("materialParam") String materialParam,
                                                   @RequestParam(value = "depotId", required = false) Long depotId,
-                                                  @RequestParam("mpList") String mpList)throws Exception {
+                                                  @RequestParam("mpList") String mpList) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             List<Long> depotList = new ArrayList<>();
-            if(depotId != null) {
+            if (depotId != null) {
                 depotList.add(depotId);
             } else {
                 //未选择仓库时默认为当前用户有权限的仓库
                 JSONArray depotArr = depotService.findDepotByCurrentUser();
-                for(Object obj: depotArr) {
+                for (Object obj : depotArr) {
                     JSONObject object = JSONObject.parseObject(obj.toString());
                     depotList.add(object.getLong("id"));
                 }
             }
             String[] mpArr = mpList.split(",");
-            List<DepotItemStockWarningCount> list = depotItemService.findStockWarningCount((currentPage-1)*pageSize, pageSize, materialParam, depotList);
+            List<DepotItemStockWarningCount> list = depotItemService.findStockWarningCount((currentPage - 1) * pageSize, pageSize, materialParam, depotList);
             //存放数据json数组
             if (null != list) {
                 for (DepotItemStockWarningCount disw : list) {
@@ -954,10 +966,10 @@ public class DepotItemController {
                     diEx.setMOtherField3(disw.getMOtherField3());
                     disw.setMaterialOther(depotItemService.getOtherInfo(mpArr, diEx));
                     disw.setMaterialUnit(getUName(disw.getMaterialUnit(), disw.getUnitName()));
-                    if(null!=disw.getLowSafeStock() && disw.getCurrentNumber().compareTo(disw.getLowSafeStock())<0) {
+                    if (null != disw.getLowSafeStock() && disw.getCurrentNumber().compareTo(disw.getLowSafeStock()) < 0) {
                         disw.setLowCritical(disw.getLowSafeStock().subtract(disw.getCurrentNumber()));
                     }
-                    if(null!=disw.getHighSafeStock() && disw.getCurrentNumber().compareTo(disw.getHighSafeStock())>0) {
+                    if (null != disw.getHighSafeStock() && disw.getCurrentNumber().compareTo(disw.getHighSafeStock()) > 0) {
                         disw.setHighCritical(disw.getCurrentNumber().subtract(disw.getHighSafeStock()));
                     }
                 }
@@ -967,7 +979,7 @@ public class DepotItemController {
             map.put("rows", list);
             res.code = 200;
             res.data = map;
-        } catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             res.code = 500;
             res.data = "获取数据失败";
@@ -977,6 +989,7 @@ public class DepotItemController {
 
     /**
      * 统计采购、销售、零售的总金额
+     *
      * @param request
      * @param response
      * @return
@@ -985,12 +998,12 @@ public class DepotItemController {
     @GetMapping(value = "/buyOrSalePrice")
     @ApiOperation(value = "统计采购、销售、零售的总金额")
     public BaseResponseInfo buyOrSalePrice(HttpServletRequest request,
-                                           HttpServletResponse response)throws Exception {
+                                           HttpServletResponse response) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         try {
             Map<String, Object> map = new HashMap<>();
             String loginName = userService.getCurrentUser().getLoginName();
-            if(!"admin".equals(loginName)) {
+            if (!"admin".equals(loginName)) {
                 Long userId = userService.getUserId(request);
                 List<String> monthList = Tools.getLastMonths(6);
                 String beginTime = Tools.firstDayOfMonth(monthList.get(0)) + BusinessConstants.DAY_FIRST_TIME;
@@ -1073,6 +1086,7 @@ public class DepotItemController {
 
     /**
      * 获取批次商品列表信息
+     *
      * @param request
      * @return
      */
@@ -1083,12 +1097,12 @@ public class DepotItemController {
                                                @RequestParam("depotId") Long depotId,
                                                @RequestParam("barCode") String barCode,
                                                @RequestParam(value = "batchNumber", required = false) String batchNumber,
-                                               HttpServletRequest request) throws Exception{
+                                               HttpServletRequest request) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<>();
         try {
             String number = "";
-            if(depotItemId != null) {
+            if (depotItemId != null) {
                 DepotItem depotItem = depotItemService.getDepotItem(depotItemId);
                 number = depotHeadService.getDepotHead(depotItem.getHeaderId()).getNumber();
             }
@@ -1110,6 +1124,7 @@ public class DepotItemController {
 
     /**
      * Excel导入明细
+     *
      * @param file
      * @param request
      * @param response
@@ -1118,7 +1133,7 @@ public class DepotItemController {
     @PostMapping(value = "/importItemExcel")
     public BaseResponseInfo importItemExcel(MultipartFile file,
                                             @RequestParam(required = false, value = "prefixNo") String prefixNo,
-                                            HttpServletRequest request, HttpServletResponse response) throws Exception{
+                                            HttpServletRequest request, HttpServletResponse response) throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> data = new HashMap<>();
         String message = "";
@@ -1135,7 +1150,7 @@ public class DepotItemController {
                 res.code = 400;
                 res.data = data;
             }
-            if(src.getRows()>1000) {
+            if (src.getRows() > 1000) {
                 message = "导入失败，明细不能超出1000条";
                 res.code = 500;
                 data.put("message", message);
@@ -1143,20 +1158,30 @@ public class DepotItemController {
             } else {
                 List<Map<String, String>> detailList = new ArrayList<>();
                 for (int i = 2; i < src.getRows(); i++) {
+                    if ("invoice".equals(prefixNo)) {
+                        Map<String, String> materialMap = new HashMap<>();
+                        materialMap.put("serviceName", ExcelUtils.getContent(src, i, 0));
+                        materialMap.put("taxRate", ExcelUtils.getContent(src, i, 1));
+                        materialMap.put("taxIncludedPrice", ExcelUtils.getContent(src, i, 2));
+                        materialMap.put("taxExcludedPrice", ExcelUtils.getContent(src, i, 3));
+                        materialMap.put("remark", ExcelUtils.getContent(src, i, 4));
+                        detailList.add(materialMap);
+                        continue;
+                    }
                     String depotName = "", barCode = "", num = "", unitPrice = "", taxRate = "", remark = "";
-                    if("QGD".equals(prefixNo)) {
+                    if ("QGD".equals(prefixNo)) {
                         barCode = ExcelUtils.getContent(src, i, 0);
                         num = ExcelUtils.getContent(src, i, 2);
                         remark = ExcelUtils.getContent(src, i, 3);
                     }
-                    if("CGDD".equals(prefixNo) || "XSDD".equals(prefixNo)) {
+                    if ("CGDD".equals(prefixNo) || "XSDD".equals(prefixNo)) {
                         barCode = ExcelUtils.getContent(src, i, 0);
                         num = ExcelUtils.getContent(src, i, 2);
                         unitPrice = ExcelUtils.getContent(src, i, 3);
                         taxRate = ExcelUtils.getContent(src, i, 4);
                         remark = ExcelUtils.getContent(src, i, 5);
                     }
-                    if("CGRK".equals(prefixNo) || "XSCK".equals(prefixNo)) {
+                    if ("CGRK".equals(prefixNo) || "XSCK".equals(prefixNo)) {
                         depotName = ExcelUtils.getContent(src, i, 0);
                         barCode = ExcelUtils.getContent(src, i, 1);
                         num = ExcelUtils.getContent(src, i, 3);
@@ -1164,13 +1189,14 @@ public class DepotItemController {
                         taxRate = ExcelUtils.getContent(src, i, 5);
                         remark = ExcelUtils.getContent(src, i, 6);
                     }
-                    if("QTRK".equals(prefixNo) || "QTCK".equals(prefixNo)) {
+                    if ("QTRK".equals(prefixNo) || "QTCK".equals(prefixNo)) {
                         depotName = ExcelUtils.getContent(src, i, 0);
                         barCode = ExcelUtils.getContent(src, i, 1);
                         num = ExcelUtils.getContent(src, i, 3);
                         unitPrice = ExcelUtils.getContent(src, i, 4);
                         remark = ExcelUtils.getContent(src, i, 5);
                     }
+
                     Map<String, String> materialMap = new HashMap<>();
                     materialMap.put("depotName", depotName);
                     materialMap.put("barCode", barCode);
@@ -1181,10 +1207,17 @@ public class DepotItemController {
                     detailList.add(materialMap);
                     barCodes += "'" + barCode + "',";
                 }
-                if (StringUtil.isNotEmpty(barCodes)) {
-                    barCodes = barCodes.substring(0, barCodes.length() - 1);
+                JSONObject map = new JSONObject();
+
+                if ("invoice".equals(prefixNo)) {
+                    map.put("rows", detailList);
+                } else {
+                    if (StringUtil.isNotEmpty(barCodes)) {
+                        barCodes = barCodes.substring(0, barCodes.length() - 1);
+                    }
+                    map = depotItemService.parseMapByExcelData(barCodes, detailList, prefixNo);
                 }
-                JSONObject map = depotItemService.parseMapByExcelData(barCodes, detailList, prefixNo);
+
                 if (map != null) {
                     res.code = 200;
                 } else {

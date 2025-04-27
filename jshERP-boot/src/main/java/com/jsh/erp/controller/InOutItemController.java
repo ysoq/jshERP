@@ -65,6 +65,7 @@ public class InOutItemController {
                     item.put("id", inOutItem.getId());
                     //收支项目名称
                     item.put("name", inOutItem.getName());
+                    item.put("code", inOutItem.getCode());
                     dataArray.add(item);
                 }
             }

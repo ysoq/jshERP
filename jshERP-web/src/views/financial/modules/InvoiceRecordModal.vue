@@ -23,7 +23,7 @@
         <a-row class="form-row" :gutter="24">
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目" data-step="1" data-title="项目">
-              <a-select placeholder="请选择项目" v-decorator="[ 'projectId' ]"
+              <a-select placeholder="请选择项目" v-decorator="[ 'projectId', validatorRules.projectId ]"
                         :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
                 <a-select-option v-for="(item,index) in inOutList" :key="index" :value="item.value">
                   {{ item.text }}
@@ -64,6 +64,11 @@
           :actionButton="true"
           @added="onAdded"
           @valueChange="onValueChange">
+          <template #buttonAfter>
+            <a-row :gutter="24" style="float:left;padding-bottom: 5px;padding-left:20px;">
+              <a-button icon="import" @click="onImport()">导入明细</a-button>
+            </a-row>
+          </template>
         </j-editable-table>
         <a-row class="form-row" :gutter="24">
           <a-col :lg="24" :md="24" :sm="24">
@@ -103,6 +108,7 @@
         </a-row>
       </a-form>
     </a-spin>
+    <import-item-modal ref='importItemModalForm' @ok='importItemModalFormOk'></import-item-modal>
   </j-modal>
 </template>
 <script>
@@ -118,11 +124,14 @@ import JUpload from '@/components/jeecg/JUpload'
 import JDate from '@/components/jeecg/JDate'
 import { getAction } from '@api/manage'
 import { getNowFormatDateTime } from '@/utils/util'
+import { getProjectSelect } from '@api/api'
+import ImportItemModal from '@views/bill/dialog/ImportItemModal.vue'
 
 export default {
   name: 'ItemInModal',
   mixins: [JEditableTableMixin, FinancialModalMixin],
   components: {
+    ImportItemModal,
     AccountModal,
     PersonModal,
     WorkflowIframe,
@@ -177,6 +186,11 @@ export default {
       },
       confirmLoading: false,
       validatorRules: {
+        projectId: {
+          rules: [
+            { required: true, message: '请选择项目!' }
+          ]
+        },
         organId: {
           rules: [
             { required: true, message: '请选择客户!' }
@@ -242,7 +256,7 @@ export default {
       this.initSystemConfig()
       this.initOrgan()
       this.initPerson()
-      this.initInOutItem('')
+      getProjectSelect('hasCode').then(list=> this.inOutList = list)
       this.initAccount()
       this.initQuickBtn()
     },
@@ -274,7 +288,13 @@ export default {
       this.$nextTick(() => {
         this.form.setFieldsValue({ 'changeAmount': allEachAmount })
       })
-    }
+    },
+    onImport() {
+      this.$refs.importItemModalForm.add("invoice")
+    },
+    importItemModalFormOk(data) {
+      this.accountTable.dataSource = data
+    },
   }
 }
 </script>

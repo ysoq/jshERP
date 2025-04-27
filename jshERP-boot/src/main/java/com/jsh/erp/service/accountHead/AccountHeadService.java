@@ -320,7 +320,7 @@ public class AccountHeadService {
                 result = accountHeadMapper.updateByExampleSelective(accountHead, example);
                 if (result > 0) {
                     if ("0".equals(status)) {
-                        auditRecordService.batchDelete(BusinessTypeEnum.ACCOUNT_HEAD.getType(), ahIds);
+                        auditRecordService.batchDelete(BusinessTypeEnum.ACCOUNT_HEAD, ahIds);
                     } else if ("1".equals(status)) {
                         auditRecordService.batchCreateRecords(BusinessTypeEnum.ACCOUNT_HEAD, ahIds);
                     }

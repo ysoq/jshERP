@@ -67,7 +67,7 @@ public class AuditRecordService {
     }
 
     @Transactional
-    public int batchDelete(String businessType, List<Long> ids) {
-        return auditRecordMapper.deleteByBusinessTypeAndIds(businessType, ids);
+    public int batchDelete(BusinessTypeEnum businessType, List<Long> ids) {
+        return auditRecordMapper.deleteByBusinessTypeAndIds(businessType.getType(), ids);
     }
 }

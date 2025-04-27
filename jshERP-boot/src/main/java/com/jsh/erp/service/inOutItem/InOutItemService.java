@@ -1,6 +1,9 @@
 package com.jsh.erp.service.inOutItem;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.ExceptionConstants;
 import com.jsh.erp.datasource.entities.*;
@@ -243,24 +246,25 @@ public class InOutItemService {
     }
 
     public List<InOutItem> findBySelect(String type) throws Exception {
-        InOutItemExample example = new InOutItemExample();
+        LambdaQueryWrapper<InOutItem> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(InOutItem::getEnabled, true)
+                   .ne(InOutItem::getDeleteFlag, BusinessConstants.DELETE_FLAG_DELETED);
+
         if (type.equals("excludeFinish")) {
-            example.createCriteria()
-                    .andEnabledEqualTo(true)
-                    .addStatusNotEqualTo("1")
-                    .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
+            queryWrapper.ne(InOutItem::getStatus, "1");
         } else if (type.equals("clearPackage")) {
-            example.createCriteria().andEnabledEqualTo(true)
-                    .andTypeEqualTo("清包")
-                    .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
-        } else {
-            example.createCriteria().andEnabledEqualTo(true)
-                    .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
+            queryWrapper.eq(InOutItem::getType, "清包");
+        } else if(type.equals("hasCode")) {
+            queryWrapper.isNotNull(InOutItem::getCode);
         }
-        example.setOrderByClause("sort asc, id desc");
+        queryWrapper.eq(InOutItem::getTenantId, userService.getCurrentUser().getTenantId());
+
+        queryWrapper.orderByAsc(InOutItem::getSort)
+                   .orderByDesc(InOutItem::getId);
+
         List<InOutItem> list = null;
         try {
-            list = inOutItemMapper.selectByExample(example);
+            list = inOutItemMapper.selectList(queryWrapper);
         } catch (Exception e) {
             JshException.readFail(logger, e);
         }

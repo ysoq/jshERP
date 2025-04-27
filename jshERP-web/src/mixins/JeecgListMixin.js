@@ -195,11 +195,11 @@ export const JeecgListMixin = {
             const item = this.dataSource.find(x => x.id === this.selectedRowKeys[a])
             console.log(item.status , status)
             if(item && item.status === status) {
-              this.$message.warning(`${item.billNo}状态为【${stats[status]}】，无需重复操作!`)
+              this.$message.warning(`已【${stats[status]}】，无需重复操作!`)
               return reject()
             }
             if(item && item.status === '2') {
-              this.$message.warning(`${item.billNo}已作废，无法操作!`)
+              this.$message.warning(`已作废，无法操作!`)
               return reject()
             }
             ids += this.selectedRowKeys[a] + ','

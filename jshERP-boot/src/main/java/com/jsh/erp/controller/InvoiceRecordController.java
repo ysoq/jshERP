@@ -1,6 +1,7 @@
 package com.jsh.erp.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -160,7 +162,7 @@ public class InvoiceRecordController {
         InvoiceRecord oldRecord = invoiceRecordMapper.selectById(invoiceRecordVo.getId());
         Map<String, Object> objectMap = new HashMap<>();
 
-        if(oldRecord == null) {
+        if (oldRecord == null) {
             return returnJson(objectMap, ErpInfo.ERROR.name, ErpInfo.ERROR.code);
         }
         var invoiceRecord = invoiceRecordVo.to();
@@ -183,29 +185,28 @@ public class InvoiceRecordController {
         return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
     }
 
-//
-//    /**
-//     * 修改
-//     *
-//     * @param invoiceRecord
-//     * @return
-//     */
-//    @PutMapping
-//    public ResponseEntity<Boolean> update( @RequestBody Supplier.InvoiceRecord invoiceRecord) {
-//        boolean result = invoiceRecordService.update(invoiceRecord);
-//        return ResponseEntity.ok(result);
-//    }
-//
-//    /**
-//     * 删除
-//     *
-//     * @param id
-//     * @return
-//     */
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Integer> delete(@PathVariable("id") Long id) {
-//        int result = invoiceRecordService.delete(id);
-//        return ResponseEntity.ok(result);
-//    }
+    @PostMapping("/batchSetStatus")
+    @Transactional
+    public String batchSetStatus(@RequestBody JSONObject jsonObject) throws Exception {
+        String status = jsonObject.getString("status");
+        var ids = jsonObject.getString("ids").split(",");
+        Map<String, Object> objectMap = new HashMap<>();
+        String whereStatus = "0".equals(status) ? "1" : "1".equals(status) ? "0" : "2".equals(status) ? "0" : "-100";
+        var where = Wrappers.<InvoiceRecord>lambdaQuery().in(InvoiceRecord::getId, ids).eq(InvoiceRecord::getStatus, whereStatus);
 
+        var list = invoiceRecordMapper.selectList(where);
+        if (!list.isEmpty()) {
+            for (var record : list) {
+                record.setStatus(status);
+                invoiceRecordMapper.updateById(record);
+            }
+            if ("0".equals(status)) {
+                auditRecordService.batchDelete(BusinessTypeEnum.Invoice_Record, list.stream().map(InvoiceRecord::getId).collect(Collectors.toList()));
+            } else if ("1".equals(status)) {
+                auditRecordService.batchCreateRecords(BusinessTypeEnum.Invoice_Record, list.stream().map(InvoiceRecord::getId).collect(Collectors.toList()));
+            }
+        }
+
+        return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
+    }
 }

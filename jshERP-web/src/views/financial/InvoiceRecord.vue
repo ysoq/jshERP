@@ -147,7 +147,7 @@
             @change="handleTableChange"
           >
             <span slot="action" slot-scope="text, record">
-              <a @click="myHandleDetail(record, '收入', prefixNo)">查看</a>
+              <a @click="handleDetail(record)">查看</a>
               <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
               <a v-if="btnEnableList.indexOf(1) > -1" @click="handleEdit(record)">编辑</a>
               <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
@@ -170,14 +170,14 @@
         <!-- table区域-end -->
         <!-- 表单区域 -->
         <invoice-record-modal ref="modalForm" @ok="modalFormOk" @close="modalFormClose"></invoice-record-modal>
-        <financial-detail ref="modalDetail" @ok="modalFormOk" @close="modalFormClose"></financial-detail>
+        <invoice-detail ref="modalDetail" @ok="modalFormOk" @close="modalFormClose"></invoice-detail>
       </a-card>
     </a-col>
   </a-row>
 </template>
 <script>
 import InvoiceRecordModal from './modules/InvoiceRecordModal'
-import FinancialDetail from './dialog/FinancialDetail'
+import InvoiceDetail from './dialog/InvoiceDetail.vue'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { FinancialListMixin } from './mixins/FinancialListMixin'
 import JDate from '@/components/jeecg/JDate'
@@ -188,7 +188,7 @@ export default {
   mixins: [JeecgListMixin, FinancialListMixin],
   components: {
     InvoiceRecordModal,
-    FinancialDetail,
+    InvoiceDetail,
     JDate
   },
   data () {
@@ -202,16 +202,6 @@ export default {
       },
       // 查询条件
       queryParam: {
-        billNo: '',
-        inOutItemId: '',
-        searchMaterial: '',
-        type: '收入',
-        organId: undefined,
-        creator: undefined,
-        handsPersonId: undefined,
-        accountId: undefined,
-        status: undefined,
-        remark: ''
       },
       // 表头
       columns: [
@@ -222,12 +212,27 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'action' }
         },
-        { title: '项目', dataIndex: 'projectId', width: 140, ellipsis: true },
-        { title: '往来单位', dataIndex: 'supplierId', width: 140, ellipsis: true },
+        {
+          title: '项目', dataIndex: 'projectId', width: 140, ellipsis: true,
+          customRender: (text, record) => {
+            return this.getMetaValue(this.inOutList, record.projectId + '', 'text', 'value')
+          }
+        },
+        {
+          title: '往来单位', dataIndex: 'supplierId', width: 140, ellipsis: true,
+          customRender: (text, record) => {
+            return this.getMetaValue(this.organList, record.supplierId, 'supplier', 'id')
+          }
+        },
         { title: '单据编号', dataIndex: 'invoiceNumber', width: 160 },
-        { title: '收入账户 ', dataIndex: 'accountId', width: 160 },
-        { title: '开票含税金额', dataIndex: 'taxAmount', width: 100, ellipsis: true },
-        { title: '单据日期', dataIndex: 'invoiceDate', width: 100, ellipsis: true },
+        {
+          title: '收入账户 ', dataIndex: 'accountId', width: 160,
+          customRender: (text, record) => {
+            return this.getMetaValue(this.accountList, record.accountId, 'name', 'id')
+          }
+        },
+        { title: '开票含税金额', dataIndex: 'taxAmount', width: 130, ellipsis: true },
+        { title: '单据日期', dataIndex: 'invoiceDate', width: 160, ellipsis: true },
         {
           title: '状态',
           dataIndex: 'status',
@@ -235,7 +240,12 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'customRenderStatus' }
         },
-        { title: '操作员', dataIndex: 'userName', width: 80 },
+        {
+          title: '操作员', dataIndex: 'updater', width: 80,
+          customRender: (text, record) => {
+            return this.getMetaValue(this.userList, record.updater, 'userName', 'id')
+          }
+        },
         { title: '审核员', dataIndex: 'auditor', width: 100 },
         { title: '审核时间', dataIndex: 'auditTime', width: 160 },
         { title: '备注', dataIndex: 'remark', width: 80 }
@@ -244,9 +254,9 @@ export default {
         list (args) {
           return postAction('/api/invoiceRecord/findPage', args)
         },
-        delete: '/accountHead/delete',
-        deleteBatch: '/accountHead/deleteBatch',
-        batchSetStatusUrl: '/accountHead/batchSetStatus'
+        delete: '/api/invoiceRecord/delete',
+        deleteBatch: '/api/invoiceRecord/deleteBatch',
+        batchSetStatusUrl: '/api/invoiceRecord/batchSetStatus'
       }
     }
   },
@@ -262,17 +272,32 @@ export default {
 
   },
   methods: {
+    async handleDetail(record) {
+      const res = await getAction(`/api/invoiceRecord/${record.id}`, {})
+      const data = res.data
+      data.projectId = this.getMetaValue(this.inOutList, data.projectId + '',  'text', 'value',)
+      data.supplierId = this.getMetaValue(this.organList, data.supplierId, 'supplier', 'id', )
+      data.accountId = this.getMetaValue(this.accountList, data.accountId,  'name', 'id',)
+      this.$refs.modalDetail.show(data, "KP", "")
+      this.$refs.modalDetail.title = '开票详情'
+    },
     async handleEdit (record) {
-      console.log(record, 'handleEdit')
-      if (!record) {
+      if (record.status === '0') {
         const res = await getAction(`/api/invoiceRecord/${record.id}`, {})
         this.$refs.modalForm.edit(res.data)
+        this.$refs.modalForm.title = '编辑'
+        this.$refs.modalForm.disableSubmit = false
       } else {
-        this.$refs.modalForm.edit({})
+        this.$message.warning('抱歉，只有未审核的单据才能编辑，请先进行反审核！')
       }
-
-      this.$refs.modalForm.title = '编辑'
-      this.$refs.modalForm.disableSubmit = false
+    },
+    getMetaValue (list, text, key, value) {
+      const a = list.find(item => item[value] === text)
+      if (a) {
+        return a[key]
+      } else {
+        return ''
+      }
     }
   }
 }
