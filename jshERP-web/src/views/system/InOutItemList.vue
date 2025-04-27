@@ -122,12 +122,7 @@
             <span slot="name" slot-scope="name, record">
                <a @click="handleFlow(record)"> {{ name }}</a>
             </span>
-            <span slot="totalUnInAccount" slot-scope="enabled, record">
-              {{ getPrice(record) }}
-            </span>
-            <span slot="contractPrice" slot-scope="enabled, record">
-              {{ getPrice2(record.contractPrice) }}
-            </span>
+
             <div slot="totalInAccount" slot-scope="enabled, record">
               <span>{{ getPrice2(record.totalInAccount) }}</span>
               <span style="color: royalblue"
@@ -135,9 +130,7 @@
                 }}%)</span>
 
             </div>
-            <span slot="totalOutAccount" slot-scope="enabled, record">
-              {{ getPrice2(record.totalOutAccount) }}
-            </span>
+
             <span slot="finishTime" slot-scope="finishTime, record">
               <span :style='{color: isAfterNow(record) ? "red": ""}'>{{ finishTime }}</span>
             </span>
@@ -202,7 +195,7 @@ export default {
       supplierList: [],
       // 查询条件
       queryParam: { name: '', type: '', remark: '' },
-      totalColumns: ['contractPrice', 'totalInAccount', 'totalUnInAccount', 'totalOutAccount'],
+      totalColumns: ['contractPrice', 'totalInAccount', 'totalUnInAccount', 'totalOutAccount', 'taxAmount'],
       // 表头
       columns: [
         {
@@ -238,7 +231,9 @@ export default {
         },
         {
           title: '合同金额', dataIndex: 'contractPrice', width: 150,
-          scopedSlots: { customRender: 'contractPrice' }
+          customRender: (text) => {
+            return this.getPrice2(text)
+          }
         },
         {
           title: '已回款金额', dataIndex: 'totalInAccount', width: 180,
@@ -248,13 +243,22 @@ export default {
           title: '未回款金额',
           dataIndex: 'totalUnInAccount',
           width: 150,
-          scopedSlots: { customRender: 'totalUnInAccount' }
+          customRender: (text, item) => {
+            return this.getPrice(item)
+          }
         },
         {
           title: '支出金额', dataIndex: 'totalOutAccount', width: 150,
-          scopedSlots: { customRender: 'totalOutAccount' }
+          customRender: (text) => {
+            return this.getPrice2(text)
+          }
         },
-
+        {
+          title: '含税开票金额', dataIndex: 'taxAmount', width: 150,
+          customRender: (text) => {
+            return this.getPrice2(text)
+          }
+        },
         {
           title: '状态',
           dataIndex: 'enabled',
@@ -424,7 +428,7 @@ export default {
     //导出单据
     handleExport () {
       let list = []
-      let head = '#,编号,名称,类型,项目经理,联系方式,客户,项目完成日期,项目进度,合同金额,已回款金额,未回款金额,支出金额,状态,备注'
+      let head = '#,编号,名称,类型,项目经理,联系方式,客户,项目完成日期,项目进度,合同金额,已回款金额,未回款金额,支出金额,含税开票金额,状态,备注'
       for (let i = 0; i < this.dataSource.length; i++) {
         let item = []
         let ds = this.dataSource[i]
@@ -436,6 +440,7 @@ export default {
           this.getPrice2(ds.totalInAccount),
           this.getPrice(ds),
           this.getPrice2(ds.totalOutAccount),
+          this.getPrice2(ds.taxAmount),
           status, ds.remark)
         list.push(item)
       }
