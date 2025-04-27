@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.lang.reflect.Field;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ResponseJsonUtil {
     public static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -27,11 +29,44 @@ public class ResponseJsonUtil {
             if (name.equals("createTime") || name.equals("modifyTime")||name.equals("updateTime")) {
                 return value;
             } else if (value instanceof Date) {
-                return FORMAT.format(value);
+                // 获取字段的JsonFormat注解
+                JsonFormat jsonFormat = getJsonFormatAnnotation(object, name);
+                if (jsonFormat != null && !jsonFormat.pattern().isEmpty()) {
+                    try {
+                        String pattern = jsonFormat.pattern();
+                        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+                        // 处理时区
+                        if (!jsonFormat.timezone().isEmpty()) {
+                            formatter.setTimeZone(TimeZone.getTimeZone(jsonFormat.timezone()));
+                        }
+                        return formatter.format((Date) value);
+                    } catch (IllegalArgumentException e) {
+                        // 格式或时区无效时回退到默认格式
+                        return FORMAT.format(value);
+                    }
+                } else {
+                    // 无注解或格式无效时使用默认格式化
+                    return FORMAT.format(value);
+                }
             } else {
                 return value;
             }
         }
+    }
+
+    // 辅助方法：递归查找字段的JsonFormat注解
+    private static JsonFormat getJsonFormatAnnotation(Object object, String name) {
+        Class<?> clazz = object.getClass();
+        while (clazz != null) {
+            try {
+                Field field = clazz.getDeclaredField(name);
+                return field.getAnnotation(JsonFormat.class);
+            } catch (NoSuchFieldException e) {
+                // 继续查找父类
+                clazz = clazz.getSuperclass();
+            }
+        }
+        return null;
     }
 
     /**

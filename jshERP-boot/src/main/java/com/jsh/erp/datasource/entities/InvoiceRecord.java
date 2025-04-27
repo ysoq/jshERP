@@ -1,7 +1,10 @@
 package com.jsh.erp.datasource.entities;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -23,6 +26,7 @@ public class InvoiceRecord implements Serializable {
     /**
      *  主键
      */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
@@ -53,6 +57,7 @@ public class InvoiceRecord implements Serializable {
     /**
      *  单据日期
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date invoiceDate;
 
     /**
@@ -61,14 +66,10 @@ public class InvoiceRecord implements Serializable {
     private String status;
 
     /**
-     *  操作员ID
-     */
-    private Long operatorId;
-
-    /**
      *  备注
      */
     private String remark;
+    private String fileName;
 
     /**
      *  删除标记(0-未删除 1-已删除)
@@ -78,11 +79,13 @@ public class InvoiceRecord implements Serializable {
     /**
      *  创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
      *  更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**

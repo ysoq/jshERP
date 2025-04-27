@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,12 @@ public class AuditRecordService {
         } catch (Exception e) {
             return 0;
         }
+    }
+    @Transactional
+    public int batchCreateRecord(BusinessTypeEnum businessType, Long businessId) throws Exception {
+        List<Long> ids = new ArrayList<>();
+        ids.add(businessId);
+        return batchCreateRecords(businessType, ids);
     }
 
     @Transactional

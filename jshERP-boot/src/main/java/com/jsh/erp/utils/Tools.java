@@ -224,6 +224,15 @@ public class Tools {
         return new SimpleDateFormat("yyyy-MM").format(cal.getTime());
     }
 
+    public static Date getDate235959(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        return calendar.getTime();
+    }
+
     /**
      * 获取当前月份的前6个月(含当前月)
      * @param size  月数
