@@ -6,6 +6,7 @@ package com.jsh.erp.utils;
 public enum ErpInfo {
     //通过构造传递参数
     OK(200, "成功"),
+    NAME_EXIST(400, "名称已存在"),
     BAD_REQUEST(400, "请求错误或参数错误"),
     UNAUTHORIZED(401, "未认证用户"),
     INVALID_VERIFY_CODE(461, "错误的验证码"),

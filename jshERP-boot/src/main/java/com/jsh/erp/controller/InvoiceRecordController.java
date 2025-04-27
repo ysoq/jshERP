@@ -146,7 +146,7 @@ public class InvoiceRecordController {
     }
 
     /**
-     * 新增
+     * 修改
      */
     @PutMapping("/update")
     @Transactional
@@ -200,5 +200,19 @@ public class InvoiceRecordController {
         }
 
         return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
+    }
+
+    @DeleteMapping("/delete")
+    @Transactional
+    public String delete(@RequestParam Long id) throws Exception {
+        var data = invoiceRecordMapper.selectById(id);
+        if (data == null) {
+            return returnJson(new HashMap<>(), ErpInfo.ERROR.name, ErpInfo.ERROR.code);
+        }
+        data.setDeleteFlag("1");
+        data.setUpdateTime(new Date());
+        data.setUpdater(userService.getCurrentUser().getId());
+        invoiceRecordMapper.updateById(data);
+        return returnJson(new HashMap<>(), ErpInfo.OK.name, ErpInfo.OK.code);
     }
 }
