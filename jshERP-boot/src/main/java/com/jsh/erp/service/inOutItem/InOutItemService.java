@@ -264,7 +264,11 @@ public class InOutItemService {
         } else if(type.equals("hasCode")) {
             queryWrapper.isNotNull(InOutItem::getCode);
         }
-        queryWrapper.eq(InOutItem::getTenantId, userService.getCurrentUser().getTenantId());
+        try {
+            queryWrapper.eq(InOutItem::getTenantId, userService.getCurrentUser().getTenantId());
+        } catch (Exception e) {
+
+        }
 
         queryWrapper.orderByAsc(InOutItem::getSort)
                    .orderByDesc(InOutItem::getId);

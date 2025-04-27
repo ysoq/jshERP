@@ -41,6 +41,9 @@ public class InvoiceRecordServiceImpl extends ServiceImpl<InvoiceRecordMapper, I
         var queryWrapper = new QueryWrapper<InvoiceRecord>();
         var ids = inOutItemList.stream().map(InOutItem::getId).toArray();
         queryWrapper.in("project_id", ids);
+        queryWrapper.eq("delete_flag", "0");
+        queryWrapper.eq("status", "1");
+
         List<InvoiceRecord> invoiceRecordList = invoiceRecordMapper.selectList(queryWrapper);
 
         // 遍历 InOutItem 列表，根据 projectId 查询对应的发票信息，并赋值到 InOutItem 对象中
