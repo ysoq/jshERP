@@ -125,7 +125,8 @@ function getProjectSelect(type) {
       return res.map(x => ({
         value: x.id + '',
         text: x.name,
-        title: x.name
+        title: x.name,
+        ...x
       }))
     }
     return []

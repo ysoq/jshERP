@@ -225,6 +225,9 @@ public class Tools {
     }
 
     public static Date getDate235959(Date date) {
+        if(date == null) {
+            return null;
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 23);

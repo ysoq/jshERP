@@ -22,11 +22,27 @@
       </template>
       <a-spin :spinning='confirmLoading'>
         <a-form :form='form' id='memberModal'>
+          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目'>
+            <a-select placeholder="" v-decorator.trim="[ 'projectId', validatorRules.projectId ]" optionFilterProp="children"
+                      :dropdownMatchSelectWidth="false" showSearch allowClear>
+              <a-select-option v-for="(item, index) in bonusList" :key="index" :value="item.id">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='班组'>
+            <a-select placeholder="" v-decorator.trim="[ 'teamId', validatorRules.teamId ]" optionFilterProp="children"
+                      :dropdownMatchSelectWidth="false" showSearch allowClear>
+              <a-select-option v-for="(item, index) in workTeamList" :key="index" :value="item.id">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='金额'>
             <a-input-number
               style='width: 100%'
               placeholder='请输入金额'
-              v-decorator.trim="['totalPrice', validatorRules.totalPrice]"
+              v-decorator.trim="['amount', validatorRules.amount]"
               :min='0'
               :max='999999999'
             ></a-input-number>
@@ -50,6 +66,10 @@ import dayjs from 'dayjs'
 export default {
   name: 'ProjectBonusModal',
   mixins: [mixinDevice],
+  props: {
+    workTeamList: Array,
+    bonusList: Array,
+  },
   data() {
     return {
       title: '操作',
@@ -67,11 +87,21 @@ export default {
       confirmLoading: false,
       form: this.$form.createForm(this),
       validatorRules: {
-        totalPrice: {
+        projectId: {
+          rules: [
+            { required: true, message: '请选择项目!' }
+          ]
+        },
+        teamId: {
+          rules: [
+            { required: true, message: '请选择班组!' }
+          ]
+        },
+        amount: {
           rules: [
             { required: true, message: '请输入金额!' }
           ]
-        }
+        },
       }
     }
   },
@@ -82,17 +112,13 @@ export default {
       this.form.resetFields()
       this.model = Object.assign({}, record)
       this.visible = true
-      if(!this.model.billNo) {
-        getAction('/sequence/buildNumber').then((res) => {
-          if (res && res.code === 200) {
-            this.model.billNo= 'JEFP' + res.data.defaultNumber
-          }
-        })
-      }
+
       this.$nextTick(() => {
         this.form.setFieldsValue({
-          'totalPrice': this.model.totalPrice ? Math.abs(this.model.totalPrice ) : null,
-          'remark': this.model.remark
+          'remark': this.model.remark,
+          'projectId': this.model.projectId,
+          'teamId': this.model.teamId,
+          'amount': this.model.amount,
         })
         autoJumpNextInput('memberModal')
       })
@@ -108,38 +134,24 @@ export default {
         if (!err) {
           that.confirmLoading = true
           const args = {
-            info: JSON.stringify({
-              'billTime': this.model.billTime || dayjs().format('YYYY-MM-DD HH:mm:ss'),
-              'billNo': this.model.billNo,
-              'remark': values.remark,
-              'changeAmount': values.totalPrice * -1,
-              'type': '分配金额',
-              'totalPrice': values.totalPrice * -1,
-              'status': '0',
-              'id': this.model.id
-            }),
-            rows: JSON.stringify([
-              {
-                "eachAmount": values.totalPrice,
-                "inOutItemId": this.model.inOutItemId
-              }
-            ])
+             ...values,
+            'id': this.model.id ? this.model.id : null,
           }
           let obj
           if (!this.model.id) {
-            obj = httpAction('/accountHead/addAccountHeadAndDetail', args, 'post')
+            obj = httpAction('/api/projectAmount/insert', args, 'post')
           } else {
-            obj = httpAction('/accountHead/updateAccountHeadAndDetail', args, 'put')
+            obj = httpAction('/api/projectAmount/update', args, 'put')
           }
           obj.then((res) => {
             if (res.code === 200) {
               that.$emit('ok')
+              that.close()
             } else {
               that.$message.warning(res.data.message)
             }
           }).finally(() => {
             that.confirmLoading = false
-            that.close()
           })
         }
       })
@@ -147,24 +159,6 @@ export default {
     handleCancel() {
       this.close()
     },
-    validateSupplierName(rule, value, callback) {
-      let params = {
-        name: value,
-        type: '会员',
-        id: this.model.id ? this.model.id : 0
-      }
-      checkSupplier(params).then((res) => {
-        if (res && res.code === 200) {
-          if (!res.data.status) {
-            callback()
-          } else {
-            callback('会员卡号已经存在')
-          }
-        } else {
-          callback(res.data)
-        }
-      })
-    }
   }
 }
 </script>

@@ -141,4 +141,11 @@ public class InOutItemController {
         return res;
     }
 
+    @GetMapping("/canBonus")
+    public BaseResponseInfo selectList() {
+        List<InOutItem> status5Or6 = inOutItemMapperEx.selectProjectByStatus(new String[]{"5", "6"});
+        BaseResponseInfo res = new BaseResponseInfo();
+        res.data = status5Or6;
+        return res;
+    }
 }

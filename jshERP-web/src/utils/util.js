@@ -1,32 +1,40 @@
 import { isURL } from '@/utils/validate'
-import { downFilePost} from '@/api/manage'
+import { downFilePost } from '@/api/manage'
 import Vue from 'vue'
 import introJs from 'intro.js'
 
-
-export function getNumberValue(value) {
-  if (['string', 'number'].includes(typeof value) && !isNaN(parseFloat(value)) && isFinite(value)) {
-    return value - 0;
+export function getMetaValue (list, text, key, value) {
+  const a = list.find(item => item[value] + '' === text + '')
+  if (a) {
+    return a[key]
+  } else {
+    return ''
   }
-  return null;
 }
 
-export function timeFix() {
+export function getNumberValue (value) {
+  if (['string', 'number'].includes(typeof value) && !isNaN(parseFloat(value)) && isFinite(value)) {
+    return value - 0
+  }
+  return null
+}
+
+export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
   return hour < 9 ? '早上好' : (hour <= 11 ? '上午好' : (hour <= 13 ? '中午好' : (hour < 20 ? '下午好' : '晚上好')))
 }
 
-export function welcome() {
+export function welcome () {
   const arr = ['休息一会儿吧', '准备吃什么呢?', '要不要打一把 DOTA', '我猜你可能累了']
-  let index = Math.floor((Math.random()*arr.length))
+  let index = Math.floor((Math.random() * arr.length))
   return arr[index]
 }
 
 /**
  * 触发 window.resize
  */
-export function triggerWindowResizeEvent() {
+export function triggerWindowResizeEvent () {
   let event = document.createEvent('HTMLEvents')
   event.initEvent('resize', true, true)
   event.eventType = 'message'
@@ -38,18 +46,18 @@ export function triggerWindowResizeEvent() {
  * @param obj
  * @returns {*}
  */
-export function filterObj(obj) {
+export function filterObj (obj) {
   if (!(typeof obj == 'object')) {
-    return;
+    return
   }
 
-  for ( let key in obj) {
+  for (let key in obj) {
     if (obj.hasOwnProperty(key)
       && (obj[key] == null || obj[key] == undefined || obj[key] === '')) {
-      delete obj[key];
+      delete obj[key]
     }
   }
-  return obj;
+  return obj
 }
 
 /**
@@ -58,11 +66,11 @@ export function filterObj(obj) {
  * @param fmt
  * @returns {*}
  */
-export function formatDate(value, fmt) {
-  let regPos = /^\d+(\.\d+)?$/;
-  if(regPos.test(value)){
+export function formatDate (value, fmt) {
+  let regPos = /^\d+(\.\d+)?$/
+  if (regPos.test(value)) {
     //如果是数字
-    let getDate = new Date(value);
+    let getDate = new Date(value)
     let o = {
       'M+': getDate.getMonth() + 1,
       'd+': getDate.getDate(),
@@ -71,7 +79,7 @@ export function formatDate(value, fmt) {
       's+': getDate.getSeconds(),
       'q+': Math.floor((getDate.getMonth() + 3) / 3),
       'S': getDate.getMilliseconds()
-    };
+    }
     if (/(y+)/.test(fmt)) {
       fmt = fmt.replace(RegExp.$1, (getDate.getFullYear() + '').substr(4 - RegExp.$1.length))
     }
@@ -80,18 +88,18 @@ export function formatDate(value, fmt) {
         fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
       }
     }
-    return fmt;
-  }else{
+    return fmt
+  } else {
     //TODO
-    value = value.trim();
-    return value.substr(0,fmt.length);
+    value = value.trim()
+    return value.substr(0, fmt.length)
   }
 }
 
 // 生成首页路由
-export function generateIndexRouter(data) {
+export function generateIndexRouter (data) {
   let indexRouter = generateChildRouters(data)
-  indexRouter.splice(0,0, {
+  indexRouter.splice(0, 0, {
     path: '/',
     name: '首页',
     component: () => import('@/components/layouts/TabLayout'),
@@ -102,30 +110,30 @@ export function generateIndexRouter(data) {
     },
     redirect: '/dashboard/analysis'
   })
-  return indexRouter;
+  return indexRouter
 }
 
 // 生成嵌套路由（子路由）
 
 function generateChildRouters (data) {
-  const routers = [];
+  const routers = []
   for (let item of data) {
-    let componentPath = "";
-    item.route = "1";
-    if(item.component.indexOf("layouts")>=0){
-      componentPath = () => import('@/components'+item.component);
+    let componentPath = ''
+    item.route = '1'
+    if (item.component.indexOf('layouts') >= 0) {
+      componentPath = () => import('@/components' + item.component)
     } else {
-      componentPath = () => import('@/views'+item.component);
+      componentPath = () => import('@/views' + item.component)
     }
     // eslint-disable-next-line
-    let URL = (item.url|| '').replace(/{{([^}}]+)?}}/g, (s1, s2) => eval(s2)) // URL支持{{ window.xxx }}占位符变量
+    let URL = (item.url || '').replace(/{{([^}}]+)?}}/g, (s1, s2) => eval(s2)) // URL支持{{ window.xxx }}占位符变量
     if (isURL(URL)) {
-      item.url = URL;
+      item.url = URL
     }
-    let componentName =''
-    if(item.component) {
-      let index = item.component.lastIndexOf("\/");
-      componentName = item.component.substring(index + 1, item.component.length);
+    let componentName = ''
+    if (item.component) {
+      let index = item.component.lastIndexOf('\/')
+      componentName = item.component.substring(index + 1, item.component.length)
     }
     let menu = {
       path: item.url,
@@ -135,27 +143,27 @@ function generateChildRouters (data) {
         title: item.text,
         icon: item.icon,
         url: item.url,
-        componentName:componentName,
-        internalOrExternal:true,
+        componentName: componentName,
+        internalOrExternal: true,
         keepAlive: true
       }
     }
-    if(item.component.indexOf("IframePageView")>-1){
+    if (item.component.indexOf('IframePageView') > -1) {
       //给带iframe的页面进行改造
       menu.iframeComponent = componentPath
     } else {
       menu.component = componentPath
     }
     if (item.children && item.children.length > 0) {
-      menu.children = [...generateChildRouters( item.children)];
+      menu.children = [...generateChildRouters(item.children)]
     }
     //--update-begin----author:scott---date:20190320------for:根据后台菜单配置，判断是否路由菜单字段，动态选择是否生成路由（为了支持参数URL菜单）------
     //判断是否生成路由
-    if(item.route && item.route === '0'){
+    if (item.route && item.route === '0') {
       //console.log(' 不生成路由 item.route：  '+item.route);
       //console.log(' 不生成路由 item.path：  '+item.path);
-    }else{
-      routers.push(menu);
+    } else {
+      routers.push(menu)
     }
     //--update-end----author:scott---date:20190320------for:根据后台菜单配置，判断是否路由菜单字段，动态选择是否生成路由（为了支持参数URL菜单）------
   }
@@ -167,7 +175,7 @@ function generateChildRouters (data) {
  * @param obj 被克隆的对象
  * @return 克隆后的对象
  */
-export function cloneObject(obj) {
+export function cloneObject (obj) {
   return JSON.parse(JSON.stringify(obj))
 }
 
@@ -181,14 +189,14 @@ export function cloneObject(obj) {
  * @param2 最大值
  * @return int 生成后的数字
  */
-export function randomNumber() {
+export function randomNumber () {
   // 生成 最小值 到 最大值 区间的随机数
   const random = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
   if (arguments.length === 1) {
     let [length] = arguments
-  // 生成指定长度的随机数字，首位一定不是 0
+    // 生成指定长度的随机数字，首位一定不是 0
     let nums = [...Array(length).keys()].map((i) => (i > 0 ? random(0, 9) : random(1, 9)))
     return parseInt(nums.join(''))
   } else if (arguments.length >= 2) {
@@ -205,7 +213,7 @@ export function randomNumber() {
  * @param chats 可选字符串区间（只会生成传入的字符串中的字符）
  * @return string 生成的字符串
  */
-export function randomString(length, chats) {
+export function randomString (length, chats) {
   if (!length) length = 1
   if (!chats) chats = '0123456789qwertyuioplkjhgfdsazxcvbnm'
   let str = ''
@@ -220,7 +228,7 @@ export function randomString(length, chats) {
  * 随机生成uuid
  * @return string 生成的uuid
  */
-export function randomUUID() {
+export function randomUUID () {
   let chats = '0123456789abcdef'
   return randomString(32, chats)
 }
@@ -230,10 +238,10 @@ export function randomUUID() {
  * @param string
  * @returns {*}
  */
-export function underLine2CamelCase(string){
-  return string.replace( /_([a-z])/g, function( all, letter ) {
-    return letter.toUpperCase();
-  });
+export function underLine2CamelCase (string) {
+  return string.replace(/_([a-z])/g, function(all, letter) {
+    return letter.toUpperCase()
+  })
 }
 
 /**
@@ -241,11 +249,11 @@ export function underLine2CamelCase(string){
  * @param bpmStatus
  * @returns {*}
  */
-export function showDealBtn(bpmStatus){
-  if(bpmStatus!="1"&&bpmStatus!="3"&&bpmStatus!="4"){
-    return true;
+export function showDealBtn (bpmStatus) {
+  if (bpmStatus != '1' && bpmStatus != '3' && bpmStatus != '4') {
+    return true
   }
-  return false;
+  return false
 }
 
 /**
@@ -253,9 +261,9 @@ export function showDealBtn(bpmStatus){
  * @param css 要增强的css
  * @param id style标签的id，可以用来清除旧样式
  */
-export function cssExpand(css, id) {
+export function cssExpand (css, id) {
   let style = document.createElement('style')
-  style.type = "text/css"
+  style.type = 'text/css'
   style.innerHTML = `@charset "UTF-8"; ${css}`
   // 清除旧样式
   if (id) {
@@ -267,7 +275,6 @@ export function cssExpand(css, id) {
   document.head.appendChild(style)
 }
 
-
 /** 用于js增强事件，运行JS代码，可以传参 */
 // options 所需参数：
 //    参数名         类型            说明
@@ -275,7 +282,7 @@ export function cssExpand(css, id) {
 //    event          Object          event对象
 //    jsCode         String          待执行的js代码
 //    errorMessage   String          执行出错后的提示（控制台）
-export function jsExpand(options = {}) {
+export function jsExpand (options = {}) {
 
   // 绑定到window上的keyName
   let windowKeyName = 'J_CLICK_EVENT_OPTIONS'
@@ -305,13 +312,13 @@ export function jsExpand(options = {}) {
     vm: options.vm,
     event: options.event,
     // 当执行完成时，无论如何都会调用的回调事件
-    done() {
+    done () {
       // 执行完后删除新增的 script 标签不会撤销执行结果（已产生的结果不会被撤销）
       script.outerHTML = ''
       delete window[windowKeyName]['EVENT_' + id]
     },
     // 当js运行出错的时候调用的事件
-    error(e) {
+    error (e) {
       console.group(`${options.errorMessage || '用户自定义JS增强代码运行出错'}（${new Date()}）`)
       console.error(e)
       console.groupEnd()
@@ -329,7 +336,7 @@ export function jsExpand(options = {}) {
  * @param key 可空，如果比较的是对象，可能存在地址不一样但值实际上是一样的情况，可以传此字段判断对象中唯一的字段，例如 id。不传则直接比较实际值
  * @returns {boolean} 成功 push 返回 true，不处理返回 false
  */
-export function pushIfNotExist(array, value, key) {
+export function pushIfNotExist (array, value, key) {
   for (let item of array) {
     if (key && (item[key] === value[key])) {
       return false
@@ -359,7 +366,7 @@ export const failedSymbol = Symbol()
  * @param promise 可传Promise对象或返回Promise对象的方法
  * @returns {Promise<any>}
  */
-export function alwaysResolve(promise) {
+export function alwaysResolve (promise) {
   return new Promise((resolve, reject) => {
     let p = promise
     if (typeof promise === 'function') {
@@ -388,9 +395,9 @@ export function alwaysResolve(promise) {
  * @param delay 防抖的毫秒数
  * @returns {Function}
  */
-export function simpleDebounce(fn, delay = 100) {
+export function simpleDebounce (fn, delay = 100) {
   let timer = null
-  return function () {
+  return function() {
     let args = arguments
     if (timer) {
       clearTimeout(timer)
@@ -408,7 +415,7 @@ export function simpleDebounce(fn, delay = 100) {
  * @param replacer 替换后的内容
  * @returns {String} 替换后的字符串
  */
-export function replaceAll(text, checker, replacer) {
+export function replaceAll (text, checker, replacer) {
   let lastText = text
   text = text.replace(checker, replacer)
   if (lastText !== text) {
@@ -424,16 +431,16 @@ export function replaceAll(text, checker, replacer) {
  * @param replacer
  * @returns {string}
  */
-export function getMpListShort(thisRows, checker, replacer) {
+export function getMpListShort (thisRows, checker, replacer) {
   let mPropertyListShort = ''
   let nativeNameStr = ''
   for (let i = 0; i < thisRows.length; i++) {
     if (thisRows[i].enabled) {
-      nativeNameStr += thisRows[i].nativeName + ",";
+      nativeNameStr += thisRows[i].nativeName + ','
     }
   }
   if (nativeNameStr) {
-    mPropertyListShort = nativeNameStr.substring(0, nativeNameStr.length - 1);
+    mPropertyListShort = nativeNameStr.substring(0, nativeNameStr.length - 1)
   }
   return mPropertyListShort
 }
@@ -441,117 +448,117 @@ export function getMpListShort(thisRows, checker, replacer) {
 /**
  * js获取当前年份， 格式“yyyy”
  */
-export function getNowFormatYear() {
-  let date = new Date();
-  return date.getFullYear();
+export function getNowFormatYear () {
+  let date = new Date()
+  return date.getFullYear()
 }
 
 /**
  * js获取当前月份， 格式“yyyy-MM”
  */
-export function getNowFormatMonth() {
-  let date = new Date();
-  let seperator1 = "-";
-  let month = date.getMonth() + 1;
+export function getNowFormatMonth () {
+  let date = new Date()
+  let seperator1 = '-'
+  let month = date.getMonth() + 1
   if (month >= 1 && month <= 9) {
-    month = "0" + month;
+    month = '0' + month
   }
-  return date.getFullYear() + seperator1 + month;
+  return date.getFullYear() + seperator1 + month
 }
 
 /**
  * js获取当前日期， 格式“yyyy-MM-dd”
  */
-export function getFormatDate() {
-  let date = new Date();
-  let seperator1 = "-";
-  let year = date.getFullYear();
-  let month = date.getMonth() + 1;
-  let strDate = date.getDate();
+export function getFormatDate () {
+  let date = new Date()
+  let seperator1 = '-'
+  let year = date.getFullYear()
+  let month = date.getMonth() + 1
+  let strDate = date.getDate()
   if (month >= 1 && month <= 9) {
-    month = "0" + month;
+    month = '0' + month
   }
   if (strDate >= 0 && strDate <= 9) {
-    strDate = "0" + strDate;
+    strDate = '0' + strDate
   }
-  return year + seperator1 + month + seperator1 + strDate;
+  return year + seperator1 + month + seperator1 + strDate
 }
 
 /**
  * js获取当前时间， 格式“yyyy-MM-dd HH:MM:SS”
  */
-export function getNowFormatDateTime() {
-  let date = new Date();
-  let seperator1 = "-";
-  let seperator2 = ":";
-  let month = date.getMonth() + 1;
-  let strDate = date.getDate();
-  let strHours = date.getHours();
-  let strMinutes = date.getMinutes();
-  let strSeconds = date.getSeconds();
+export function getNowFormatDateTime () {
+  let date = new Date()
+  let seperator1 = '-'
+  let seperator2 = ':'
+  let month = date.getMonth() + 1
+  let strDate = date.getDate()
+  let strHours = date.getHours()
+  let strMinutes = date.getMinutes()
+  let strSeconds = date.getSeconds()
   if (month >= 1 && month <= 9) {
-    month = "0" + month;
+    month = '0' + month
   }
   if (strDate >= 0 && strDate <= 9) {
-    strDate = "0" + strDate;
+    strDate = '0' + strDate
   }
   if (strHours >= 0 && strHours <= 9) {
-    strHours = "0" + strHours;
+    strHours = '0' + strHours
   }
   if (strMinutes >= 0 && strMinutes <= 9) {
-    strMinutes = "0" + strMinutes;
+    strMinutes = '0' + strMinutes
   }
   if (strSeconds >= 0 && strSeconds <= 9) {
-    strSeconds = "0" + strSeconds;
+    strSeconds = '0' + strSeconds
   }
   return date.getFullYear() + seperator1 + month + seperator1 + strDate
-    + " " + strHours + seperator2 + strMinutes
-    + seperator2 + strSeconds;
+    + ' ' + strHours + seperator2 + strMinutes
+    + seperator2 + strSeconds
 }
 
 /**
  * js获取当前时间， 格式“yyyyMMddHHMMSS”
  */
-export function getNowFormatStr() {
-  let date = new Date();
-  let year = date.getFullYear();
-  let month = date.getMonth() + 1;
-  let strDate = date.getDate();
-  let strHours = date.getHours();
-  let strMinutes = date.getMinutes();
-  let strSeconds = date.getSeconds();
+export function getNowFormatStr () {
+  let date = new Date()
+  let year = date.getFullYear()
+  let month = date.getMonth() + 1
+  let strDate = date.getDate()
+  let strHours = date.getHours()
+  let strMinutes = date.getMinutes()
+  let strSeconds = date.getSeconds()
   if (month >= 1 && month <= 9) {
-    month = "0" + month;
+    month = '0' + month
   }
   if (strDate >= 0 && strDate <= 9) {
-    strDate = "0" + strDate;
+    strDate = '0' + strDate
   }
   if (strHours >= 0 && strHours <= 9) {
-    strHours = "0" + strHours;
+    strHours = '0' + strHours
   }
   if (strMinutes >= 0 && strMinutes <= 9) {
-    strMinutes = "0" + strMinutes;
+    strMinutes = '0' + strMinutes
   }
   if (strSeconds >= 0 && strSeconds <= 9) {
-    strSeconds = "0" + strSeconds;
+    strSeconds = '0' + strSeconds
   }
-  return year +''+ month +''+ strDate +''+ strHours +''+ strMinutes +''+ strSeconds;
+  return year + '' + month + '' + strDate + '' + strHours + '' + strMinutes + '' + strSeconds
 }
 
 /**
  * js获取N天前的日期， 格式“yyyy-MM-dd”
  */
-export function getBeforeFormatDate(day) {
-  let currentDate = new Date();
-  let thirtyDaysAgo = new Date(currentDate.getTime() - day * 24 * 60 * 60 * 1000);
-  let seperator1 = "-";
-  let month = thirtyDaysAgo.getMonth() + 1;
-  let strDate = thirtyDaysAgo.getDate();
+export function getBeforeFormatDate (day) {
+  let currentDate = new Date()
+  let thirtyDaysAgo = new Date(currentDate.getTime() - day * 24 * 60 * 60 * 1000)
+  let seperator1 = '-'
+  let month = thirtyDaysAgo.getMonth() + 1
+  let strDate = thirtyDaysAgo.getDate()
   if (month >= 1 && month <= 9) {
-    month = "0" + month;
+    month = '0' + month
   }
   if (strDate >= 0 && strDate <= 9) {
-    strDate = "0" + strDate;
+    strDate = '0' + strDate
   }
   return thirtyDaysAgo.getFullYear() + seperator1 + month + seperator1 + strDate
 }
@@ -559,17 +566,17 @@ export function getBeforeFormatDate(day) {
 /**
  * js获取N月前的日期， 格式“yyyy-MM-dd”
  */
-export function getPrevMonthFormatDate(monthNum) {
-  let prevMonth = new Date(); // 当前日期
-  prevMonth.setMonth(prevMonth.getMonth() - monthNum); // 设置为前一个月
-  let seperator1 = "-";
-  let month = prevMonth.getMonth() + 1;
-  let strDate = prevMonth.getDate();
+export function getPrevMonthFormatDate (monthNum) {
+  let prevMonth = new Date() // 当前日期
+  prevMonth.setMonth(prevMonth.getMonth() - monthNum) // 设置为前一个月
+  let seperator1 = '-'
+  let month = prevMonth.getMonth() + 1
+  let strDate = prevMonth.getDate()
   if (month >= 1 && month <= 9) {
-    month = "0" + month;
+    month = '0' + month
   }
   if (strDate >= 0 && strDate <= 9) {
-    strDate = "0" + strDate;
+    strDate = '0' + strDate
   }
   return prevMonth.getFullYear() + seperator1 + month + seperator1 + strDate
 }
@@ -579,19 +586,19 @@ export function getPrevMonthFormatDate(monthNum) {
  * @param arrylist
  * @param val
  */
-export function removeByVal(arrylist, val) {
-  for(var i = 0; i < arrylist .length; i++) {
-    if(arrylist [i] == val) {
-      arrylist .splice(i, 1);
-      break;
+export function removeByVal (arrylist, val) {
+  for (var i = 0; i < arrylist.length; i++) {
+    if (arrylist [i] == val) {
+      arrylist.splice(i, 1)
+      break
     }
   }
 }
 
-export function getCheckFlag(multiBillType, multiLevelApprovalFlag, prefixNo) {
-  if(multiLevelApprovalFlag==='1') {
+export function getCheckFlag (multiBillType, multiLevelApprovalFlag, prefixNo) {
+  if (multiLevelApprovalFlag === '1') {
     //开启
-    if(multiBillType) {
+    if (multiBillType) {
       let multiBillTypeArr = multiBillType.split(',')
       return multiBillTypeArr.indexOf(prefixNo) <= -1
     } else {
@@ -608,51 +615,50 @@ export function getCheckFlag(multiBillType, multiLevelApprovalFlag, prefixNo) {
  * @param str
  * @returns {Array}
  */
-export function changeListFmtMinus(str) {
+export function changeListFmtMinus (str) {
   let newArr = new Array()
-  if(str) {
+  if (str) {
     let arr = []
-    if(str.indexOf(',')>-1) {
+    if (str.indexOf(',') > -1) {
       arr = str.split(',')
     } else {
       arr = str
     }
-    for(let i=0; i<arr.length; i++) {
-      if(arr[i] < 0){
-        newArr.push((arr[i]-0).toString());
-      }
-      else {
-        newArr.push((0 - arr[i]).toString());
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] < 0) {
+        newArr.push((arr[i] - 0).toString())
+      } else {
+        newArr.push((0 - arr[i]).toString())
       }
     }
   }
-  return newArr;
+  return newArr
 }
 
 //通过post方式导出Excel
-export function exportXlsPost(fileName, title, head, tip, list) {
-  if(!fileName || typeof fileName != "string"){
-    fileName = "导出文件"
+export function exportXlsPost (fileName, title, head, tip, list) {
+  if (!fileName || typeof fileName != 'string') {
+    fileName = '导出文件'
   }
-  let paramObj = {'title': title, 'head': head, 'tip': tip, 'list': list}
-  console.log("导出参数", paramObj)
-  downFilePost(paramObj).then((data)=>{
+  let paramObj = { 'title': title, 'head': head, 'tip': tip, 'list': list }
+  console.log('导出参数', paramObj)
+  downFilePost(paramObj).then((data) => {
     if (!data) {
-      this.$message.warning("文件下载失败")
+      this.$message.warning('文件下载失败')
       return
     }
     if (typeof window.navigator.msSaveBlob !== 'undefined') {
-      window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
-    }else{
-      let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+      window.navigator.msSaveBlob(new Blob([data], { type: 'application/vnd.ms-excel' }), fileName + '.xls')
+    } else {
+      let url = window.URL.createObjectURL(new Blob([data], { type: 'application/vnd.ms-excel' }))
       let link = document.createElement('a')
       link.style.display = 'none'
       link.href = url
-      link.setAttribute('download', fileName + '_' + getNowFormatStr()+'.xls')
+      link.setAttribute('download', fileName + '_' + getNowFormatStr() + '.xls')
       document.body.appendChild(link)
       link.click()
-      document.body.removeChild(link); //下载完成移除元素
-      window.URL.revokeObjectURL(url); //释放掉blob对象
+      document.body.removeChild(link) //下载完成移除元素
+      window.URL.revokeObjectURL(url) //释放掉blob对象
     }
   })
 }
@@ -662,51 +668,51 @@ export function exportXlsPost(fileName, title, head, tip, list) {
  * @param module 这个变量可以用来存取版本号， 系统更新时候改变相应值
  * @param cur_version 这个变量可以用来存取版本号， 系统更新时候改变相应值
  */
-export function handleIntroJs(module, cur_version) {
+export function handleIntroJs (module, cur_version) {
   //每个页面设置不同的缓存变量名称，不可以重复，有新版本时，更新cur_version
   //有新版本更新时才出现一次引导页， 第二次进入进不再出现， 这里有缓存来判断
   let introJsObj = introJs()
-  if(module !== 'indexChart') {
+  if (module !== 'indexChart') {
     let idElement = '#' + module
     introJsObj = introJs(idElement)
   }
   if (Vue.ls.get('intro_cache_' + module) === cur_version) {
-    return;
+    return
   }
   introJsObj.setOptions({
     prevLabel: '&larr; 上一步',
     nextLabel: '下一步 &rarr;',
     doneLabel: '知道了',
     exitOnOverlayClick: false //点击空白区域是否关闭提示组件
-  }).oncomplete(function(){
+  }).oncomplete(function() {
     //点击跳过按钮后执行的事件(这里保存对应的版本号到缓存,并且设置有效期为100天）
-    Vue.ls.set('intro_cache_' + module, cur_version, 100 * 24 * 60 * 60 * 1000);
-  }).onexit(function(){
+    Vue.ls.set('intro_cache_' + module, cur_version, 100 * 24 * 60 * 60 * 1000)
+  }).onexit(function() {
     //点击结束按钮后， 执行的事件
-    Vue.ls.set('intro_cache_' + module, cur_version, 100 * 24 * 60 * 60 * 1000);
+    Vue.ls.set('intro_cache_' + module, cur_version, 100 * 24 * 60 * 60 * 1000)
   }).start()
 }
 
 /**
  * 回车后自动跳到下一个input
  */
-export function autoJumpNextInput(domInfo) {
+export function autoJumpNextInput (domInfo) {
   let domIndex = 0
   let inputs = document.getElementById(domInfo).getElementsByTagName('input')
   inputs[domIndex].focus()
-  document.getElementById(domInfo).addEventListener('keydown',function(e){
-    if(e.keyCode === 13){
+  document.getElementById(domInfo).addEventListener('keydown', function(e) {
+    if (e.keyCode === 13) {
       domIndex++
-      if(domIndex === inputs.length) {
+      if (domIndex === inputs.length) {
         domIndex = 0
       }
       inputs[domIndex].focus()
     }
   })
-  for(let i=0; i<inputs.length; i++){
+  for (let i = 0; i < inputs.length; i++) {
     //这个index就是做个介质，来获取当前的i是第几个
-    inputs[i].index = i;
-    inputs[i].onclick = function () {
+    inputs[i].index = i
+    inputs[i].onclick = function() {
       domIndex = this.index
     }
   }

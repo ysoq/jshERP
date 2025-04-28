@@ -143,7 +143,7 @@ public class WorkTeamController {
         return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
     }
 
-    @PostMapping("/findBySelect")
+    @GetMapping("/findBySelect")
     @Transactional
     public String findBySelect() {
         String res;

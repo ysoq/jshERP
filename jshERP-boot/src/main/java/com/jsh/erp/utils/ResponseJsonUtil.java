@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 import java.lang.reflect.Field;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ResponseJsonUtil {
@@ -26,8 +27,12 @@ public class ResponseJsonUtil {
     public static final class ResponseFilter extends ExtJsonUtils.ExtFilter implements ValueFilter {
         @Override
         public Object process(Object object, String name, Object value) {
-            if (name.equals("createTime") || name.equals("modifyTime")||name.equals("updateTime")) {
-                return value;
+            if (name.equals("createTime") || name.equals("modifyTime") || name.equals("updateTime")) {
+                if (value instanceof Date) {
+                    return Tools.dateToStr((Date) value, "yyyy-MM-dd HH:mm:ss");
+                } else {
+                    return value;
+                }
             } else if (value instanceof Date) {
                 // 获取字段的JsonFormat注解
                 JsonFormat jsonFormat = getJsonFormatAnnotation(object, name);
@@ -70,7 +75,6 @@ public class ResponseJsonUtil {
     }
 
     /**
-     *
      * @param responseCode
      * @return
      */
@@ -87,6 +91,7 @@ public class ResponseJsonUtil {
 
     /**
      * 验证失败的json串
+     *
      * @param code
      * @return
      */
@@ -100,6 +105,7 @@ public class ResponseJsonUtil {
 
     /**
      * 成功的json串
+     *
      * @param responseCode
      * @return
      */
@@ -116,7 +122,6 @@ public class ResponseJsonUtil {
         map.put("message", message);
         return backJson(new ResponseCode(code, map));
     }
-
 
 
     public static <T> String backJson(IPage<T> list, String message, int code) {
