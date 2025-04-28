@@ -1,34 +1,31 @@
 package com.jsh.erp.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.jsh.erp.datasource.entities.InvoiceRecord;
+import com.jsh.erp.datasource.entities.InOutItem;
 import com.jsh.erp.datasource.entities.WorkTeam;
 import com.jsh.erp.datasource.mappers.WorkTeamMapper;
-import com.jsh.erp.datasource.vo.InvoiceRecordSearch;
-import com.jsh.erp.datasource.vo.InvoiceRecordVo;
 import com.jsh.erp.datasource.vo.QueryVo;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.ErpInfo;
 import com.jsh.erp.utils.StringUtil;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.jsh.erp.utils.ResponseJsonUtil.backJson;
 import static com.jsh.erp.utils.ResponseJsonUtil.returnJson;
@@ -64,10 +61,11 @@ public class WorkTeamController {
         Page<WorkTeam> page = new Page<>(query.getCurrentPage(), query.getPageSize());
         LambdaQueryWrapper<WorkTeam> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(WorkTeam::getDeleteFlag, 0);
-        queryWrapper.like(StringUtil.isNotEmpty(params.getTeamName()), WorkTeam::getTeamName, params.getRemark());
+        queryWrapper.like(StringUtil.isNotEmpty(params.getTeamName()), WorkTeam::getTeamName, params.getTeamName());
         queryWrapper.like(StringUtil.isNotEmpty(params.getRemark()), WorkTeam::getRemark, params.getRemark());
-        queryWrapper.eq(StringUtil.isNotEmpty(params.getContactPerson()), WorkTeam::getContactPerson, params.getContactPerson());
+        queryWrapper.like(StringUtil.isNotEmpty(params.getContactPerson()), WorkTeam::getContactPerson, params.getContactPerson());
 
+        queryWrapper.eq(WorkTeam::getTenantId, userService.getTenantId());
         queryWrapper.orderByDesc(WorkTeam::getUpdateTime);
         var result = workTeamMapper.selectPage(page, queryWrapper);
         return backJson(result, ErpInfo.OK.name, ErpInfo.OK.code);
@@ -124,6 +122,57 @@ public class WorkTeamController {
         return returnJson(new HashMap<>(), ErpInfo.OK.name, ErpInfo.OK.code);
     }
 
+
+    @PostMapping("/batchSetStatus")
+    @Transactional
+    public String batchSetStatus(@RequestBody JSONObject jsonObject) throws Exception {
+        String status = jsonObject.getString("status");
+        var ids = jsonObject.getString("ids").split(",");
+        Map<String, Object> objectMap = new HashMap<>();
+        String whereStatus = "0".equals(status) ? "1" : "1".equals(status) ? "0" : "2".equals(status) ? "0" : "-100";
+        var where = Wrappers.<WorkTeam>lambdaQuery().in(WorkTeam::getId, ids).eq(WorkTeam::getStatus, whereStatus);
+
+        var list = workTeamMapper.selectList(where);
+        if (!list.isEmpty()) {
+            for (var record : list) {
+                record.setStatus(status);
+                workTeamMapper.updateById(record);
+            }
+        }
+
+        return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
+    }
+
+    @PostMapping("/findBySelect")
+    @Transactional
+    public String findBySelect() {
+        String res;
+        try {
+            LambdaQueryWrapper<WorkTeam> queryWrapper = Wrappers.lambdaQuery();
+            queryWrapper.eq(WorkTeam::getDeleteFlag, 0)
+                    .eq(WorkTeam::getStatus, "0")
+                    .eq(WorkTeam::getTenantId, userService.getTenantId());
+
+            List<WorkTeam> dataList = workTeamMapper.selectList(queryWrapper);
+
+            //存放数据json数组
+            JSONArray dataArray = new JSONArray();
+            if (null != dataList) {
+                for (var data : dataList) {
+                    JSONObject item = new JSONObject();
+                    item.put("id", data.getId());
+                    item.put("name", data.getTeamName());
+                    dataArray.add(item);
+                }
+            }
+            res = dataArray.toJSONString();
+        } catch (Exception e) {
+            res = "[]";
+        }
+        return res;
+    }
+
+
     private Boolean checkIsNameExist(String name, Long id) throws Exception {
         LambdaQueryWrapper<WorkTeam> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(WorkTeam::getTeamName, name);
@@ -142,4 +191,6 @@ public class WorkTeamController {
             return null;
         }
     }
+
+
 }

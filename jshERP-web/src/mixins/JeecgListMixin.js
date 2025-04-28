@@ -193,14 +193,15 @@ export const JeecgListMixin = {
           }
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
             const item = this.dataSource.find(x => x.id === this.selectedRowKeys[a])
-            console.log(item.status , status)
-            if(item && item.status === status) {
-              this.$message.warning(`已【${stats[status]}】，无需重复操作!`)
-              return reject()
-            }
-            if(item && item.status === '2') {
-              this.$message.warning(`已作废，无法操作!`)
-              return reject()
+            if(this.url.useStatusVerify) {
+              if(item && item.status === status) {
+                this.$message.warning(`已【${stats[status]}】，无需重复操作!`)
+                return reject()
+              }
+              if(item && item.status === '2') {
+                this.$message.warning(`已作废，无法操作!`)
+                return reject()
+              }
             }
             ids += this.selectedRowKeys[a] + ','
           }

@@ -288,7 +288,8 @@
           list: "/depotHead/list",
           delete: "/depotHead/delete",
           deleteBatch: "/depotHead/deleteBatch",
-          batchSetStatusUrl: "/depotHead/batchSetStatus"
+          batchSetStatusUrl: "/depotHead/batchSetStatus",
+          useStatusVerify: true
         }
       }
     },

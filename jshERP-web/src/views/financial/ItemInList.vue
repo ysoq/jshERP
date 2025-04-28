@@ -248,7 +248,8 @@ export default {
         list: '/accountHead/list',
         delete: '/accountHead/delete',
         deleteBatch: '/accountHead/deleteBatch',
-        batchSetStatusUrl: '/accountHead/batchSetStatus'
+        batchSetStatusUrl: '/accountHead/batchSetStatus',
+        useStatusVerify: true
       }
     }
   },

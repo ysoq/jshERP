@@ -963,4 +963,13 @@ public class UserService {
         }
         return 0;
     }
+
+    public Long getTenantId() {
+        try {
+            return getCurrentUser().getTenantId();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -256,7 +256,8 @@ export default {
         },
         delete: '/api/invoiceRecord/delete',
         deleteBatch: '/api/invoiceRecord/deleteBatch',
-        batchSetStatusUrl: '/api/invoiceRecord/batchSetStatus'
+        batchSetStatusUrl: '/api/invoiceRecord/batchSetStatus',
+        useStatusVerify: true
       }
     }
   },

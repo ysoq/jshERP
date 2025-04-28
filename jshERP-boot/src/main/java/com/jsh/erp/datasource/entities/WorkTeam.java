@@ -53,6 +53,10 @@ public class WorkTeam implements Serializable{
      */
     private String deleteFlag;
     /**
+     *  禁用(0-启用 1-禁用)
+     */
+    private String status;
+    /**
      *  更新时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -62,5 +66,7 @@ public class WorkTeam implements Serializable{
      *  更新人
      */
     private Long updater;
+
+    private Long tenantId;
 
 }
