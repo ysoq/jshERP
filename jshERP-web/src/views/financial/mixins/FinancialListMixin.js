@@ -111,10 +111,10 @@ export const FinancialListMixin = {
       }
     },
     myHandleDelete (record) {
-      if (record.status === '0') {
+      if (record.status !== '1') {
         this.handleDelete(record.id)
       } else {
-        this.$message.warning('抱歉，只有未审核的单据才能删除，请先进行反审核！')
+        this.$message.warning('已审核单据无法删除，请先进行反审核！')
       }
     },
     myHandleDetail (record, type, prefixNo) {

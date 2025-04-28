@@ -1,5 +1,6 @@
 package com.jsh.erp.service.InvoiceRecord;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jsh.erp.datasource.entities.InOutItem;
 import com.jsh.erp.datasource.mappers.InvoiceRecordMapper;
@@ -22,7 +23,6 @@ import java.util.List;
 @Slf4j
 public class InvoiceRecordServiceImpl extends ServiceImpl<InvoiceRecordMapper, InvoiceRecord> implements IService<InvoiceRecord> {
 
-    // ... 已有代码 ...
     @Autowired
     private InvoiceRecordMapper invoiceRecordMapper;
 
@@ -55,5 +55,14 @@ public class InvoiceRecordServiceImpl extends ServiceImpl<InvoiceRecordMapper, I
                 }
             }
         }
+    }
+
+    public List<InvoiceRecord> getListByProjectId(Long projectId) {
+        LambdaQueryWrapper<InvoiceRecord> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(InvoiceRecord::getProjectId, projectId);
+        queryWrapper.eq(InvoiceRecord::getDeleteFlag, "0");
+        queryWrapper.eq(InvoiceRecord::getStatus, "1");
+        List<InvoiceRecord> list = invoiceRecordMapper.selectList(queryWrapper);
+        return list;
     }
 }

@@ -17,6 +17,8 @@ import com.jsh.erp.service.InvoiceRecord.InvoiceRecordServiceImpl;
 import com.jsh.erp.service.log.LogService;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.StringUtil;
+import com.jsh.erp.utils.Tools;
+import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,8 +258,22 @@ public class InOutItemService {
         LambdaQueryWrapper<InOutItem> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(InOutItem::getEnabled, true)
                    .ne(InOutItem::getDeleteFlag, BusinessConstants.DELETE_FLAG_DELETED);
+        /*
+        InOutItemExample example = new InOutItemExample();
+        if (type.equals("excludeFinish")) {
+            example.createCriteria()
+                    .addStatusNotEqualTo("1")
+        } else if (type.equals("clearPackage")) {
+            example.createCriteria()
+                    .andTypeEqualTo("清包")
+        } else {
+            example.createCriteria()
+        }
+        example.setOrderByClause("sort asc, id desc");
+        * */
 
         if (type.equals("excludeFinish")) {
+            // 不等于1，等于null需要查询到
             queryWrapper.ne(InOutItem::getStatus, "1");
         } else if (type.equals("clearPackage")) {
             queryWrapper.eq(InOutItem::getType, "清包");
@@ -311,6 +327,18 @@ public class InOutItemService {
     }
 
     public List<InOutItemFlow> projectFlow(Long id) {
-        return inOutItemMapperEx.selectInOutItemByFlow(id);
+        var list = inOutItemMapperEx.selectInOutItemByFlow(id);
+
+        var invoiceList = invoiceRecordServiceImpl.getListByProjectId(id);
+        for (var invoice : invoiceList) {
+            var inOutItemFlow = new InOutItemFlow();
+            inOutItemFlow.setCreateTime(Tools.dateToStr( invoice.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
+            inOutItemFlow.setHeaderId(invoice.getId());
+            inOutItemFlow.setNumber(invoice.getInvoiceNumber());
+            inOutItemFlow.setType("发票");
+            inOutItemFlow.setTotalPrice(invoice.getTaxAmount());
+            list.add(inOutItemFlow);
+        }
+        return list;
     }
 }

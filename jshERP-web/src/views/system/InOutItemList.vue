@@ -236,6 +236,12 @@ export default {
           }
         },
         {
+          title: '含税开票金额', dataIndex: 'taxAmount', width: 150,
+          customRender: (text) => {
+            return this.getPrice2(text)
+          }
+        },
+        {
           title: '已回款金额', dataIndex: 'totalInAccount', width: 180,
           scopedSlots: { customRender: 'totalInAccount' }
         },
@@ -253,12 +259,7 @@ export default {
             return this.getPrice2(text)
           }
         },
-        {
-          title: '含税开票金额', dataIndex: 'taxAmount', width: 150,
-          customRender: (text) => {
-            return this.getPrice2(text)
-          }
-        },
+
         {
           title: '状态',
           dataIndex: 'enabled',
@@ -320,7 +321,6 @@ export default {
     ...mapGetters(['nickname']),
     getProjectStatusText,
     handleSetStatus (status) {
-      console.log(this.selectionRows)
       if (!this.selectionRows.every(x => x.projectStatus === '5' && x.status !== '1') && status === 'examine') {
         this.$message.error(`只能选择${getProjectStatusText('5')}状态数据`)
         return
@@ -428,7 +428,7 @@ export default {
     //导出单据
     handleExport () {
       let list = []
-      let head = '#,编号,名称,类型,项目经理,联系方式,客户,项目完成日期,项目进度,合同金额,已回款金额,未回款金额,支出金额,含税开票金额,状态,备注'
+      let head = '#,编号,名称,类型,项目经理,联系方式,客户,项目完成日期,项目进度,合同金额,含税开票金额,已回款金额,未回款金额,支出金额,状态,备注'
       for (let i = 0; i < this.dataSource.length; i++) {
         let item = []
         let ds = this.dataSource[i]
@@ -437,10 +437,10 @@ export default {
           ds.type, ds.username, ds.phonenum,
           ds.supplierName, ds.finishTimeStr, ds.projectStatus,
           this.getPrice2(ds.contractPrice),
+          this.getPrice2(ds.taxAmount),
           this.getPrice2(ds.totalInAccount),
           this.getPrice(ds),
           this.getPrice2(ds.totalOutAccount),
-          this.getPrice2(ds.taxAmount),
           status, ds.remark)
         list.push(item)
       }

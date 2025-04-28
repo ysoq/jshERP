@@ -3,6 +3,14 @@ import { downFilePost} from '@/api/manage'
 import Vue from 'vue'
 import introJs from 'intro.js'
 
+
+export function getNumberValue(value) {
+  if (['string', 'number'].includes(typeof value) && !isNaN(parseFloat(value)) && isFinite(value)) {
+    return value - 0;
+  }
+  return null;
+}
+
 export function timeFix() {
   const time = new Date()
   const hour = time.getHours()

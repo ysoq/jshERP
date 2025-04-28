@@ -34,13 +34,13 @@
               </template>
               <template v-else>
                 <p style='margin-bottom: 3px'>
-                  {{ (item.subType || '').replace('销售', '材料') }}-{{ item.type }}
+                  {{ item.subType ? item.subType.replace('销售', '材料') + "-" : '' }}{{ item.type }}
                 </p>
                 <p style='margin-bottom: 3px'>
                  单号：<a @click='showDetail(item)'>{{ item.number }}</a>
                 </p>
                 <p>变动金额： <span
-                  style='color: orangered'>{{ (  item.type === '收入' || item.subType === '销售退货' ? 1 : -1) * Math.abs(item.totalPrice)
+                  style='color: orangered'>{{ ( item.type === '发票' ||  item.type === '收入' || item.subType === '销售退货' ? 1 : -1) * Math.abs(item.totalPrice)
                   }}</span>元</p>
               </template>
             </div>
@@ -96,7 +96,7 @@ export default {
         const list = res.data
           .map(x => ({
             ...x,
-            color: x.type === '收入' ? 'green' : 'red'
+            color: x.type === '收入' || x.type === '发票' ? 'green' : 'red'
           }))
           .concat(record.msgList.map(x => ({
             ...x,

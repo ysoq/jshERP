@@ -108,11 +108,10 @@
         </a-row>
       </a-form>
     </a-spin>
-    <import-item-modal ref='importItemModalForm' @ok='importItemModalFormOk'></import-item-modal>
+    <import-item-modal ref="importItemModalForm" @ok="importItemModalFormOk"></import-item-modal>
   </j-modal>
 </template>
 <script>
-import pick from 'lodash.pick'
 import AccountModal from '../../system/modules/AccountModal'
 import PersonModal from '../../system/modules/PersonModal'
 import WorkflowIframe from '@/components/tools/WorkflowIframe'
@@ -123,7 +122,7 @@ import { FinancialModalMixin } from '../mixins/FinancialModalMixin'
 import JUpload from '@/components/jeecg/JUpload'
 import JDate from '@/components/jeecg/JDate'
 import { getAction } from '@api/manage'
-import { getNowFormatDateTime } from '@/utils/util'
+import { getNowFormatDateTime, getNumberValue } from '@/utils/util'
 import { getProjectSelect } from '@api/api'
 import ImportItemModal from '@views/bill/dialog/ImportItemModal.vue'
 
@@ -168,14 +167,19 @@ export default {
         loading: false,
         dataSource: [],
         columns: [
-          { title: '服务名称', key: 'serviceName', width: '20%', type: FormTypes.input, placeholder: '' },
+          {
+            title: '服务名称', key: 'serviceName', width: '20%', type: FormTypes.input, placeholder: '',
+            validateRules: [{ required: true, message: '${title}不能为空' }]
+          },
           {
             title: '税率', key: 'taxRate', width: '10%', type: FormTypes.inputNumber,
-            placeholder: ''
+            placeholder: '',
+            validateRules: [{ required: true, message: '${title}不能为空' }]
           },
           {
             title: '含税金额（元）', statistics: true, key: 'taxIncludedPrice', width: '10%', type: FormTypes.inputNumber,
-            placeholder: ''
+            placeholder: '',
+            validateRules: [{ required: true, message: '${title}不能为空' }]
           },
           {
             title: '不含税金额', key: 'taxExcludedPrice', width: '10%', type: FormTypes.inputNumber,
@@ -222,7 +226,7 @@ export default {
   },
   methods: {
     onValueChange (event) {
-      if(event.column.key === "taxIncludedPrice") {
+      if (event.column.key === 'taxIncludedPrice') {
         this.form.setFieldsValue({ 'taxAmount': event.target.statisticsColumns.taxIncludedPrice })
       }
     },
@@ -247,7 +251,7 @@ export default {
         this.$nextTick(() => {
           this.form.setFieldsValue({
             ...this.model,
-            projectId: this.model.projectId ? this.model.projectId + '' : null,
+            projectId: this.model.projectId ? this.model.projectId + '' : null
           })
           this.accountTable.dataSource = this.model.items
         })
@@ -256,7 +260,7 @@ export default {
       this.initSystemConfig()
       this.initOrgan()
       this.initPerson()
-      getProjectSelect('hasCode').then(list=> this.inOutList = list)
+      getProjectSelect('hasCode').then(list => this.inOutList = list)
       this.initAccount()
       this.initQuickBtn()
     },
@@ -289,12 +293,22 @@ export default {
         this.form.setFieldsValue({ 'changeAmount': allEachAmount })
       })
     },
-    onImport() {
-      this.$refs.importItemModalForm.add("invoice")
+    onImport () {
+      this.$refs.importItemModalForm.add('invoice')
     },
-    importItemModalFormOk(data) {
+    importItemModalFormOk (data) {
+      for (const item of data) {
+        if(item.taxRate && typeof item.taxRate ==='string') {
+          item.taxRate = item.taxRate.replace('%', '')
+        }
+        item.taxRate = getNumberValue(item.taxRate)
+        item.taxExcludedPrice = getNumberValue(item.taxExcludedPrice)
+        item.taxIncludedPrice = getNumberValue(item.taxIncludedPrice)
+      }
       this.accountTable.dataSource = data
-    },
+      const taxAmount = data.reduce((acc, cur) => acc + (cur.taxIncludedPrice - 0), 0)
+      this.form.setFieldsValue({ 'taxAmount': taxAmount.toFixed(2) })
+    }
   }
 }
 </script>
