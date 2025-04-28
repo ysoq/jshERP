@@ -37,7 +37,7 @@
                 <p style="margin-bottom: 3px">
                   {{ item.subType ? item.subType.replace('销售', '材料') + '-' : '' }}{{ item.type }}
                 </p>
-                <p style="margin-bottom: 3px">
+                <p style="margin-bottom: 3px" v-if="item.number">
                   单号：<a @click="showDetail(item)">{{ item.number }}</a>
                 </p>
                 <p>变动金额： <span

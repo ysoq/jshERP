@@ -1,6 +1,7 @@
 package com.jsh.erp.datasource.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -36,7 +37,7 @@ public class ProjectAmount implements Serializable{
     /**
      *  分配金额
      */
-    private Float amount;
+    private BigDecimal amount;
 
     /**
      *  状态(0-未审核 1-已审核)

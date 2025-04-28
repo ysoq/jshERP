@@ -4,13 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.ExceptionConstants;
 import com.jsh.erp.datasource.entities.*;
-import com.jsh.erp.datasource.mappers.AccountItemMapperEx;
-import com.jsh.erp.datasource.mappers.InOutItemFlowMapper;
-import com.jsh.erp.datasource.mappers.InOutItemMapper;
-import com.jsh.erp.datasource.mappers.InOutItemMapperEx;
+import com.jsh.erp.datasource.mappers.*;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
 import com.jsh.erp.service.InvoiceRecord.InvoiceRecordServiceImpl;
@@ -54,6 +52,11 @@ public class InOutItemService {
 
     @Autowired
     private InvoiceRecordServiceImpl invoiceRecordServiceImpl;
+
+    @Autowired
+    private ProjectAmountMapper projectAmountMapper;
+    @Autowired
+    private WorkTeamMapper workTeamMapper;
 
     public InOutItem getInOutItem(long id) throws Exception {
         InOutItem result = null;
@@ -338,6 +341,28 @@ public class InOutItemService {
             inOutItemFlow.setType("发票");
             inOutItemFlow.setTotalPrice(invoice.getTaxAmount());
             list.add(inOutItemFlow);
+        }
+
+        LambdaQueryWrapper<ProjectAmount> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(ProjectAmount::getProjectId, id)
+                .eq(ProjectAmount::getDeleteFlag, 0)
+                .eq(ProjectAmount::getStatus, "1");
+
+        var projectAmountList = projectAmountMapper.selectList(queryWrapper);
+        if(projectAmountList != null && !projectAmountList.isEmpty()) {
+            for(var projectAmount : projectAmountList) {
+                LambdaQueryWrapper<WorkTeam> workTeamQueryWrapper = Wrappers.lambdaQuery();
+                workTeamQueryWrapper.eq(WorkTeam::getId, projectAmount.getTeamId());
+                var workTeam = workTeamMapper.selectOne(workTeamQueryWrapper);
+
+                var flow = new InOutItemFlow();
+                flow.setCreateTime(Tools.dateToStr( projectAmount.getUpdateTime(), "yyyy-MM-dd HH:mm:ss"));
+                flow.setHeaderId(projectAmount.getId());
+                flow.setTotalPrice(projectAmount.getAmount());
+                flow.setSubType("金额分配");
+                flow.setType(workTeam.getTeamName());
+                list.add(flow);
+            }
         }
         return list;
     }
