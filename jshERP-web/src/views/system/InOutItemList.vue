@@ -315,9 +315,7 @@ export default {
       getAction('/supplier/list', args).then(res => {
         this.supplierList = res.data.rows
       }),
-      getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
-        this.msgList = res.data.list
-      })
+      this.loadMsgList()
     ])
 
   },
@@ -325,6 +323,15 @@ export default {
   methods: {
     ...mapGetters(['nickname']),
     getProjectStatusText,
+    async modalFormOk() {
+      await this.loadMsgList()
+      return this.loadData()
+    },
+    loadMsgList() {
+      return getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
+        this.msgList = res.data.list
+      })
+    },
     handleSetStatus (status) {
       if (!this.selectionRows.every(x => x.projectStatus === '5' && x.status !== '1') && status === 'examine') {
         this.$message.error(`只能选择${getProjectStatusText('5')}状态数据`)

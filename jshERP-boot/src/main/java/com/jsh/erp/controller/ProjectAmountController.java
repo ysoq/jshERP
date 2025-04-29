@@ -128,7 +128,7 @@ public class ProjectAmountController {
     public String insert(@RequestBody ProjectAmount data) throws Exception {
         Map<String, Object> objectMap = new HashMap<>();
 
-        if (isProjectAmountExists(data.getProjectId(), data.getTeamId(), null)) {
+        if (isProjectAmountExists(data.getProjectId(), data.getTeamId())) {
             return returnJson(objectMap, "该项目已分配过金额，请勿重复分配！", ErpInfo.ERROR.code);
         }
         data.setId(null);
@@ -156,7 +156,9 @@ public class ProjectAmountController {
         if (oldRecord == null) {
             return returnJson(objectMap, ErpInfo.ERROR.name, ErpInfo.ERROR.code);
         }
-        if (isProjectAmountExists(data.getProjectId(), data.getTeamId(), data.getId())) {
+        if ((!oldRecord.getProjectId().equals(data.getProjectId())
+                || !Objects.equals(oldRecord.getTeamId(), data.getTeamId()))
+                && isProjectAmountExists(data.getProjectId(), data.getTeamId())) {
             return returnJson(objectMap, "该项目已分配过金额，请勿重复分配！", ErpInfo.ERROR.code);
         }
         oldRecord.setProjectId(data.getProjectId());
@@ -200,13 +202,12 @@ public class ProjectAmountController {
     }
 
     @DeleteMapping("/delete")
-    private Boolean isProjectAmountExists(Long projectId, Long teamId, Long id) {
+    private Boolean isProjectAmountExists(Long projectId, Long teamId) {
         LambdaQueryWrapper<ProjectAmount> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(ProjectAmount::getTenantId, userService.getTenantId());
         queryWrapper.eq(ProjectAmount::getProjectId, projectId);
         queryWrapper.eq(ProjectAmount::getDeleteFlag, 0);
 
-        // 添加 (team_id = 4 OR status = 1) 的条件
         queryWrapper.and(
                 wq -> wq.eq(ProjectAmount::getTeamId, teamId).or().eq(ProjectAmount::getStatus, "1")
         );

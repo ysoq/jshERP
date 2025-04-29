@@ -148,7 +148,7 @@ export default {
         inOutItemId: flowItem.inOutItemId,
         beginTime: getPrevMonthFormatDate(3),
         endTime: getFormatDate(),
-        createTimeRange: [moment(getPrevMonthFormatDate(3)), moment(getFormatDate())],
+        createTimeRange: flowItem.inOutItemId ? [] :[moment(getPrevMonthFormatDate(3)), moment(getFormatDate())],
         creator: undefined
       },
       ipagination: {
@@ -259,7 +259,7 @@ export default {
       })
     },
     searchQuery() {
-      if (this.queryParam.beginTime == '' || this.queryParam.endTime == '') {
+      if (this.queryParam.beginTime == '' && this.queryParam.endTime == '' && this.queryParam.inOutItemId == '') {
         this.$message.warning('请选择单据日期！')
       } else {
         this.loadData(1)

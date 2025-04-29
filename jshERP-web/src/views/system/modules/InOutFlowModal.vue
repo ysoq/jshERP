@@ -38,7 +38,7 @@
                   {{ item.subType ? item.subType.replace('销售', '材料') + '-' : '' }}{{ item.type }}
                 </p>
                 <p style="margin-bottom: 3px" v-if="item.number">
-                  单号：<a @click="showDetail(item)">{{ item.number }}</a>
+                  单号：<a >{{ item.number }}</a>
                 </p>
                 <p>变动金额： <span
                   style="color: orangered">{{ (item.type === '发票' || item.type === '收入' || item.subType === '销售退货' ? 1 : -1) * Math.abs(item.totalPrice)
@@ -120,6 +120,7 @@ export default {
     showDetail (item) {
       let link = ''
       window.localStorage.setItem('flowItem', JSON.stringify(item))
+      console.log(item)
       if (item.type === '收支汇总') {
         link = this.$router.resolve(`/report/income_expend`)
       } else if (item.type === '领料汇总') {

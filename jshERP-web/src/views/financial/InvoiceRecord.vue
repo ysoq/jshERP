@@ -285,9 +285,10 @@ export default {
     async handleEdit (record) {
       if (record.status === '0') {
         const res = await getAction(`/api/invoiceRecord/${record.id}`, {})
-        this.$refs.modalForm.edit(res.data)
+        this.$refs.modalForm.action = 'edit'
         this.$refs.modalForm.title = '编辑'
         this.$refs.modalForm.disableSubmit = false
+        this.$refs.modalForm.edit(res.data)
       } else {
         this.$message.warning('抱歉，只有未审核的单据才能编辑，请先进行反审核！')
       }

@@ -247,7 +247,6 @@ export default {
         this.addInit('KP')
         this.fileList = []
       } else {
-        console.log(this.model)
         this.$nextTick(() => {
           this.form.setFieldsValue({
             ...this.model,

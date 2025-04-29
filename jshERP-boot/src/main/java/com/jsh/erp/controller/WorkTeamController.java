@@ -116,10 +116,7 @@ public class WorkTeamController {
         return returnJson(new HashMap<>(), ErpInfo.OK.name, ErpInfo.OK.code);
     }
 
-    @DeleteMapping("/delete")
-    public String delete(@RequestParam Long id) throws Exception {
-        return batchDeleteResource(id.toString());
-    }
+
 
 
     @PostMapping("/batchSetStatus")
@@ -191,6 +188,11 @@ public class WorkTeamController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public String delete(@RequestParam Long id) throws Exception {
+        return batchDeleteResource(id.toString());
+    }
+
     @DeleteMapping(value = "/deleteBatch")
     public String batchDeleteResource(@RequestParam("ids") String ids) throws Exception {
         var idList = ids.split(",");
@@ -209,6 +211,8 @@ public class WorkTeamController {
         if (!list.isEmpty()) {
             for (var record : list) {
                 record.setDeleteFlag("1");
+                record.setUpdateTime(new Date());
+                record.setUpdater(userService.getCurrentUser().getId());
                 workTeamMapper.updateById(record);
             }
         }

@@ -214,7 +214,7 @@ export default {
         depotId: undefined,
         beginTime: getPrevMonthFormatDate(3),
         endTime: getFormatDate(),
-        createTimeRange: [moment(getPrevMonthFormatDate(3)), moment(getFormatDate())],
+        createTimeRange: flowItem.inOutItemId ? [] : [moment(getPrevMonthFormatDate(3)), moment(getFormatDate())],
         type: '出库,入库',
         creator: undefined,
         organizationId: undefined,

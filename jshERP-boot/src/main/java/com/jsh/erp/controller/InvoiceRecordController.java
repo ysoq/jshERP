@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jsh.erp.constants.BusinessTypeEnum;
 import com.jsh.erp.datasource.entities.InvoiceDetail;
 import com.jsh.erp.datasource.entities.InvoiceRecord;
+import com.jsh.erp.datasource.entities.ProjectAmount;
+import com.jsh.erp.datasource.entities.WorkTeam;
 import com.jsh.erp.datasource.mappers.InvoiceDetailMapper;
 import com.jsh.erp.datasource.mappers.InvoiceRecordMapper;
 import com.jsh.erp.datasource.vo.InvoiceRecordSearch;
@@ -203,16 +205,26 @@ public class InvoiceRecordController {
     }
 
     @DeleteMapping("/delete")
-    @Transactional
     public String delete(@RequestParam Long id) throws Exception {
-        var data = invoiceRecordMapper.selectById(id);
-        if (data == null) {
-            return returnJson(new HashMap<>(), ErpInfo.ERROR.name, ErpInfo.ERROR.code);
+        return batchDeleteResource(id.toString());
+    }
+
+    @DeleteMapping(value = "/deleteBatch")
+    public String batchDeleteResource(@RequestParam("ids") String ids) throws Exception {
+        var idList = ids.split(",");
+        Map<String, Object> objectMap = new HashMap<>();
+        var where = Wrappers.<InvoiceRecord>lambdaQuery().in(InvoiceRecord::getId, idList);
+        var list = invoiceRecordMapper.selectList(where);
+
+        if (!list.isEmpty()) {
+            for (var record : list) {
+                record.setDeleteFlag("1");
+                record.setUpdateTime(new Date());
+                record.setUpdater(userService.getCurrentUser().getId());
+                invoiceRecordMapper.updateById(record);
+            }
         }
-        data.setDeleteFlag("1");
-        data.setUpdateTime(new Date());
-        data.setUpdater(userService.getCurrentUser().getId());
-        invoiceRecordMapper.updateById(data);
-        return returnJson(new HashMap<>(), ErpInfo.OK.name, ErpInfo.OK.code);
+
+        return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
     }
 }
