@@ -107,19 +107,21 @@
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
             @change="handleTableChange"
           >
-            <span slot="action" slot-scope="text, record">
+            <div slot="action" slot-scope="text, record">
+              <a @click="handleEdit(record, true)">查看</a>
               <template v-if="record.status!=='1'">
-                  <a @click="handleEdit(record)">编辑</a>
-                 <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
-                  <a-popconfirm
-                    v-if="btnEnableList.indexOf(1) > -1"
-                    title="确定删除吗?"
-                    @confirm="() => handleDelete(record.id)"
-                  >
+                <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
+                <a @click="handleEdit(record)">编辑</a>
+                <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
+                <a-popconfirm
+                  v-if="btnEnableList.indexOf(1) > -1"
+                  title="确定删除吗?"
+                  @confirm="() => handleDelete(record.id)"
+                >
                   <a>删除</a>
                 </a-popconfirm>
               </template>
-            </span>
+            </div>
             <template slot="customRenderStatus" slot-scope="status">
               <a-tag v-if="status === '0'" color="red">未审核</a-tag>
               <a-tag v-if="status === '1'" color="green">已审核</a-tag>
@@ -263,11 +265,12 @@ export default {
 
   },
   methods: {
-    handleEdit: function(record) {
+    handleEdit(record, readonly = false) {
       this.$refs.projectBonus.edit({
         ...record
       })
-      this.$refs.projectBonus.title = record.id ? '编辑' : '新增'
+      this.$refs.projectBonus.isReadOnly = readonly
+      this.$refs.projectBonus.title = readonly ? '查看' : record.id ? '编辑' : '新增'
     }
   }
 }

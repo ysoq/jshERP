@@ -21,7 +21,7 @@
         </a-button>
       </template>
       <a-spin :spinning='confirmLoading'>
-        <a-form :form='form' id='memberModal'>
+        <a-form :form='form' id='memberModal' >
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目'>
             <a-select placeholder="" v-decorator.trim="[ 'projectId', validatorRules.projectId ]" optionFilterProp="children"
                       :dropdownMatchSelectWidth="false" showSearch allowClear>
@@ -56,12 +56,9 @@
   </div>
 </template>
 <script>
-import pick from 'lodash.pick'
-import { addSupplier, editSupplier, checkSupplier } from '@/api/api'
 import { autoJumpNextInput } from '@/utils/util'
 import { mixinDevice } from '@/utils/mixin'
-import { getAction, httpAction } from '@api/manage'
-import dayjs from 'dayjs'
+import {  httpAction } from '@api/manage'
 
 export default {
   name: 'ProjectBonusModal',

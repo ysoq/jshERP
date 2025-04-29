@@ -198,6 +198,10 @@ export const JeecgListMixin = {
                 this.$message.warning(`已【${stats[status]}】，无需重复操作!`)
                 return reject()
               }
+              if(item.status === '1' && status === '2') {
+                this.$message.warning(`已审核，无法作废!`)
+                return reject()
+              }
               if(item && item.status === '2') {
                 this.$message.warning(`已作废，无法操作!`)
                 return reject()
