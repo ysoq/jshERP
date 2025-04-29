@@ -6,7 +6,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jsh.erp.datasource.entities.InOutItem;
+import com.jsh.erp.datasource.entities.ProjectAmount;
 import com.jsh.erp.datasource.entities.WorkTeam;
+import com.jsh.erp.datasource.mappers.ProjectAmountMapper;
 import com.jsh.erp.datasource.mappers.WorkTeamMapper;
 import com.jsh.erp.datasource.vo.QueryVo;
 import com.jsh.erp.service.user.UserService;
@@ -44,6 +46,9 @@ public class WorkTeamController {
 
     @Autowired
     private WorkTeamMapper workTeamMapper;
+
+    @Autowired
+    private ProjectAmountMapper projectAmountMapper;
 
 
     @Autowired
@@ -113,15 +118,7 @@ public class WorkTeamController {
 
     @DeleteMapping("/delete")
     public String delete(@RequestParam Long id) throws Exception {
-        var data = getWorkTeamById(id);
-        if (data == null) {
-            return returnJson(new HashMap<>(), ErpInfo.ERROR.name, ErpInfo.ERROR.code);
-        }
-        data.setDeleteFlag("1");
-        data.setUpdateTime(new Date());
-        data.setUpdater(userService.getCurrentUser().getId());
-        workTeamMapper.updateById(data);
-        return returnJson(new HashMap<>(), ErpInfo.OK.name, ErpInfo.OK.code);
+        return batchDeleteResource(id.toString());
     }
 
 
@@ -195,12 +192,20 @@ public class WorkTeamController {
     }
 
     @DeleteMapping(value = "/deleteBatch")
-    public String batchDeleteResource( @RequestParam("ids") String ids) throws Exception {
+    public String batchDeleteResource(@RequestParam("ids") String ids) throws Exception {
         var idList = ids.split(",");
         Map<String, Object> objectMap = new HashMap<>();
         var where = Wrappers.<WorkTeam>lambdaQuery().in(WorkTeam::getId, idList);
-
         var list = workTeamMapper.selectList(where);
+
+        var projectAmountWhere = Wrappers.<ProjectAmount>lambdaQuery().in(ProjectAmount::getTeamId, idList).eq(ProjectAmount::getDeleteFlag, 0);
+        var projectAmounts = projectAmountMapper.selectList(projectAmountWhere);
+        if (!projectAmounts.isEmpty()) {
+            var name = list.stream().filter(item -> item.getId().equals(projectAmounts.get(0).getTeamId())).findFirst().get().getTeamName();
+
+            return returnJson(objectMap, "【"+ name +"】班组已被使用，无法删除", ErpInfo.ERROR.code);
+        }
+
         if (!list.isEmpty()) {
             for (var record : list) {
                 record.setDeleteFlag("1");

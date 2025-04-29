@@ -7,17 +7,17 @@
           <!-- 搜索区域 -->
           <a-form layout="inline" @keyup.enter.native="searchQuery">
             <a-row :gutter="24">
-              <a-col :md="6" :sm="24">
+              <a-col :md="5" :sm="24">
                 <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input placeholder="请输入" v-model="queryParam.name"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="24">
+              <a-col :md="5" :sm="24">
                 <a-form-item label="编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input placeholder="请输入" v-model="queryParam.code"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="24">
+              <a-col :md="5" :sm="24">
                 <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-select placeholder="请选择" v-model="queryParam.type">
                     <a-select-option value="大包">大包</a-select-option>
@@ -26,9 +26,18 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-
+              <a-col :md="5" :sm="24">
+                <a-form-item label="项目经理" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select placeholder="请选择" v-model="queryParam.manager" optionFilterProp="children"
+                            :dropdownMatchSelectWidth="false" showSearch>
+                    <a-select-option v-for="(item, index) in userList" :key="index" :value="item.id">
+                      {{ item.userName }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
               <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
-                <a-col :md="6" :sm="24">
+                <a-col :md="4" :sm="24">
                   <a-button type="primary" @click="searchQuery">查询</a-button>
                   <a-button style="margin-left: 8px" @click="searchReset">重置</a-button>
                   <a @click="handleToggleSearch" style="margin-left: 8px">
@@ -38,17 +47,7 @@
                 </a-col>
               </span>
               <template v-if="toggleSearchStatus">
-                <a-col :md="6" :sm="24">
-                  <a-form-item label="项目经理" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder="请选择" v-model="queryParam.manager" optionFilterProp="children"
-                              :dropdownMatchSelectWidth="false" showSearch>
-                      <a-select-option v-for="(item, index) in userList" :key="index" :value="item.id">
-                        {{ item.userName }}
-                      </a-select-option>
-                    </a-select>
-                  </a-form-item>
-                </a-col>
-                <a-col :md="6" :sm="24">
+                <a-col :md="5" :sm="24">
                   <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择" v-model="queryParam.supplierId" showSearch
                               optionFilterProp="children"
@@ -59,7 +58,7 @@
                     </a-select>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="24">
+                <a-col :md="5" :sm="24">
                   <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-input placeholder="请输入" v-model="queryParam.remark"></a-input>
                   </a-form-item>
