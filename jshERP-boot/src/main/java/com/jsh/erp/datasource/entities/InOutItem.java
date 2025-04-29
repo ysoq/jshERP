@@ -62,4 +62,7 @@ public class InOutItem implements Serializable {
 
     @TableField(exist = false)
     private BigDecimal taxAmount;
+
+    @TableField(exist = false)
+    private BigDecimal projectAmount;
 }

@@ -12,6 +12,7 @@ import com.jsh.erp.datasource.vo.QueryVo;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.ErpInfo;
 import com.jsh.erp.utils.StringUtil;
+import io.swagger.annotations.ApiOperation;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -190,6 +192,23 @@ public class WorkTeamController {
         } else {
             return null;
         }
+    }
+
+    @DeleteMapping(value = "/deleteBatch")
+    public String batchDeleteResource( @RequestParam("ids") String ids) throws Exception {
+        var idList = ids.split(",");
+        Map<String, Object> objectMap = new HashMap<>();
+        var where = Wrappers.<WorkTeam>lambdaQuery().in(WorkTeam::getId, idList);
+
+        var list = workTeamMapper.selectList(where);
+        if (!list.isEmpty()) {
+            for (var record : list) {
+                record.setDeleteFlag("1");
+                workTeamMapper.updateById(record);
+            }
+        }
+
+        return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
     }
 
 

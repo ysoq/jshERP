@@ -193,6 +193,7 @@ export default {
       },
       userList: [],
       supplierList: [],
+      msgList: [],
       // 查询条件
       queryParam: { name: '', type: '', remark: '' },
       totalColumns: ['contractPrice', 'totalInAccount', 'totalUnInAccount', 'totalOutAccount', 'taxAmount'],
@@ -272,13 +273,12 @@ export default {
       ],
       url: {
         list: async (params) => {
-          const msgList = await getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
-            return res.data.list
-          })
+          await this.taskList
           const list = await getAction('/inOutItem/list', params)
           for (const item of list.data.rows) {
-            item.msgList = msgList ? msgList.filter(x => x.inOutItemId === item.id) : []
+            item.msgList = this.msgList ? this.msgList.filter(x => x.inOutItemId === item.id) : []
             item.projectStatus = (item.msgList[0] || { projectStatus: '1' }).projectStatus
+            item.totalOutAccount = (item.totalOutAccount || 0) + (item.projectAmount || 0)
           }
 
           function getTotal (key) {
@@ -300,11 +300,6 @@ export default {
     }
   },
   created () {
-    getUserList({}).then((res) => {
-      if (res) {
-        this.userList = res
-      }
-    })
     const args = {
       search: `{"supplier":"","type":"客户","telephone":"","phonenum":""}`,
       currentPage: 1,
@@ -312,9 +307,20 @@ export default {
       column: 'createTime',
       order: 'desc'
     }
-    getAction('/supplier/list', args).then(res => {
-      this.supplierList = res.data.rows
-    })
+    this.taskList = Promise.all([
+      getUserList({}).then((res) => {
+        if (res) {
+          this.userList = res
+        }
+      }),
+      getAction('/supplier/list', args).then(res => {
+        this.supplierList = res.data.rows
+      }),
+      getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
+        this.msgList = res.data.list
+      })
+    ])
+
   },
   computed: {},
   methods: {

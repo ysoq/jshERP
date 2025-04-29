@@ -11,20 +11,16 @@ import com.jsh.erp.datasource.entities.*;
 import com.jsh.erp.datasource.mappers.InOutItemMapper;
 import com.jsh.erp.datasource.mappers.InOutItemMapperEx;
 import com.jsh.erp.datasource.mappers.ProjectAmountMapper;
-import com.jsh.erp.datasource.vo.InvoiceRecordVo;
 import com.jsh.erp.datasource.vo.ProjectAmountSearch;
 import com.jsh.erp.datasource.vo.ProjectAmountVO;
 import com.jsh.erp.datasource.vo.QueryVo;
 import com.jsh.erp.service.audit.AuditRecordService;
-import com.jsh.erp.service.msg.MsgService;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.ErpInfo;
 import com.jsh.erp.utils.StringUtil;
 import com.jsh.erp.utils.Tools;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -77,7 +73,7 @@ public class ProjectAmountController {
         if (StringUtil.isNotEmpty(params.getProjectCode()) || StringUtil.isNotEmpty(params.getProjectName())) {
             var projectQuery = Wrappers.<InOutItem>lambdaQuery();
             projectQuery.eq(StringUtil.isNotEmpty(params.getProjectCode()), InOutItem::getCode, params.getProjectCode());
-            projectQuery.eq(StringUtil.isNotEmpty(params.getProjectName()), InOutItem::getName, params.getProjectName());
+            projectQuery.like(StringUtil.isNotEmpty(params.getProjectName()), InOutItem::getName, params.getProjectName());
 
             var projectList = inOutItemMapper.selectList(projectQuery);
             if (projectList.size() > 0) {
@@ -95,7 +91,7 @@ public class ProjectAmountController {
         queryWrapper.ge(params.getAuditBeginTime() != null, ProjectAmount::getUpdateTime, params.getAuditBeginTime());
         queryWrapper.le(params.getAuditEndTime() != null, ProjectAmount::getUpdateTime, Tools.getDate235959(params.getAuditEndTime()));
 
-        queryWrapper.eq(StringUtil.isNotEmpty(params.getRemark()), ProjectAmount::getRemark, params.getRemark());
+        queryWrapper.like(StringUtil.isNotEmpty(params.getRemark()), ProjectAmount::getRemark, params.getRemark());
         queryWrapper.eq(StringUtil.isNotEmpty(params.getStatus()), ProjectAmount::getStatus, params.getStatus());
 
         queryWrapper.orderByDesc(ProjectAmount::getUpdateTime);

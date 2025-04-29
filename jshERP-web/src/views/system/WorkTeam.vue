@@ -108,27 +108,18 @@ export default {
       // 表头
       columns: [
         {
-          title: '#',
-          dataIndex: 'id',
-          width: 40,
-          align: 'center',
-          customRender: function(t) {
-            return t
-          }
-        },
-        {
           title: '操作',
           dataIndex: 'action',
           align: 'center',
-          width: 200,
+          width: 100,
           scopedSlots: { customRender: 'action' }
         },
-        { title: '班组名称', dataIndex: 'teamName', width: 200 },
-        { title: '联系人', dataIndex: 'contactPerson', width: 200 },
-        { title: '联系电话', dataIndex: 'phone', width: 80 },
-        { title: '备注', dataIndex: 'remark', width: 80 },
+        { title: '班组名称', dataIndex: 'teamName', },
+        { title: '联系人', dataIndex: 'contactPerson', },
+        { title: '联系电话', dataIndex: 'phone', },
+        { title: '备注', dataIndex: 'remark',},
         {
-          title: '状态', dataIndex: 'status', width: 60, align: 'center',
+          title: '状态', dataIndex: 'status', width: 100, align: 'center',
           scopedSlots: { customRender: 'customRenderEnabledFlag' }
         }
 
