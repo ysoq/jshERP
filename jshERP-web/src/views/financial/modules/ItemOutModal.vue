@@ -129,6 +129,7 @@
   import { FinancialModalMixin } from '../mixins/FinancialModalMixin'
   import JUpload from '@/components/jeecg/JUpload'
   import JDate from '@/components/jeecg/JDate'
+  import { getProjectSelect } from '@api/api'
   export default {
     name: "ItemOutModal",
     mixins: [JEditableTableMixin, FinancialModalMixin],
@@ -237,7 +238,7 @@
         this.initSystemConfig()
         this.initOrgan()
         this.initPerson()
-        this.initInOutItem('')
+        getProjectSelect('hasCode').then(list => this.inOutList = list)
         this.initAccount()
         this.initQuickBtn()
       },

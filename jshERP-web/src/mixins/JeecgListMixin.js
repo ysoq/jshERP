@@ -247,6 +247,11 @@ export const JeecgListMixin = {
         for (var a = 0; a < this.selectedRowKeys.length; a++) {
           ids += this.selectedRowKeys[a] + ','
         }
+        if(this.selectedRowKeys.map(x=> this.dataSource.find(y=> y.id === x)).find(x=> x.status === '1')) {
+          this.$message.warning('已审核单据无法删除，请先进行反审核！')
+          return
+        }
+
         var that = this
         this.$confirm({
           title: '确认删除',

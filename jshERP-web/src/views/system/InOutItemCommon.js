@@ -15,5 +15,7 @@ export function getProjectStatusText(projectStatus, status) {
       return '已开票'
     case '6' :
       return '已完成'
+    case '99' :
+      return '项目合并'
   }
 }
