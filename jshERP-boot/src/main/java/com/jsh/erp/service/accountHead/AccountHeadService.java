@@ -374,6 +374,10 @@ public class AccountHeadService {
             String type = list.get(0).getType();
             /**处理单据子表信息*/
             accountItemService.saveDetials(rows, headId, type, request);
+
+            if ("1".equals(accountHead.getStatus())) {
+                auditRecordService.batchCreateRecord(BusinessTypeEnum.ACCOUNT_HEAD, headId);
+            }
         }
         if ("收预付款".equals(accountHead.getType())) {
             //更新会员预付款
@@ -391,7 +395,17 @@ public class AccountHeadService {
             throw new BusinessRunTimeException(ExceptionConstants.ACCOUNT_HEAD_BILL_NO_EXIST_CODE,
                     String.format(ExceptionConstants.ACCOUNT_HEAD_BILL_NO_EXIST_MSG));
         }
+
+        if ("1".equals(accountHead.getStatus())) {
+            AccountHead data = getAccountHead(accountHead.getId());
+            if ("0".equals(data.getStatus())) {
+                auditRecordService.batchCreateRecord(BusinessTypeEnum.ACCOUNT_HEAD, accountHead.getId());
+            }
+        }
+
         accountHeadMapper.updateByPrimaryKeySelective(accountHead);
+
+
         //根据单据编号查询单据id
         AccountHeadExample dhExample = new AccountHeadExample();
         dhExample.createCriteria().andBillNoEqualTo(accountHead.getBillNo()).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);

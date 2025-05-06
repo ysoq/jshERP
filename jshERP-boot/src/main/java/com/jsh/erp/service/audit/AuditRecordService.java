@@ -29,20 +29,6 @@ public class AuditRecordService {
     }
 
     @Transactional
-    public int createRecord(BusinessTypeEnum businessType, String businessId) {
-        try {
-            AuditRecord record = new AuditRecord();
-            record.setBusinessType(businessType);
-            record.setBusinessId(Long.parseLong(businessId));
-            String username = userService.getCurrentUser().getUsername();
-            record.setAuditor(username);
-            record.setAuditTime(new Date());
-            return auditRecordMapper.insertSelective(record);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-    @Transactional
     public int batchCreateRecord(BusinessTypeEnum businessType, Long businessId) throws Exception {
         List<Long> ids = new ArrayList<>();
         ids.add(businessId);

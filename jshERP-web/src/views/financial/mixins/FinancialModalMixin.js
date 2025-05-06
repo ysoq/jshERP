@@ -146,7 +146,7 @@ export const FinancialModalMixin = {
     //账户-用于主表
     initAccount(){
       let that = this;
-      getAccount({}).then((res)=>{
+      return getAccount({}).then((res)=>{
         if(res && res.code === 200) {
           that.accountList = res.data.accountList;
         }

@@ -260,7 +260,12 @@ export default {
       this.initOrgan()
       this.initPerson()
       getProjectSelect('hasCode').then(list => this.inOutList = list)
-      this.initAccount()
+      this.initAccount().then(() => {
+        console.log('initAccount', this.accountList)
+        this.form.setFieldsValue({
+          accountId: this.accountList[0].id
+        })
+      })
       this.initQuickBtn()
     },
     //提交单据时整理成formData
@@ -297,7 +302,7 @@ export default {
     },
     importItemModalFormOk (data) {
       for (const item of data) {
-        if(item.taxRate && typeof item.taxRate ==='string') {
+        if (item.taxRate && typeof item.taxRate === 'string') {
           item.taxRate = item.taxRate.replace('%', '')
         }
         item.taxRate = getNumberValue(item.taxRate)
