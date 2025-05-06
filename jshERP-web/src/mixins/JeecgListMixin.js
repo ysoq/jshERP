@@ -544,6 +544,7 @@ export const JeecgListMixin = {
     /** 表格增加合计行 */
     tableAddTotalRow(columns, dataSource) {
       if (dataSource.length > 0 && this.ipagination.pageSize % 10 === 1) {
+        console.log('1111111')
         //分页条数为11、21、31等的时候增加合计行
         let numKey = 'rowIndex'
         let totalRow = { [numKey]: '合计' }
@@ -573,6 +574,8 @@ export const JeecgListMixin = {
             totalRow[dataIndex] = total
           }
         })
+        console.log('222222', totalRow, dataSource)
+
         dataSource.push(totalRow)
         //总数要增加合计的行数，每页都有一行合计，所以总数要加上
         let size = Math.ceil(this.ipagination.total / (this.ipagination.pageSize - 1))

@@ -51,10 +51,10 @@
       </a-spin>
 
       <template slot="footer">
-        <a-button v-if="!record.parentId" @click='showDetail({type: "收支汇总", inOutItemId: `${record.id}`})'>
+        <a-button v-if="record && !record.parentId" @click='showDetail({type: "收支汇总", inOutItemId: `${record.id}`})'>
           收支汇总
         </a-button>
-        <a-button v-if="!record.parentId" @click='showDetail({type: "领料汇总", inOutItemId: `${record.id}`})'>
+        <a-button v-if="record && !record.parentId" @click='showDetail({type: "领料汇总", inOutItemId: `${record.id}`})'>
           领料汇总
         </a-button>
         <a-button type="primary" @click="handleCancel">

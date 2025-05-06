@@ -197,12 +197,16 @@ export default {
         span: 18,
         offset: 1
       },
+      ipagination: {
+        pageSize: 11,
+        pageSizeOptions: ['11', '21', '31', '101', '201', '301', '1001', '2001', '3001'],
+      },
       userList: [],
       supplierList: [],
       msgList: [],
       // 查询条件
       queryParam: { name: '', type: '', remark: '' },
-      totalColumns: ['contractPrice', 'totalInAccount', 'totalUnInAccount', 'totalOutAccount', 'taxAmount'],
+      totalColumns: `contractPrice,totalInAccount,totalOutAccount,totalUnInAccount,`,
       // 表头
       columns: [
         {
@@ -258,7 +262,7 @@ export default {
           dataIndex: 'totalUnInAccount',
           width: 150,
           customRender: (text, item) => {
-            return this.getPrice(item)
+            return this.getPrice2(text)
           }
         },
         {
@@ -281,23 +285,17 @@ export default {
       url: {
         list: async (params) => {
           await this.taskList
-          const list = await getAction('/inOutItem/list', params)
+          const list = await getAction('/inOutItem/list', {
+            ...params,
+            pageSize: this.ipagination.pageSize - 1
+          })
           for (const item of list.data.rows) {
             item.msgList = this.msgList ? this.msgList.filter(x => x.inOutItemId === item.id) : []
             item.projectStatus = (item.msgList[0] || { projectStatus: '1' }).projectStatus
             item.totalOutAccount = (item.totalOutAccount || 0) + (item.projectAmount || 0)
+            item.totalUnInAccount = this.getPrice(item)
           }
 
-          function getTotal (key) {
-            return list.data.rows.reduce((a, b) => a + b[key], 0).toFixed(2)
-          }
-
-          list.data.rows.push({
-            rowIndex: '合计',
-            contractPrice: getTotal('contractPrice'),
-            totalInAccount: getTotal('totalInAccount'),
-            totalOutAccount: getTotal('totalOutAccount')
-          })
           return list
         },
         delete: '/inOutItem/delete',
@@ -335,16 +333,16 @@ export default {
       await this.loadMsgList()
       return this.loadData()
     },
-    batchDel1(){
+    batchDel1 () {
       const list = this.selectedRowKeys.map(x => this.dataSource.find(y => y.id === x))
       if (list.find(x => x.parentId)) {
         this.$message.warning('项目已合并，无法继续操作！')
         return
       }
 
-      return this.batchDel();
+      return this.batchDel()
     },
-    handleSetStatus1(type) {
+    handleSetStatus1 (type) {
       const list = this.selectedRowKeys.map(x => this.dataSource.find(y => y.id === x))
       if (list.find(x => x.parentId)) {
         this.$message.warning('项目已合并，无法继续操作！')
@@ -491,18 +489,19 @@ export default {
     //导出单据
     handleExport () {
       let list = []
-      let head = '#,编号,名称,类型,项目经理,联系方式,客户,项目完成日期,项目进度,合同金额,含税开票金额,已回款金额,未回款金额,支出金额,状态,备注'
+      let head = '编号,名称,关联主项目,类型,项目经理,联系方式,客户,项目完成日期,项目进度,合同金额,含税开票金额,已回款金额,未回款金额,支出金额,状态,备注'
       for (let i = 0; i < this.dataSource.length; i++) {
         let item = []
         let ds = this.dataSource[i]
-        const status = ds.enabled ? '启用' : ds.enabled === false ? '禁用' : ''
-        item.push(ds.rowIndex, ds.code, ds.name,
+        const status = ds.rowIndex === '合计' ? '' : ds.enabled ? '启用' : '禁用'
+
+        item.push(ds.rowIndex === '合计' ? '合计' : ds.code, ds.name, ds.parentName,
           ds.type, ds.username, ds.phonenum,
-          ds.supplierName, ds.finishTimeStr, ds.projectStatus,
+          ds.supplierName, ds.finishTimeStr, getProjectStatusText(ds.projectStatus),
           this.getPrice2(ds.contractPrice),
           this.getPrice2(ds.taxAmount),
           this.getPrice2(ds.totalInAccount),
-          this.getPrice(ds),
+          this.getPrice2(ds.totalUnInAccount),
           this.getPrice2(ds.totalOutAccount),
           status, ds.remark)
         list.push(item)
