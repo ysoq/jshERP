@@ -169,7 +169,7 @@
         </div>
         <!-- table区域-end -->
         <!-- 表单区域 -->
-        <invoice-record-modal ref="modalForm" @ok="modalFormOk" @close="modalFormClose"></invoice-record-modal>
+        <invoice-record-modal ref="modalForm" @ok="handleOk" @close="modalFormClose"></invoice-record-modal>
         <invoice-detail ref="modalDetail" @ok="modalFormOk" @close="modalFormClose"></invoice-detail>
       </a-card>
     </a-col>
@@ -182,6 +182,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { FinancialListMixin } from './mixins/FinancialListMixin'
 import JDate from '@/components/jeecg/JDate'
 import { getAction, postAction } from '@api/manage'
+import { inOutItemExcludeFinish } from '@api/api'
 
 export default {
   name: 'ItemInList',
@@ -269,10 +270,13 @@ export default {
     this.initPerson()
     this.initAccount()
   },
-  mounted () {
-
-  },
   methods: {
+    handleOk() {
+      inOutItemExcludeFinish(false).then(list => {
+        this.inOutList = list
+        this.modalFormOk()
+      })
+    },
     async handleDetail(record) {
       const res = await getAction(`/api/invoiceRecord/${record.id}`, {})
       const data = res.data
