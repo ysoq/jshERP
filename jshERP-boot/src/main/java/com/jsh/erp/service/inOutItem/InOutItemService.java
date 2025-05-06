@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.BusinessTypeEnum;
@@ -12,6 +13,7 @@ import com.jsh.erp.datasource.entities.*;
 import com.jsh.erp.datasource.mappers.*;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
+import com.jsh.erp.service.DataRecycleService;
 import com.jsh.erp.service.InvoiceRecord.InvoiceRecordServiceImpl;
 import com.jsh.erp.service.ProjectAmountService;
 import com.jsh.erp.service.audit.AuditRecordService;
@@ -66,6 +68,12 @@ public class InOutItemService {
     private AuditRecordService auditRecordService;
     @Autowired
     private ProjectAmountService projectAmountService;
+    @Autowired
+    private AccountItemMapper accountItemMapper;
+    @Autowired
+    private DepotItemMapper depotItemMapper;
+    @Autowired
+    private DataRecycleService dataRecycleService;
 
     public InOutItem getInOutItem(long id) throws Exception {
         InOutItem result = null;
@@ -139,17 +147,30 @@ public class InOutItemService {
         return list;
     }
 
-    public Long countInOutItem(String name, String type, String remark) throws Exception {
+    public Long countInOutItem(String name,
+                               String type,
+                               String remark,
+                               String code,
+                               String manager,
+                               String supplierId) throws Exception {
         Long result = null;
         try {
-            String manager = null;
-            User user = userService.getCurrentUser();
-            String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
-            if (BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
-                manager = user.getId().toString();
+            if (StringUtil.isEmpty(manager)) {
+                User user = userService.getCurrentUser();
+                String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
+                if (BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
+                    manager = user.getId().toString();
+                }
             }
-
-            result = inOutItemMapperEx.countsByInOutItem(name, type, remark, manager);
+            LambdaQueryWrapper<InOutItem> queryWrapper = Wrappers.lambdaQuery();
+            queryWrapper.like(StringUtils.isNotEmpty(name), InOutItem::getName, name);
+            queryWrapper.eq(StringUtils.isNotEmpty(type), InOutItem::getType, type);
+            queryWrapper.like(StringUtils.isNotEmpty(remark), InOutItem::getRemark, remark);
+            queryWrapper.eq(StringUtils.isNotEmpty(code), InOutItem::getCode, code);
+            queryWrapper.eq(StringUtils.isNotEmpty(manager), InOutItem::getManager, manager);
+            queryWrapper.eq(StringUtils.isNotEmpty(supplierId), InOutItem::getSupplierId, supplierId);
+            queryWrapper.eq(InOutItem::getTenantId, userService.getTenantId());
+            result = Long.valueOf(inOutItemMapper.selectCount(queryWrapper));
         } catch (Exception e) {
             JshException.readFail(logger, e);
         }
@@ -162,12 +183,37 @@ public class InOutItemService {
         verifyNameAndCode(inOutItem.getId(), inOutItem.getName(), "");
         int result = 0;
         try {
+            // 获取当前最大id
             inOutItem.setEnabled(true);
-            inOutItemMapper.insertSelective(inOutItem);
-            List<InOutItem> list = this.findBySelect("");
-            result = Math.toIntExact(list.get(0).getId());
-            logService.insertLog("收支项目",
-                    new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(inOutItem.getName()).toString(), request);
+            inOutItem.setId(getNextId());
+            inOutItem.setTenantId(userService.getTenantId());
+            inOutItem.setDeleteFlag(BusinessConstants.DELETE_FLAG_EXISTS);
+            inOutItemMapper.insert(inOutItem);
+            inOutItemMapper.updateByPrimaryKeySelective(inOutItem);
+            var mergeIds = obj.getJSONArray("projectIds");
+
+            // 项目合并
+            if (mergeIds != null && !mergeIds.isEmpty()) {
+                var projectList = inOutItemMapper.selectList(Wrappers.<InOutItem>lambdaQuery().in(InOutItem::getId, mergeIds));
+                for (InOutItem item : projectList) {
+                    item.setParentId(inOutItem.getId());
+                    item.setEnabled(false);
+                    inOutItemMapper.updateById(item);
+                }
+
+                var depotItemList = depotItemMapper.selectList(Wrappers.<DepotItem>lambdaQuery().in(DepotItem::getInOutItemId, mergeIds));
+                if (depotItemList != null && !depotItemList.isEmpty()) {
+                    for (DepotItem depotItem : depotItemList) {
+                        dataRecycleService.insertRecycle(depotItem, depotItem.getInOutItemId(), inOutItem.getId());
+
+                        depotItem.setInOutItemId(inOutItem.getId());
+                        depotItemMapper.updateById(depotItem);
+                    }
+                }
+            }
+
+
+            result = Math.toIntExact(inOutItem.getId());
         } catch (Exception e) {
             JshException.writeFail(logger, e);
         }
@@ -277,19 +323,6 @@ public class InOutItemService {
         LambdaQueryWrapper<InOutItem> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(InOutItem::getEnabled, true)
                 .ne(InOutItem::getDeleteFlag, BusinessConstants.DELETE_FLAG_DELETED);
-        /*
-        InOutItemExample example = new InOutItemExample();
-        if (type.equals("excludeFinish")) {
-            example.createCriteria()
-                    .addStatusNotEqualTo("1")
-        } else if (type.equals("clearPackage")) {
-            example.createCriteria()
-                    .andTypeEqualTo("清包")
-        } else {
-            example.createCriteria()
-        }
-        example.setOrderByClause("sort asc, id desc");
-        * */
 
         if (type.equals("excludeFinish")) {
             // 不等于1，等于null需要查询到
@@ -348,17 +381,43 @@ public class InOutItemService {
     public List<InOutItemFlow> projectFlow(Long id) {
         var list = inOutItemMapperEx.selectInOutItemByFlow(id);
 
-        var invoiceList = invoiceRecordServiceImpl.getListByProjectId(id);
-        for (var invoice : invoiceList) {
-            var inOutItemFlow = new InOutItemFlow();
-            inOutItemFlow.setCreateTime(Tools.dateToStr(invoice.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
-            inOutItemFlow.setHeaderId(invoice.getId());
-            inOutItemFlow.setNumber(invoice.getInvoiceNumber());
-            inOutItemFlow.setType("发票");
-            inOutItemFlow.setTotalPrice(invoice.getTaxAmount());
-            list.add(inOutItemFlow);
+        if(list != null && !list.isEmpty()) {
+            var ids = list.stream().filter(item -> item.getSubType().equals("收支")).map(InOutItemFlow::getHeaderId).collect(Collectors.toList());
+            if(!ids.isEmpty()) {
+                var auditList = auditRecordService.getByBusinessTypeAndIds(BusinessTypeEnum.ACCOUNT_HEAD, ids);
+                for(var item : list) {
+                    var audit = auditList.stream().filter(a -> a.getBusinessId().equals(item.getHeaderId())).findFirst().orElse(null);
+                    if (audit != null) {
+                        item.setCreateTime(Tools.dateToStr(audit.getAuditTime(), "yyyy-MM-dd HH:mm:ss"));
+                    }
+                }
+            }
         }
 
+
+        // 查询发票信息
+        var invoiceList = invoiceRecordServiceImpl.getListByProjectId(id);
+        if (invoiceList != null && !invoiceList.isEmpty()) {
+            var ids = invoiceList.stream().map(InvoiceRecord::getId).collect(Collectors.toList());
+            var auditList = auditRecordService.getByBusinessTypeAndIds(BusinessTypeEnum.Invoice_Record, ids);
+
+            for (var invoice : invoiceList) {
+                var flow = new InOutItemFlow();
+                flow.setCreateTime(Tools.dateToStr(invoice.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
+                flow.setHeaderId(invoice.getId());
+                flow.setNumber(invoice.getInvoiceNumber());
+                flow.setType("发票");
+                flow.setTotalPrice(invoice.getTaxAmount());
+
+                var audit = auditList.stream().filter(a -> a.getBusinessId().equals(invoice.getId())).findFirst().orElse(null);
+                if (audit != null) {
+                    flow.setCreateTime(Tools.dateToStr(audit.getAuditTime(), "yyyy-MM-dd HH:mm:ss"));
+                }
+                list.add(flow);
+            }
+        }
+
+        // 查询项目金额分配信息
         LambdaQueryWrapper<ProjectAmount> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(ProjectAmount::getProjectId, id)
                 .eq(ProjectAmount::getDeleteFlag, 0)
@@ -386,5 +445,12 @@ public class InOutItemService {
             }
         }
         return list;
+    }
+
+    public Long getNextId() {
+        QueryWrapper<InOutItem> wrapper = new QueryWrapper<>();
+        wrapper.select("MAX(id) AS id");  // 使用别名确保映射到实体类的id字段
+        InOutItem data = inOutItemMapper.selectOne(wrapper);
+        return data.getId() + 1;
     }
 }

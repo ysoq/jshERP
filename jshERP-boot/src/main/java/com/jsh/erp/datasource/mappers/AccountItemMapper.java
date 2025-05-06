@@ -1,11 +1,12 @@
 package com.jsh.erp.datasource.mappers;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jsh.erp.datasource.entities.AccountItem;
 import com.jsh.erp.datasource.entities.AccountItemExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
-public interface AccountItemMapper {
+public interface AccountItemMapper extends BaseMapper<AccountItem> {
     long countByExample(AccountItemExample example);
 
     int deleteByExample(AccountItemExample example);

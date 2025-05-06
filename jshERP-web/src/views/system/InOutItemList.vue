@@ -72,15 +72,17 @@
         <!-- 操作按钮区域 -->
         <div class="table-operator" style="margin-top: 5px">
           <a-button v-if="btnEnableList.indexOf(1) > -1" @click="handleAdd" type="primary" icon="plus">新增</a-button>
-          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="batchDel" icon="delete">删除</a-button>
-          <a-button v-if="btnEnableList.indexOf(2)>-1" icon="check" @click="handleSetStatus('examine')">审核</a-button>
-          <a-button v-if="btnEnableList.indexOf(7)>-1" icon="stop" @click="handleSetStatus('counter-audit')">反审核
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="handleMerge" icon="column-width">项目合并
           </a-button>
-          <a-button v-if="btnEnableList.indexOf(1) > -1" @click='handleSetStatus("enable")' icon="check-square"
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="batchDel1" icon="delete">删除</a-button>
+          <a-button v-if="btnEnableList.indexOf(2)>-1" icon="check" @click="handleSetStatus1('examine')">审核</a-button>
+          <a-button v-if="btnEnableList.indexOf(7)>-1" icon="stop" @click="handleSetStatus1('counter-audit')">反审核
+          </a-button>
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click='handleSetStatus1("enable")' icon="check-square"
           >启用
           </a-button
           >
-          <a-button v-if="btnEnableList.indexOf(1) > -1" @click='handleSetStatus("disabled")' icon="close-square"
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click='handleSetStatus1("disabled")' icon="close-square"
           >禁用
           </a-button
           >
@@ -101,23 +103,28 @@
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
             @change="handleTableChange"
           >
-            <span slot="action" slot-scope="text, record">
+            <div slot="action" slot-scope="text, record">
               <template v-if='record.rowIndex !== "合计"'>
-              <a @click="handleMsg(record)" v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'>进度填写</a>
-              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type="vertical" />
-              <a @click="handleEdit(record, false)" v-if='record.status !== "1"'>编辑</a>
-              <a @click="handleEdit(record, true)" v-if='record.status === "1"'>查看</a>
-              <a-divider v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"' type="vertical" />
-              <a-popconfirm
-                v-if='btnEnableList.indexOf(1) > -1 && record.status !== "1"'
-                title="确定删除吗?"
-                @confirm="() => handleDelete(record.id)"
-              >
-                <a>删除</a>
-              </a-popconfirm>
-            </template>
+                <a @click="handleEdit(record, true)" v-if='record.status === "1" || record.parentId'>查看</a>
+                <template v-else>
+                  <a @click="handleMsg(record)"
+                     v-if="btnEnableList.indexOf(1) > -1 ">进度填写</a>
+                  <a-divider v-if="btnEnableList.indexOf(1) > -1 " type="vertical" />
+                  <a @click="handleEdit(record, false)" v-if="btnEnableList.indexOf(1) > -1 ">编辑</a>
+                  <a-divider v-if="btnEnableList.indexOf(1) > -1 " type="vertical" />
+                  <a-popconfirm
+                    v-if="btnEnableList.indexOf(1) > -1 "
+                    title="确定删除吗?"
+                    @confirm="() => handleDelete(record.id)"
+                  >
+                    <a>删除</a>
+                  </a-popconfirm>
+                </template>
 
-            </span>
+              </template>
+
+
+            </div>
             <span slot="name" slot-scope="name, record">
                <a @click="handleFlow(record)"> {{ name }}</a>
             </span>
@@ -166,7 +173,7 @@ import InOutFlowModal from './modules/InOutFlowModal'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDate from '@/components/jeecg/JDate'
 import InOutMsgModal from '@views/system/modules/InOutMsgModal.vue'
-import { getAction, postAction } from '@api/manage'
+import { deleteAction, getAction, postAction } from '@api/manage'
 import { getProjectStatusText } from '@views/system/InOutItemCommon'
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
@@ -216,6 +223,7 @@ export default {
           title: '名称', dataIndex: 'name', width: 200,
           scopedSlots: { customRender: 'name' }
         },
+        { title: '关联主项目', dataIndex: 'parentName', width: 140, ellipsis: true },
         { title: '类型', dataIndex: 'type', width: 100 },
         { title: '项目经理', dataIndex: 'username', width: 100 },
         { title: '联系方式', dataIndex: 'phonenum', width: 130 },
@@ -323,11 +331,54 @@ export default {
   methods: {
     ...mapGetters(['nickname']),
     getProjectStatusText,
-    async modalFormOk() {
+    async modalFormOk () {
       await this.loadMsgList()
       return this.loadData()
     },
-    loadMsgList() {
+    batchDel1(){
+      const list = this.selectedRowKeys.map(x => this.dataSource.find(y => y.id === x))
+      if (list.find(x => x.parentId)) {
+        this.$message.warning('项目已合并，无法继续操作！')
+        return
+      }
+
+      return this.batchDel();
+    },
+    handleSetStatus1(type) {
+      const list = this.selectedRowKeys.map(x => this.dataSource.find(y => y.id === x))
+      if (list.find(x => x.parentId)) {
+        this.$message.warning('项目已合并，无法继续操作！')
+        return
+      }
+      return this.handleSetStatus(type)
+    },
+    handleMerge () {
+      if (this.selectedRowKeys.length <= 1) {
+        this.$message.warning('至少选择两条记录！')
+        return
+      }
+      const list = this.selectedRowKeys.map(x => this.dataSource.find(y => y.id === x))
+      if (list.find(x => x.code)) {
+        this.$message.warning('只能选择编号为空的记录！')
+        return
+      }
+      if (list.find(x => x.parentId)) {
+        this.$message.warning('项目已合并，无法继续操作！')
+        return
+      }
+
+      this.$confirm({
+        title: '确认合并',
+        content: '是否合并选中数据?',
+        onOk: () => {
+          this.$refs.modalForm.add({ projectIds: this.selectedRowKeys })
+          this.$refs.modalForm.title = '项目合并'
+          this.$refs.modalForm.disableSubmit = false
+        }
+      })
+
+    },
+    loadMsgList () {
       return getAction('/msg/getMsgCountByType', { 'type': '项目进度' }).then(res => {
         this.msgList = res.data.list
       })

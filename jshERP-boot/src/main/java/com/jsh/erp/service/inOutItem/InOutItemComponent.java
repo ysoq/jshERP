@@ -53,7 +53,15 @@ public class InOutItemComponent implements ICommonQuery {
         String name = StringUtil.getInfo(search, "name");
         String type = StringUtil.getInfo(search, "type");
         String remark = StringUtil.getInfo(search, "remark");
-        return inOutItemService.countInOutItem(name, type, remark);
+        String code = StringUtil.getInfo(search, "code");
+        String manager = StringUtil.getInfo(search, "manager");
+        String supplierId = StringUtil.getInfo(search, "supplierId");
+        return inOutItemService.countInOutItem( name,
+                type,
+                remark,
+                code,
+                manager,
+                supplierId);
     }
 
     @Override

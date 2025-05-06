@@ -4,6 +4,7 @@
     <select id="selectByConditionInOutItem" parameterType="com.jsh.erp.datasource.entities.InOutItemExample" resultMap="com.jsh.erp.datasource.mappers.InOutItemMapper.BaseResultMap">
         SELECT
         io.*,
+        par.name as parentName,
         u.username,
         u.phonenum,
         io.supplier_id AS supplierId,
@@ -13,6 +14,7 @@
         (COALESCE ( SUM( CASE WHEN f.type in ('出库', '支出', '分配金额') THEN f.totalPrice ELSE 0 END ), 0 ) - COALESCE ( SUM( CASE WHEN f.subType = '销售退货' THEN f.totalPrice ELSE 0 END ), 0 ) ) AS total_out_account
         FROM
         `jsh_in_out_item` io
+        left join `jsh_in_out_item` par on io.parent_id = par.id
         LEFT JOIN `jsh_user` u ON io.manager = u.id
         LEFT JOIN view_project_account_flow AS f ON f.projectId = io.id
         LEFT JOIN jsh_supplier su ON su.id = io.supplier_id

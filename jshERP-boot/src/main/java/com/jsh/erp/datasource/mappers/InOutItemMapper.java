@@ -14,8 +14,6 @@ public interface InOutItemMapper extends BaseMapper<InOutItem> {
 
     int deleteByPrimaryKey(Long id);
 
-    int insert(InOutItem record);
-
     int insertSelective(InOutItem record);
 
     List<InOutItem> selectByExample(InOutItemExample example);

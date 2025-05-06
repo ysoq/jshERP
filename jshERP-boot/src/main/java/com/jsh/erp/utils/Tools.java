@@ -545,6 +545,10 @@ public class Tools {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
     }
 
+    public static Date getNowDate() {
+        return Calendar.getInstance().getTime();
+    }
+
     /**
      * 判断字符串中是否含有中文
      *

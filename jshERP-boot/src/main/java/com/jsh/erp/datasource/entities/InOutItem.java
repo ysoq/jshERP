@@ -1,6 +1,8 @@
 package com.jsh.erp.datasource.entities;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -13,6 +15,12 @@ import java.util.Date;
 public class InOutItem implements Serializable {
 
     private static final long serialVersionUID=1L;
+
+    /**
+     *  主键ID
+     */
+
+    @TableId(type = IdType.ID_WORKER)
     private Long id;
 
     private String name;
@@ -25,22 +33,37 @@ public class InOutItem implements Serializable {
 
     private String sort;
 
-    private Long tenantId;
-
     private String deleteFlag;
 
+    @TableField("code")
     private String code;
+
+    @TableField("manager")
     private Long manager;
+
+    @TableField("file_list")
     private String fileList;
 
-
-
+    @TableField("finish_time")
     private Date finishTime;
 
+    @TableField("status")
     private String status;
 
+    @TableField("supplier_id")
     private Long supplierId;
+
+    @TableField("tenant_id")
+    private Long tenantId;
+
+    @TableField("contract_price")
     private BigDecimal contractPrice;
+
+    // 父级项目ID
+    private Long parentId;
+
+    @TableField(exist = false)
+    private String parentName;
 
     @TableField(exist = false)
     private String projectStatus;
