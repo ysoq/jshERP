@@ -12,7 +12,7 @@
 
     <a-upload
       name="file"
-      :multiple="false"
+      :multiple="true"
       :action="uploadAction"
       :headers="headers"
       :data="{'biz':bizPath}"
