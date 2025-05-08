@@ -124,13 +124,13 @@
           <template #depotBatchSet>
             <a-icon type='down' @click='handleBatchSetDepot' />
           </template>
-          <template #depotAdd>
-            <a-divider v-if='quickBtn.depot' style='margin: 4px 0;' />
-            <div v-if='quickBtn.depot' style='padding: 4px 8px; cursor: pointer;' @click='addDepot'>
-              <a-icon type='plus' />
-              新增仓库
-            </div>
-          </template>
+<!--          <template #depotAdd>-->
+<!--            <a-divider v-if='quickBtn.depot' style='margin: 4px 0;' />-->
+<!--            <div v-if='quickBtn.depot' style='padding: 4px 8px; cursor: pointer;' @click='addDepot'>-->
+<!--              <a-icon type='plus' />-->
+<!--              新增仓库-->
+<!--            </div>-->
+<!--          </template>-->
         </j-editable-table>
         <a-row class='form-row' :gutter='24'>
           <a-col :lg='24' :md='24' :sm='24'>

@@ -117,6 +117,7 @@ public class InOutItemService {
             String code,
             String manager,
             String supplierId,
+            String enabled,
             int offset, int rows) throws Exception {
         List<InOutItem> list = null;
         try {
@@ -130,7 +131,7 @@ public class InOutItemService {
             }
 
             list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null, manager,
-                    code, supplierId
+                    code, supplierId, enabled
             );
 
             var projectAmountList = projectAmountService.getProjectAmountByProjectList(list.stream().map(InOutItem::getId).collect(Collectors.toList()));
@@ -152,7 +153,8 @@ public class InOutItemService {
                                String remark,
                                String code,
                                String manager,
-                               String supplierId) throws Exception {
+                               String supplierId,
+                               String enabled) throws Exception {
         Long result = null;
         try {
             if (StringUtil.isEmpty(manager)) {
@@ -170,6 +172,8 @@ public class InOutItemService {
             queryWrapper.eq(StringUtils.isNotEmpty(manager), InOutItem::getManager, manager);
             queryWrapper.eq(StringUtils.isNotEmpty(supplierId), InOutItem::getSupplierId, supplierId);
             queryWrapper.eq(InOutItem::getTenantId, userService.getTenantId());
+            queryWrapper.eq(StringUtils.isNotEmpty(enabled), InOutItem::getEnabled, enabled);
+
             result = Long.valueOf(inOutItemMapper.selectCount(queryWrapper));
         } catch (Exception e) {
             JshException.readFail(logger, e);

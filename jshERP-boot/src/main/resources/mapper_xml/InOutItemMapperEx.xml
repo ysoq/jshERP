@@ -39,6 +39,9 @@
         <if test="supplierId != null">
             and io.supplier_id=#{supplierId}
         </if>
+        <if test="enabled != null">
+            and io.enabled=#{enabled}
+        </if>
         <if test="ids != null and ids.length>0">
             and io.id in (
             <foreach collection="ids" item="id" separator=",">

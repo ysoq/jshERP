@@ -63,6 +63,14 @@
                     <a-input placeholder="请输入" v-model="queryParam.remark"></a-input>
                   </a-form-item>
                 </a-col>
+                <a-col :md="5" :sm="24">
+                  <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-select placeholder="请选择状态" v-model="queryParam.enabled">
+                      <a-select-option value="1">启用</a-select-option>
+                      <a-select-option value="0">禁用</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
               </template>
 
 
@@ -206,7 +214,7 @@ export default {
       msgList: [],
       workTeamList: [],
       // 查询条件
-      queryParam: { name: '', type: '', remark: '' },
+      queryParam: { name: '', type: '', remark: '', enabled: '1' },
       totalColumns: `contractPrice,totalInAccount,totalOutAccount,totalUnInAccount,`,
       // 表头
       columns: [
@@ -444,7 +452,7 @@ export default {
         if (record.totalInAccount > record.contractPrice) {
           return '0.00'
         } else {
-          return this.formatPrice((record.contractPrice - record.totalInAccount))
+          return (record.contractPrice - record.totalInAccount).toFixed(2)
         }
       }
       return ''
