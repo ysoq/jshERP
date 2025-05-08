@@ -91,6 +91,8 @@
           </a-button>
           <a-button v-if="btnEnableList.indexOf(2) > -1" icon="stop" @click="batchSetStatus('2')">作废
           </a-button>
+          <a-button icon="download" @click="handleExport">导出</a-button>
+
         </div>
         <!-- table区域-begin -->
         <div>
@@ -101,25 +103,27 @@
             rowKey="id"
             :columns="columns"
             :dataSource="dataSource"
-            :pagination="false"
+            :pagination="ipagination"
             :scroll="scroll"
             :loading="loading"
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
             @change="handleTableChange"
           >
             <div slot="action" slot-scope="text, record">
-              <a @click="handleEdit(record, true)">查看</a>
-              <template v-if="record.status!=='1'">
-                <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
-                <a @click="handleEdit(record)">编辑</a>
-                <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
-                <a-popconfirm
-                  v-if="btnEnableList.indexOf(1) > -1"
-                  title="确定删除吗?"
-                  @confirm="() => handleDelete(record.id)"
-                >
-                  <a>删除</a>
-                </a-popconfirm>
+              <template v-if='record.rowIndex !== "合计"'>
+                <a @click="handleEdit(record, true)">查看</a>
+                <template v-if="record.status!=='1'">
+                  <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
+                  <a @click="handleEdit(record)">编辑</a>
+                  <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
+                  <a-popconfirm
+                    v-if="btnEnableList.indexOf(1) > -1"
+                    title="确定删除吗?"
+                    @confirm="() => handleDelete(record.id)"
+                  >
+                    <a>删除</a>
+                  </a-popconfirm>
+                </template>
               </template>
             </div>
             <template slot="customRenderStatus" slot-scope="status">
@@ -164,6 +168,11 @@ export default {
         span: 18,
         offset: 1
       },
+      ipagination: {
+        pageSize: 11,
+        pageSizeOptions: ['11', '21', '31', '101', '201', '301', '1001', '2001', '3001']
+      },
+      totalColumns: `amount,`,
       // 查询条件
       queryParam: {
         projectCode: '',
@@ -175,6 +184,12 @@ export default {
       },
       // 表头
       columns: [
+        {
+          dataIndex: 'rowIndex', width: 60, align: 'center', slots: { title: 'customTitle' },
+          customRender: function(t, r, index) {
+            return (t !== '合计') ? (parseInt(index) + 1) : t
+          }
+        },
         {
           title: '操作',
           dataIndex: 'action',
@@ -223,9 +238,23 @@ export default {
         }
       ],
       url: {
-        async list (args) {
+        list: async (args) => {
           await this.beforeTask
-          return postAction('/api/projectAmount/findPage', args)
+          const search = JSON.parse(args.search)
+          if (search.createTimeRange && search.createTimeRange.length) {
+            search.beginTime = dayjs(search.createTimeRange[0]).format('YYYY-MM-DD')
+            search.endTime = dayjs(search.createTimeRange[1]).format('YYYY-MM-DD')
+          }
+          if (search.auditBeginRange && search.auditBeginRange.length) {
+            search.auditBeginTime = dayjs(search.auditBeginRange[0]).format('YYYY-MM-DD')
+            search.auditEndTime = dayjs(search.auditBeginRange[1]).format('YYYY-MM-DD')
+          }
+          const apiArgs = {
+            ...args,
+            search: JSON.stringify(search),
+            pageSize: this.ipagination.pageSize - 1
+          }
+          return postAction('/api/projectAmount/findPage', apiArgs)
         },
         delete: '/api/projectAmount/delete',
         batchSetStatusUrl: '/api/projectAmount/batchSetStatus',
@@ -265,12 +294,40 @@ export default {
 
   },
   methods: {
-    handleEdit(record, readonly = false) {
+    handleEdit (record, readonly = false) {
       this.$refs.projectBonus.edit({
         ...record
       })
       this.$refs.projectBonus.isReadOnly = readonly
       this.$refs.projectBonus.title = readonly ? '查看' : record.id ? '编辑' : '新增'
+    },
+    //导出单据
+    handleExport () {
+      let list = []
+      let head = '项目编号,项目名称,班组,分配金额,备注,操作人,提交时间,审核人,审核时间,状态'
+      for (let i = 0; i < this.dataSource.length; i++) {
+        let item = []
+        let ds = this.dataSource[i]
+        const status = {
+          '0': '未审核',
+          '1': '已审核',
+          '2': '作废'
+        }
+
+        item.push(ds.rowIndex === '合计' ? '合计' : getMetaValue(this.projectList, ds.projectId, 'code', 'id'),
+          getMetaValue(this.projectList, ds.projectId, 'name', 'id'),
+          getMetaValue(this.workTeamList, ds.teamId, 'name', 'id'),
+          ds.amount,
+          ds.remark,
+          getMetaValue(this.userList, ds.updater, 'userName', 'id'),
+          ds.updateTime,
+          ds.auditor,
+          ds.auditTime,
+          status[ds.status])
+        list.push(item)
+      }
+      let tip = '项目金额分配'
+      this.handleExportXlsPost(tip, tip, head, tip, list)
     }
   }
 }
