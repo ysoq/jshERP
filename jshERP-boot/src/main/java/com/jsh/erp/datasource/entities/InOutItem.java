@@ -35,6 +35,8 @@ public class InOutItem implements Serializable {
 
     private String deleteFlag;
 
+    private String teamList;
+
     @TableField("code")
     private String code;
 

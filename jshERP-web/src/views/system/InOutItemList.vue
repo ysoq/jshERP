@@ -159,7 +159,7 @@
         </div>
         <!-- table区域-end -->
         <!-- 表单区域 -->
-        <inOutItem-modal ref="modalForm" @ok="handleFormOk"></inOutItem-modal>
+        <inOutItem-modal ref="modalForm" @ok="handleFormOk" :workTeamList="workTeamList"></inOutItem-modal>
         <InOutFlowModal ref="flowModal"></InOutFlowModal>
         <InOutMsgModal ref="msg" @ok="modalFormOk" />
       </a-card>
@@ -204,6 +204,7 @@ export default {
       userList: [],
       supplierList: [],
       msgList: [],
+      workTeamList: [],
       // 查询条件
       queryParam: { name: '', type: '', remark: '' },
       totalColumns: `contractPrice,totalInAccount,totalOutAccount,totalUnInAccount,`,
@@ -321,7 +322,10 @@ export default {
       getAction('/supplier/list', args).then(res => {
         this.supplierList = res.data.rows
       }),
-      this.loadMsgList()
+      this.loadMsgList(),
+      getAction('/api/workTeam/findBySelect').then(res => {
+        this.workTeamList = res
+      }),
     ])
 
   },
@@ -369,7 +373,8 @@ export default {
         title: '确认合并',
         content: '是否合并选中数据?',
         onOk: () => {
-          this.$refs.modalForm.add({ projectIds: this.selectedRowKeys })
+          const teamList = list.filter(x=> x.teamList).map(x => x.teamList).join(',').split(',')
+          this.$refs.modalForm.add({ projectIds: this.selectedRowKeys, teamList: [...new Set(teamList)].join(',') })
           this.$refs.modalForm.title = '项目合并'
           this.$refs.modalForm.disableSubmit = false
         }

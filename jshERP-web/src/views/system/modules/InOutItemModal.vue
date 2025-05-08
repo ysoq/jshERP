@@ -41,6 +41,19 @@
               <a-select-option value="运维">运维</a-select-option>
             </a-select>
           </a-form-item>
+
+
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="班组">
+            <a-select placeholder="选择班组" v-decorator="['teamList']"
+                      optionFilterProp="children" mode="multiple"
+                      :dropdownMatchSelectWidth="false" showSearch :disabled="disableSubmit">
+              <a-select-option v-for="(item, index) in workTeamList" :key="index" :value="`${item.id}`">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+
+
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目经理">
             <a-select placeholder="选择项目经理" v-decorator="['manager',validatorRules.manager]"
                       optionFilterProp="children"
@@ -110,6 +123,9 @@ export default {
   name: 'InOutItemModal',
   mixins: [mixinDevice],
   components: { JDate, JUpload },
+  props: {
+    workTeamList: Array
+  },
   data () {
     return {
       title: '操作',
@@ -191,6 +207,8 @@ export default {
         this.form.setFieldsValue({ 'file3': fileList.file3 })
         this.form.setFieldsValue({ 'file4': fileList.file4 })
         this.form.setFieldsValue({ 'file5': fileList.file5 })
+        const teamList = this.model.teamList ? this.model.teamList.split(',') : []
+        this.form.setFieldsValue({ 'teamList': teamList })
 
         autoJumpNextInput('inOutItemModal')
       })
@@ -219,6 +237,7 @@ export default {
             file4: values.file4,
             file5: values.file5
           })
+          formData.teamList = values.teamList.join(',')
 
           let editType = 'insert'
           let obj

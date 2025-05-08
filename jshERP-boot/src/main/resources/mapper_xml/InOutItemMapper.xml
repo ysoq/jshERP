@@ -11,6 +11,7 @@
     <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
     <result column="parent_id" jdbcType="BIGINT" property="parentId" />
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
+    <result column="team_list" jdbcType="VARCHAR" property="teamList" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -308,6 +309,9 @@
       </if>
       <if test="finishTime != null">
         finish_time = #{finishTime,jdbcType=BIGINT},
+      </if>
+      <if test="teamList != null">
+        team_list = #{teamList,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
