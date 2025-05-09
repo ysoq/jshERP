@@ -68,8 +68,8 @@
                   </a-form-item>
                 </a-col>
                 <a-col :md="5" :sm="24">
-                  <a-form-item label="审核状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder="审核状态" v-model="queryParam.status" allowClear optionFilterProp="children"
+                  <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-select placeholder="状态" v-model="queryParam.status" allowClear optionFilterProp="children"
                               :dropdownMatchSelectWidth="false" showSearch>
                       <a-select-option value="0">未审核</a-select-option>
                       <a-select-option value="1">审核通过</a-select-option>
@@ -221,7 +221,6 @@ export default {
             return text
           }
         },
-        { title: '备注', dataIndex: 'remark', width: 100 },
         {
           title: '操作人', dataIndex: 'updater', width: 100,
           customRender: (text, record, index) => {
@@ -235,7 +234,8 @@ export default {
           title: '状态', dataIndex: 'status', width: 80,
           align: 'center',
           scopedSlots: { customRender: 'customRenderStatus' }
-        }
+        },
+        { title: '备注', dataIndex: 'remark', width: 100 },
       ],
       url: {
         list: async (args) => {

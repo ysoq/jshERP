@@ -18,8 +18,8 @@
                 </a-form-item>
               </a-col>
               <a-col :md="5" :sm="24">
-                <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select placeholder="请选择" v-model="queryParam.type">
+                <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol" >
+                  <a-select placeholder="请选择" v-model="queryParam.type" allowClear>
                     <a-select-option value="大包">大包</a-select-option>
                     <a-select-option value="清包">清包</a-select-option>
                     <a-select-option value="运维">运维</a-select-option>
@@ -28,7 +28,7 @@
               </a-col>
               <a-col :md="5" :sm="24">
                 <a-form-item label="项目经理" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select placeholder="请选择" v-model="queryParam.manager" optionFilterProp="children"
+                  <a-select placeholder="请选择" v-model="queryParam.manager" optionFilterProp="children" allowClear
                             :dropdownMatchSelectWidth="false" showSearch>
                     <a-select-option v-for="(item, index) in userList" :key="index" :value="item.id">
                       {{ item.userName }}
@@ -50,7 +50,7 @@
                 <a-col :md="5" :sm="24">
                   <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-select placeholder="请选择" v-model="queryParam.supplierId" showSearch
-                              optionFilterProp="children"
+                              optionFilterProp="children" allowClear
                               :dropdownMatchSelectWidth="false">
                       <a-select-option v-for="(item, index) in supplierList" :key="index" :value="item.id">
                         {{ item.supplier }}
@@ -64,8 +64,8 @@
                   </a-form-item>
                 </a-col>
                 <a-col :md="5" :sm="24">
-                  <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select placeholder="请选择状态" v-model="queryParam.enabled">
+                  <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol" >
+                    <a-select placeholder="请选择状态" v-model="queryParam.enabled" allowClear>
                       <a-select-option value="1">启用</a-select-option>
                       <a-select-option value="0">禁用</a-select-option>
                     </a-select>

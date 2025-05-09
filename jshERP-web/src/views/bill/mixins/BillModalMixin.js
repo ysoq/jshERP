@@ -1114,18 +1114,18 @@ export const BillModalMixin = {
     },
     //加载快捷按钮：供应商、客户、会员、结算账户、仓库
     initQuickBtn() {
-      let btnStrList = Vue.ls.get('winBtnStrList') //按钮功能列表 JSON字符串
-      if (btnStrList) {
-        for (let i = 0; i < btnStrList.length; i++) {
-          if (btnStrList[i].btnStr) {
-            this.quickBtn.vendor = btnStrList[i].url === '/system/vendor' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.vendor
-            this.quickBtn.customer = btnStrList[i].url === '/system/customer' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.customer
-            this.quickBtn.member = btnStrList[i].url === '/system/member' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.member
-            this.quickBtn.account = btnStrList[i].url === '/system/account' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.account
-            this.quickBtn.depot = btnStrList[i].url === '/system/depot' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.depot
-          }
-        }
-      }
+      // let btnStrList = Vue.ls.get('winBtnStrList') //按钮功能列表 JSON字符串
+      // if (btnStrList) {
+      //   for (let i = 0; i < btnStrList.length; i++) {
+      //     if (btnStrList[i].btnStr) {
+      //       this.quickBtn.vendor = btnStrList[i].url === '/system/vendor' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.vendor
+      //       this.quickBtn.customer = btnStrList[i].url === '/system/customer' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.customer
+      //       this.quickBtn.member = btnStrList[i].url === '/system/member' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.member
+      //       this.quickBtn.account = btnStrList[i].url === '/system/account' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.account
+      //       this.quickBtn.depot = btnStrList[i].url === '/system/depot' ? btnStrList[i].btnStr.indexOf(1) > -1 : this.quickBtn.depot
+      //     }
+      //   }
+      // }
     }
   }
 }

@@ -50,9 +50,9 @@ module.exports = {
             '/jshERP-boot': {
                 // target: 'http://192.168.0.30',
                 // target: 'http://192.168.123.5:4783',
-                target: 'http://localhost:4783',
+                // target: 'http://localhost:4783',
                 // target: 'http://erp.akeem.cn',
-                // target: 'http://erp.test.akeem.cn',
+                target: 'http://erp.test.akeem.cn',
                 ws: false,
                 changeOrigin: true
             }

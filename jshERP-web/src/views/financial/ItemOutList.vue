@@ -208,13 +208,13 @@ export default {
         { title: '操作员', dataIndex: 'userName', width: 100, ellipsis: true },
         { title: '支出账户', dataIndex: 'accountName', width: 100, ellipsis: true },
         { title: '支出金额', dataIndex: 'changeAmount', width: 80 },
-        { title: '备注', dataIndex: 'remark', width: 200 },
         {
           title: '状态', dataIndex: 'status', width: 80, align: 'center',
           scopedSlots: { customRender: 'customRenderStatus' }
         },
         { title: '审核员', dataIndex: 'auditor', width: 100 },
-        { title: '审核时间', dataIndex: 'auditTime', width: 160 }
+        { title: '审核时间', dataIndex: 'auditTime', width: 160 },
+        { title: '备注', dataIndex: 'remark', width: 200 },
       ],
       url: {
         list: '/accountHead/list',
