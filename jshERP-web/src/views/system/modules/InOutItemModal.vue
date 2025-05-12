@@ -150,7 +150,6 @@ export default {
         name: {
           rules: [
             { required: true, message: '请输入名称!' },
-            { min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur' }
           ]
         },
         type: {
