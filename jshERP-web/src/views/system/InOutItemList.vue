@@ -105,7 +105,7 @@
             rowKey="id"
             :columns="columns"
             :dataSource="dataSource"
-            :pagination="ipagination"
+            :pagination="false"
             :scroll="scroll"
             :loading="loading"
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
@@ -164,6 +164,23 @@
               </template>
             </span>
           </a-table>
+          <a-row :gutter="24" style="margin-top: 8px;text-align:right;">
+            <a-col :md="24" :sm="24">
+              <a-pagination @change="paginationChange" @showSizeChange="paginationShowSizeChange"
+                            size="small"
+                            show-size-changer
+                            :showQuickJumper="true"
+                            :current="ipagination.current"
+                            :page-size="ipagination.pageSize"
+                            :page-size-options="ipagination.pageSizeOptions"
+                            :total="ipagination.total"
+                            :show-total="(total, range) => `共 ${total-Math.ceil(total/ipagination.pageSize)} 条`">
+                <template slot="buildOptionText" slot-scope="props">
+                  <span>{{ props.value-1 }}条/页</span>
+                </template>
+              </a-pagination>
+            </a-col>
+          </a-row>
         </div>
         <!-- table区域-end -->
         <!-- 表单区域 -->

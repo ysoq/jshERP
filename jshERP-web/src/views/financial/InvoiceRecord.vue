@@ -10,7 +10,7 @@
             <a-row :gutter="24">
               <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目" data-step="1" data-title="项目">
-                  <a-select placeholder="请选择项目" v-model="queryParam.inOutItemId" allowClear
+                  <a-select placeholder="请选择项目" v-model="queryParam.projectId" allowClear
                             :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
                     <a-select-option v-for="(item,index) in inOutList" :key="index" :value="item.value">
                       {{ item.text }}
