@@ -34,7 +34,7 @@
               </a-col>
               <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item label="单据编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input placeholder="请输入单据编号" v-model="queryParam.billNo"></a-input>
+                  <a-input placeholder="请输入单据编号" v-model="queryParam.invoiceNumber"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :lg="5" :md="12" :sm="24">
