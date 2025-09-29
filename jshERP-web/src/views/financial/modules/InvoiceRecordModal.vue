@@ -1,16 +1,6 @@
 <template>
-  <j-modal
-    :title="title"
-    :width="width"
-    :visible="visible"
-    :confirmLoading="confirmLoading"
-    :keyboard="false"
-    :forceRender="true"
-    fullscreen
-    switchFullscreen
-    @cancel="handleCancel"
-    :id="prefixNo"
-    style="top:20px;height: 95%;">
+  <j-modal :title="title" :width="width" :visible="visible" :confirmLoading="confirmLoading" :keyboard="false"
+    :forceRender="true" fullscreen switchFullscreen @cancel="handleCancel" :id="prefixNo" style="top:20px;height: 95%;">
     <template slot="footer">
       <a-button @click="handleCancel">取消</a-button>
       <a-button v-if="checkFlag && isCanCheck" :loading="confirmLoading" @click="handleOkAndCheck">保存并审核</a-button>
@@ -23,9 +13,9 @@
         <a-row class="form-row" :gutter="24">
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目" data-step="1" data-title="项目">
-              <a-select placeholder="请选择项目" v-decorator="[ 'projectId', validatorRules.projectId ]"
-                        :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
-                <a-select-option v-for="(item,index) in inOutList" :key="index" :value="item.value">
+              <a-select placeholder="请选择项目" v-decorator="['projectId', validatorRules.projectId]"
+                :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
+                <a-select-option v-for="(item, index) in inOutList" :key="index" :value="item.value">
                   {{ item.text }}
                 </a-select-option>
               </a-select>
@@ -33,9 +23,9 @@
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="往来单位">
-              <a-select placeholder="请选择往来单位" v-decorator="[ 'supplierId', validatorRules.organId ]"
-                        :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
-                <a-select-option v-for="(item,index) in organList" :key="index" :value="item.id">
+              <a-select placeholder="请选择往来单位" v-decorator="['supplierId', validatorRules.organId]"
+                :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
+                <a-select-option v-for="(item, index) in organList" :key="index" :value="item.id">
                   {{ item.supplier }}
                 </a-select-option>
               </a-select>
@@ -43,27 +33,18 @@
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据日期">
-              <j-date v-decorator="['invoiceDate', validatorRules.billTime ]" :show-time="true" />
+              <j-date v-decorator="['invoiceDate', validatorRules.billTime]" :show-time="true" />
             </a-form-item>
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="单据编号">
-              <a-input placeholder="请输入单据编号" v-decorator.trim="[ 'invoiceNumber' ]" />
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="发票编号">
+              <a-input placeholder="请输入发票编号" v-decorator.trim="['invoiceNumber']" />
             </a-form-item>
           </a-col>
         </a-row>
-        <j-editable-table
-          :ref="refKeys[0]"
-          :loading="accountTable.loading"
-          :columns="accountTable.columns"
-          :dataSource="accountTable.dataSource"
-          :minWidth="minWidth"
-          :maxHeight="300"
-          :rowNumber="true"
-          :rowSelection="true"
-          :actionButton="true"
-          @added="onAdded"
-          @valueChange="onValueChange">
+        <j-editable-table :ref="refKeys[0]" :loading="accountTable.loading" :columns="accountTable.columns"
+          :dataSource="accountTable.dataSource" :minWidth="minWidth" :maxHeight="300" :rowNumber="true"
+          :rowSelection="true" :actionButton="true" @added="onAdded" @deleted="onDeleted" @valueChange="onValueChange">
           <template #buttonAfter>
             <a-row :gutter="24" style="float:left;padding-bottom: 5px;padding-left:20px;">
               <a-button icon="import" @click="onImport()">导入明细</a-button>
@@ -72,17 +53,17 @@
         </j-editable-table>
         <a-row class="form-row" :gutter="24">
           <a-col :lg="24" :md="24" :sm="24">
-            <a-form-item :labelCol="labelCol" :wrapperCol="{xs: { span: 24 },sm: { span: 24 }}" label="">
-              <a-textarea :rows="2" placeholder="请输入备注" v-decorator="[ 'remark' ]" style="margin-top:8px;" />
+            <a-form-item :labelCol="labelCol" :wrapperCol="{ xs: { span: 24 }, sm: { span: 24 } }" label="">
+              <a-textarea :rows="2" placeholder="请输入备注" v-decorator="['remark']" style="margin-top:8px;" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row class="form-row" :gutter="24">
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="收入账户">
-              <a-select placeholder="请选择收入账户" v-decorator="[ 'accountId', validatorRules.accountId ]"
-                        :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
-                <a-select-option v-for="(item,index) in accountList" :key="index" :value="item.id">
+              <a-select placeholder="请选择收入账户" v-decorator="['accountId', validatorRules.accountId]"
+                :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
+                <a-select-option v-for="(item, index) in accountList" :key="index" :value="item.id">
                   {{ item.name }}
                 </a-select-option>
               </a-select>
@@ -90,8 +71,7 @@
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开票含税金额">
-              <a-input placeholder="" v-decorator.trim="[ 'taxAmount', validatorRules.changeAmount ]"
-                       :readOnly="true" />
+              <a-input placeholder="" v-decorator.trim="['taxAmount', validatorRules.changeAmount]" :readOnly="true" />
             </a-form-item>
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
@@ -142,7 +122,7 @@ export default {
       render: (h, ctx) => ctx.props.vnodes
     }
   },
-  data () {
+  data() {
     return {
       title: '操作',
       width: '1600px',
@@ -222,26 +202,35 @@ export default {
       }
     }
   },
-  created () {
+  created() {
   },
   methods: {
-    onValueChange (event) {
+    onDeleted(record) {
+      this.$nextTick(() => {
+        const data = this.accountTable.dataSource.filter(x => ![...record].includes(`${x.id}`))
+        console.log(JSON.stringify(data), record, JSON.stringify(this.accountTable.dataSource))
+        const taxAmount = data.reduce((acc, cur) => acc + (cur.taxIncludedPrice - 0), 0)
+        this.form.setFieldsValue({ 'taxAmount': taxAmount.toFixed(2) })
+      })
+
+    },
+    onValueChange(event) {
       if (event.column.key === 'taxIncludedPrice') {
         this.form.setFieldsValue({ 'taxAmount': event.target.statisticsColumns.taxIncludedPrice })
       }
     },
-    addInit (amountNum) {
-      getAction('/sequence/buildNumber').then((res) => {
-        if (res && res.code === 200) {
-          this.form.setFieldsValue({ 'invoiceNumber': amountNum + res.data.defaultNumber })
-        }
-      })
+    addInit(amountNum) {
+      // getAction('/sequence/buildNumber').then((res) => {
+      //   if (res && res.code === 200) {
+      //     this.form.setFieldsValue({ 'invoiceNumber': amountNum + res.data.defaultNumber })
+      //   }
+      // })
       this.$nextTick(() => {
         this.form.setFieldsValue({ 'invoiceDate': getNowFormatDateTime(), 'taxAmount': 0 })
       })
     },
     //调用完edit()方法之后会自动调用此方法
-    async editAfter () {
+    async editAfter() {
       this.billStatus = '0'
       if (this.action === 'add') {
         this.addInit('KP')
@@ -269,7 +258,7 @@ export default {
       this.initQuickBtn()
     },
     //提交单据时整理成formData
-    classifyIntoFormData (allValues) {
+    classifyIntoFormData(allValues) {
       let billMain = Object.assign(this.model, allValues.formValue)
       let detailArr = allValues.tablesValue[0].values.map(x => (
         {
@@ -291,16 +280,16 @@ export default {
       }
     },
     //改变本次欠款的值
-    autoChangeAmount (target) {
+    autoChangeAmount(target) {
       let allEachAmount = target.statisticsColumns.eachAmount - 0
       this.$nextTick(() => {
         this.form.setFieldsValue({ 'changeAmount': allEachAmount })
       })
     },
-    onImport () {
+    onImport() {
       this.$refs.importItemModalForm.add('invoice')
     },
-    importItemModalFormOk (data) {
+    importItemModalFormOk(data) {
       for (const item of data) {
         if (item.taxRate && typeof item.taxRate === 'string') {
           item.taxRate = item.taxRate.replace('%', '')
@@ -316,6 +305,4 @@ export default {
   }
 }
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>
