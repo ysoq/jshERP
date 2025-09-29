@@ -20,7 +20,8 @@ public interface InOutItemMapperEx {
             @Param("manager") String manager,
             @Param("code") String code,
             @Param("supplierId") String supplierId,
-            @Param("enabled") String enabled
+            @Param("enabled") String enabled,
+            @Param("projectStatus") String projectStatus
     );
 
     List<InOutItem> selectProjectByStatus(@Param("status") String[] status);

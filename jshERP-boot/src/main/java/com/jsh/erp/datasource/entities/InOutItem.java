@@ -67,7 +67,7 @@ public class InOutItem implements Serializable {
     @TableField(exist = false)
     private String parentName;
 
-    @TableField(exist = false)
+    @TableField("project_status")
     private String projectStatus;
 
     @TableField(exist = false)

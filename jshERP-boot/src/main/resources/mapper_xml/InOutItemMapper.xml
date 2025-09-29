@@ -8,6 +8,7 @@
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="enabled" jdbcType="BIT" property="enabled" />
     <result column="sort" jdbcType="VARCHAR" property="sort" />
+    <result column="project_status" jdbcType="VARCHAR" property="projectStatus" />
     <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
     <result column="parent_id" jdbcType="BIGINT" property="parentId" />
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
@@ -245,6 +246,9 @@
       </if>
       <if test="record.status != null">
         status = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectStatus != null">
+        project_status = #{record.projectStatus,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null">

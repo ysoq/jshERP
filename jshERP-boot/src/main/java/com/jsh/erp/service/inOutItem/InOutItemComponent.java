@@ -38,6 +38,7 @@ public class InOutItemComponent implements ICommonQuery {
         String manager = StringUtil.getInfo(search, "manager");
         String supplierId = StringUtil.getInfo(search, "supplierId");
         String enabled = StringUtil.getInfo(search, "enabled");
+        String projectStatus = StringUtil.getInfo(search, "projectStatus");
         return inOutItemService.select(
                 name,
                 type,
@@ -46,6 +47,7 @@ public class InOutItemComponent implements ICommonQuery {
                 manager,
                 supplierId,
                 enabled,
+                projectStatus,
                 QueryUtils.offset(map), QueryUtils.rows(map));
     }
 
@@ -59,6 +61,7 @@ public class InOutItemComponent implements ICommonQuery {
         String manager = StringUtil.getInfo(search, "manager");
         String supplierId = StringUtil.getInfo(search, "supplierId");
         String enabled = StringUtil.getInfo(search, "enabled");
+        String projectStatus = StringUtil.getInfo(search, "projectStatus");
 
         return inOutItemService.countInOutItem( name,
                 type,
@@ -66,7 +69,8 @@ public class InOutItemComponent implements ICommonQuery {
                 code,
                 manager,
                 supplierId,
-                enabled);
+                enabled,
+                projectStatus);
     }
 
     @Override

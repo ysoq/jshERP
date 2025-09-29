@@ -273,6 +273,10 @@ export default {
             recoverFile: '',
             type: '项目进度'
           }
+           getAction('/inOutItem/editProjectStatus', {
+            id: projectId,
+            projectStatus: '99',
+          })
           postAction('/msg/add', msgParam)
         }
       }

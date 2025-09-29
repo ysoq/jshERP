@@ -118,6 +118,7 @@ public class InOutItemService {
             String manager,
             String supplierId,
             String enabled,
+            String projectStatus,
             int offset, int rows) throws Exception {
         List<InOutItem> list = null;
         try {
@@ -129,9 +130,8 @@ public class InOutItemService {
                     manager = user.getId().toString();
                 }
             }
-
             list = inOutItemMapperEx.selectByConditionInOutItem(name, type, remark, offset, rows, null, manager,
-                    code, supplierId, enabled
+                    code, supplierId, enabled, projectStatus
             );
 
             var projectAmountList = projectAmountService.getProjectAmountByProjectList(list.stream().map(InOutItem::getId).collect(Collectors.toList()));
@@ -154,7 +154,8 @@ public class InOutItemService {
                                String code,
                                String manager,
                                String supplierId,
-                               String enabled) throws Exception {
+                               String enabled,
+                               String projectStatus) throws Exception {
         Long result = null;
         try {
             if (StringUtil.isEmpty(manager)) {
@@ -173,7 +174,7 @@ public class InOutItemService {
             queryWrapper.eq(StringUtils.isNotEmpty(supplierId), InOutItem::getSupplierId, supplierId);
             queryWrapper.eq(InOutItem::getTenantId, userService.getTenantId());
             queryWrapper.eq(StringUtils.isNotEmpty(enabled), InOutItem::getEnabled, enabled);
-
+            queryWrapper.eq(StringUtils.isNotEmpty(projectStatus), InOutItem::getProjectStatus, projectStatus);
             result = Long.valueOf(inOutItemMapper.selectCount(queryWrapper));
         } catch (Exception e) {
             JshException.readFail(logger, e);
@@ -363,8 +364,10 @@ public class InOutItemService {
         InOutItem inOutItem = new InOutItem();
         if (status.equals("examine")) {
             inOutItem.setStatus("1");
+            inOutItem.setProjectStatus("6");
         } else if (status.equals("counter-audit")) {
             inOutItem.setStatus("0");
+            inOutItem.setProjectStatus("5");
         } else if (status.equals("enable")) {
             inOutItem.setEnabled(true);
         } else {
@@ -385,11 +388,11 @@ public class InOutItemService {
     public List<InOutItemFlow> projectFlow(Long id) {
         var list = inOutItemMapperEx.selectInOutItemByFlow(id);
 
-        if(list != null && !list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             var ids = list.stream().filter(item -> item.getSubType().equals("收支")).map(InOutItemFlow::getHeaderId).collect(Collectors.toList());
-            if(!ids.isEmpty()) {
+            if (!ids.isEmpty()) {
                 var auditList = auditRecordService.getByBusinessTypeAndIds(BusinessTypeEnum.ACCOUNT_HEAD, ids);
-                for(var item : list) {
+                for (var item : list) {
                     var audit = auditList.stream().filter(a -> a.getBusinessId().equals(item.getHeaderId())).findFirst().orElse(null);
                     if (audit != null) {
                         item.setCreateTime(Tools.dateToStr(audit.getAuditTime(), "yyyy-MM-dd HH:mm:ss"));

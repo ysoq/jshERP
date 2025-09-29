@@ -2,8 +2,11 @@ package com.jsh.erp.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jsh.erp.datasource.entities.*;
 import com.jsh.erp.datasource.mappers.AccountHeadMapperEx;
+import com.jsh.erp.datasource.mappers.InOutItemMapper;
 import com.jsh.erp.datasource.mappers.InOutItemMapperEx;
 import com.jsh.erp.service.inOutItem.InOutItemService;
 import com.jsh.erp.utils.BaseResponseInfo;
@@ -44,6 +47,9 @@ public class InOutItemController {
 
     @Resource
     private AccountHeadMapperEx accountHeadMapperEx;
+
+    @Resource
+    private InOutItemMapper inOutItemMapper;
 
     /**
      * 查找收支项目信息-下拉框
@@ -129,7 +135,7 @@ public class InOutItemController {
         for(InOutItem item : status5Or6) {
             ids.add(item.getId().toString());
         }
-        List<InOutItem> list = inOutItemMapperEx.selectByConditionInOutItem(null, null, null, 0 ,999, StringUtil.listToStringArray(ids), null, null, null, null);
+        List<InOutItem> list = inOutItemMapperEx.selectByConditionInOutItem(null, null, null, 0 ,999, StringUtil.listToStringArray(ids), null, null, null, null, null);
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("bonus", list);
@@ -147,5 +153,19 @@ public class InOutItemController {
         BaseResponseInfo res = new BaseResponseInfo();
         res.data = status5Or6;
         return res;
+    }
+
+    @GetMapping("/editProjectStatus")
+    @ApiOperation(value = "编辑项目状态")
+    public BaseResponseInfo editProjectStatus(@RequestParam("id") Long id, @RequestParam("projectStatus") String projectStatus) {
+        LambdaQueryWrapper<InOutItem> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(InOutItem::getId, id);
+        InOutItem inOutItem = inOutItemMapper.selectOne(queryWrapper);
+        if(inOutItem == null) {
+            return BaseResponseInfo.fail("项目不存在");
+        }
+        inOutItem.setProjectStatus(projectStatus);
+        inOutItemMapper.updateById(inOutItem);
+        return BaseResponseInfo.ok();
     }
 }
