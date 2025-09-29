@@ -11,42 +11,33 @@
               <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目" data-step="1" data-title="项目">
                   <a-select placeholder="请选择项目" v-model="queryParam.projectId" allowClear
-                            :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
-                    <a-select-option v-for="(item,index) in inOutList" :key="index" :value="item.value">
+                    :dropdownMatchSelectWidth="false" showSearch optionFilterProp="children">
+                    <a-select-option v-for="(item, index) in inOutList" :key="index" :value="item.value">
                       {{ item.text }}
                     </a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
+              <a-col :md="5" :sm="24">
+                <a-form-item label="项目编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input placeholder="请输入项目编号" v-model="queryParam.projectCode"></a-input>
+                </a-form-item>
+              </a-col>
               <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item label="往来单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select
-                    placeholder="请选择往来单位"
-                    showSearch
-                    optionFilterProp="children"
-                    v-model="queryParam.organId"
-                  >
+                  <a-select placeholder="请选择往来单位" showSearch optionFilterProp="children" v-model="queryParam.organId">
                     <a-select-option v-for="(item, index) in organList" :key="index" :value="item.id">
                       {{ item.supplier }}
                     </a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :lg="5" :md="12" :sm="24">
-                <a-form-item label="单据编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input placeholder="请输入单据编号" v-model="queryParam.invoiceNumber"></a-input>
-                </a-form-item>
-              </a-col>
+
+
               <a-col :lg="5" :md="12" :sm="24">
                 <a-form-item label="单据日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-range-picker
-                    style="width: 100%"
-                    v-model="queryParam.createTimeRange"
-                    format="YYYY-MM-DD"
-                    :placeholder="['开始时间', '结束时间']"
-                    @change="onDateChange"
-                    @ok="onDateOk"
-                  />
+                  <a-range-picker style="width: 100%" v-model="queryParam.createTimeRange" format="YYYY-MM-DD"
+                    :placeholder="['开始时间', '结束时间']" @change="onDateChange" @ok="onDateOk" />
                 </a-form-item>
               </a-col>
               <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
@@ -60,15 +51,14 @@
                 </a-col>
               </span>
               <template v-if="toggleSearchStatus">
-
+                <a-col :lg="5" :md="12" :sm="24">
+                  <a-form-item label="发票编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input placeholder="请输入发票编号" v-model="queryParam.invoiceNumber"></a-input>
+                  </a-form-item>
+                </a-col>
                 <a-col :md="5" :sm="24">
                   <a-form-item label="操作员" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select
-                      placeholder="请选择操作员"
-                      showSearch
-                      optionFilterProp="children"
-                      v-model="queryParam.creator"
-                    >
+                    <a-select placeholder="请选择操作员" showSearch optionFilterProp="children" v-model="queryParam.creator">
                       <a-select-option v-for="(item, index) in userList" :key="index" :value="item.id">
                         {{ item.userName }}
                       </a-select-option>
@@ -77,12 +67,8 @@
                 </a-col>
                 <a-col :md="5" :sm="24">
                   <a-form-item label="收入账户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-select
-                      placeholder="请选择收入账户"
-                      showSearch
-                      optionFilterProp="children"
-                      v-model="queryParam.accountId"
-                    >
+                    <a-select placeholder="请选择收入账户" showSearch optionFilterProp="children"
+                      v-model="queryParam.accountId">
                       <a-select-option v-for="(item, index) in accountList" :key="index" :value="item.id">
                         {{ item.name }}
                       </a-select-option>
@@ -104,6 +90,7 @@
                     <a-input placeholder="请输入单据备注" v-model="queryParam.remark"></a-input>
                   </a-form-item>
                 </a-col>
+
               </template>
             </a-row>
           </a-form>
@@ -113,49 +100,26 @@
           <a-button v-if="btnEnableList.indexOf(1) > -1" @click="myHandleAdd()" type="primary" icon="plus">新增
           </a-button>
           <a-button v-if="btnEnableList.indexOf(1) > -1" icon="delete" @click="batchDel">删除</a-button>
-          <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="check" @click="batchSetStatus('1')"
-          >审核
-          </a-button
-          >
-          <a-button v-if="checkFlag && btnEnableList.indexOf(7) > -1" icon="stop" @click="batchSetStatus('0')"
-          >反审核
-          </a-button
-          >
-          <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="stop" @click="batchSetStatus('2')"
-          >作废
-          </a-button
-          >
-          <a-button v-if="btnEnableList.indexOf(3) > -1" icon="download" @click="handleExport"
-          >导出
-          </a-button
-          >
+          <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="check" @click="batchSetStatus('1')">审核
+          </a-button>
+          <a-button v-if="checkFlag && btnEnableList.indexOf(7) > -1" icon="stop" @click="batchSetStatus('0')">反审核
+          </a-button>
+          <a-button v-if="checkFlag && btnEnableList.indexOf(2) > -1" icon="stop" @click="batchSetStatus('2')">作废
+          </a-button>
+          <a-button v-if="btnEnableList.indexOf(3) > -1" icon="download" @click="handleExport">导出
+          </a-button>
         </div>
         <!-- table区域-begin -->
         <div>
-          <a-table
-            ref="table"
-            size="middle"
-            bordered
-            rowKey="id"
-            :columns="columns"
-            :dataSource="dataSource"
-            :components="handleDrag(columns)"
-            :pagination="ipagination"
-            :scroll="scroll"
-            :loading="loading"
-            :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-            @change="handleTableChange"
-          >
+          <a-table ref="table" size="middle" bordered rowKey="id" :columns="columns" :dataSource="dataSource"
+            :components="handleDrag(columns)" :pagination="ipagination" :scroll="scroll" :loading="loading"
+            :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" @change="handleTableChange">
             <span slot="action" slot-scope="text, record">
               <a @click="handleDetail(record)">查看</a>
               <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
               <a v-if="btnEnableList.indexOf(1) > -1" @click="handleEdit(record)">编辑</a>
               <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
-              <a-popconfirm
-                v-if="btnEnableList.indexOf(1) > -1"
-                title="确定删除吗?"
-                @confirm="() => myHandleDelete(record)"
-              >
+              <a-popconfirm v-if="btnEnableList.indexOf(1) > -1" title="确定删除吗?" @confirm="() => myHandleDelete(record)">
                 <a>删除</a>
               </a-popconfirm>
             </span>
@@ -192,7 +156,8 @@ export default {
     InvoiceDetail,
     JDate
   },
-  data () {
+  data() {
+    const that = this;
     return {
       labelCol: {
         span: 5
@@ -220,12 +185,18 @@ export default {
           }
         },
         {
+          title: '项目编号', dataIndex: 'projectCode', width: 140, ellipsis: true,
+          customRender: (text, record) => {
+            return this.getMetaValue(this.inOutList, record.projectId + '', 'code', 'value')
+          }
+        },
+        {
           title: '往来单位', dataIndex: 'supplierId', width: 140, ellipsis: true,
           customRender: (text, record) => {
             return this.getMetaValue(this.organList, record.supplierId, 'supplier', 'id')
           }
         },
-        { title: '单据编号', dataIndex: 'invoiceNumber', width: 160 },
+        { title: '发票编号', dataIndex: 'invoiceNumber', width: 160 },
         {
           title: '收入账户 ', dataIndex: 'accountId', width: 160,
           customRender: (text, record) => {
@@ -252,7 +223,20 @@ export default {
         { title: '备注', dataIndex: 'remark', width: 80 }
       ],
       url: {
-        list (args) {
+        list(args) {
+          console.log('args', args)
+          const search = JSON.parse(args.search)
+          
+          if (search.projectCode) {
+            const projectId = that.getMetaValue(that.inOutList, search.projectCode, 'value', 'code')
+            if(search.projectId && search.projectId !== projectId) {
+              search.projectId = '-100'
+            } else {
+              search.projectId = projectId
+            }
+          }
+          args.search = JSON.stringify(search)
+          console.log('args11', args)
           return postAction('/api/invoiceRecord/findPage', args)
         },
         delete: '/api/invoiceRecord/delete',
@@ -263,7 +247,7 @@ export default {
     }
   },
   computed: {},
-  created () {
+  created() {
     this.initSystemConfig()
     this.initOrgan()
     this.initUser()
@@ -280,13 +264,13 @@ export default {
     async handleDetail(record) {
       const res = await getAction(`/api/invoiceRecord/${record.id}`, {})
       const data = res.data
-      data.projectId = this.getMetaValue(this.inOutList, data.projectId + '',  'text', 'value',)
-      data.supplierId = this.getMetaValue(this.organList, data.supplierId, 'supplier', 'id', )
-      data.accountId = this.getMetaValue(this.accountList, data.accountId,  'name', 'id',)
+      data.projectId = this.getMetaValue(this.inOutList, data.projectId + '', 'text', 'value',)
+      data.supplierId = this.getMetaValue(this.organList, data.supplierId, 'supplier', 'id',)
+      data.accountId = this.getMetaValue(this.accountList, data.accountId, 'name', 'id',)
       this.$refs.modalDetail.show(data, "KP", "")
       this.$refs.modalDetail.title = '开票详情'
     },
-    async handleEdit (record) {
+    async handleEdit(record) {
       if (record.status === '0') {
         const res = await getAction(`/api/invoiceRecord/${record.id}`, {})
         this.$refs.modalForm.action = 'edit'
@@ -297,7 +281,7 @@ export default {
         this.$message.warning('抱歉，只有未审核的单据才能编辑，请先进行反审核！')
       }
     },
-    getMetaValue (list, text, key, value) {
+    getMetaValue(list, text, key, value) {
       const a = list.find(item => item[value] === text)
       if (a) {
         return a[key]

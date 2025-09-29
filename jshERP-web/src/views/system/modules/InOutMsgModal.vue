@@ -1,21 +1,9 @@
 <template>
   <div ref='container'>
-    <a-modal
-      :title='title'
-      :width='800'
-      :visible='visible'
-      :confirmLoading='confirmLoading'
-      :getContainer='() => $refs.container'
-      :maskStyle="{ top: '93px', left: '154px' }"
-      :wrapClassName='wrapClassNameInfo()'
-      :mask='isDesktop()'
-      :maskClosable='false'
-      @ok='handleOk'
-      @cancel='handleCancel'
-      cancelText='取消'
-      okText='保存'
-      style='top: 10%; height: 80%'
-    >
+    <a-modal :title='title' :width='800' :visible='visible' :confirmLoading='confirmLoading'
+      :getContainer='() => $refs.container' :maskStyle="{ top: '93px', left: '154px' }"
+      :wrapClassName='wrapClassNameInfo()' :mask='isDesktop()' :maskClosable='false' @ok='handleOk'
+      @cancel='handleCancel' cancelText='取消' okText='保存' style='top: 10%; height: 80%'>
       <template slot='footer'>
         <a-button key='back' v-if='isReadOnly' @click='handleCancel'> 取消</a-button>
       </template>
@@ -25,7 +13,7 @@
             <span>{{ model.username }}</span>
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='项目进度'>
-            <a-select placeholder='请选择类型' v-decorator="[ 'projectStatus', validatorRules.projectStatus]">
+            <a-select placeholder='请选择' v-decorator="['projectStatus', validatorRules.projectStatus]">
               <a-select-option value='1'>{{ getProjectStatusText('1') }}</a-select-option>
               <a-select-option value='2'>{{ getProjectStatusText('2') }}</a-select-option>
               <a-select-option value='3'>{{ getProjectStatusText('3') }}</a-select-option>
@@ -36,7 +24,7 @@
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='进度描述'>
             <a-textarea :rows='8' placeholder='请输入进度描述' initialValue='' maxlength='2500'
-                        v-decorator.trim="['msgContent', validatorRules.msgContent]" />
+              v-decorator.trim="['msgContent', validatorRules.msgContent]" />
           </a-form-item>
           <a-form-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='附件'>
             <j-upload v-decorator="['recoverFile']" bizPath='bill'></j-upload>
@@ -54,6 +42,7 @@ import JUpload from '@/components/jeecg/JUpload'
 import { postAction } from '@api/manage'
 import { mapGetters } from 'vuex'
 import { getProjectStatusText } from '@views/system/InOutItemCommon'
+import { getAction } from '../../../api/manage'
 
 export default {
   name: 'InOutItemModal',
@@ -149,15 +138,20 @@ export default {
           }
 
           that.confirmLoading = true
-          postAction('/msg/add', msgParam).then(res => {
-            if (res.code === 200) {
-              that.$emit('ok')
-              that.close()
-            } else {
-              that.$message.warning(res.data.message)
-            }
-          }).finally(() => {
-            that.confirmLoading = false
+          getAction('/inOutItem/editProjectStatus', {
+            id: formData.inOutItemId,
+            projectStatus: formData.projectStatus,
+          }).then(() => {
+            postAction('/msg/add', msgParam).then(res => {
+              if (res.code === 200) {
+                that.$emit('ok')
+                that.close()
+              } else {
+                that.$message.warning(res.data.message)
+              }
+            }).finally(() => {
+              that.confirmLoading = false
+            })
           })
         }
       })
@@ -168,5 +162,4 @@ export default {
   }
 }
 </script>
-<style scoped>
-</style>
+<style scoped></style>
